@@ -64,3 +64,20 @@ def test_build_dashboard_html_handles_summary_fallback_article():
     fallback = _sample_article(summary_fallback=True, summary=None, confirmation_tag=None)
     html_out = step5_assemble.build_dashboard_html([fallback], [], {}, "2026-07-08")
     assert "삼성전자, 테스트 기사" in html_out
+
+
+def test_build_dashboard_html_escapes_quote_breakout_in_url():
+    """Verify that quote-breakout attacks in URLs are properly escaped.
+
+    A malicious URL like https://example.com/"onmouseover="alert(1)
+    should have its quote escaped to &quot; so it cannot break out of
+    the href attribute and inject an event handler.
+    """
+    malicious_url = 'https://example.com/"onmouseover="alert(1)'
+    article = _sample_article(url=malicious_url)
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+
+    # The unescaped payload should NOT appear in the output
+    assert 'onmouseover="alert(1)' not in html_out
+    # The escaped quote should appear in the output
+    assert "&quot;" in html_out
