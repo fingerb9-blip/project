@@ -67,6 +67,9 @@ def call_gemini(prompt: str, response_schema: dict, model: str = DEFAULT_MODEL) 
             return json.loads(response.text)
         except Exception as exc:  # noqa: BLE001 - 429/일시 오류 재시도 후 RuntimeError로 래핑
             last_error = exc
+            if "PerDay" in str(exc):
+                # 일일 무료 할당량 소진 - 분 단위 재시도로는 회복되지 않으므로 즉시 포기
+                break
             time.sleep(2**attempt)
 
     raise RuntimeError(f"Gemini API 호출 실패 ({_MAX_RETRIES}회 재시도): {last_error}") from last_error
