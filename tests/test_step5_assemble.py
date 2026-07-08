@@ -1,6 +1,20 @@
 from src import step5_assemble
 
 
+def _sample_issue(**overrides):
+    issue = {
+        "issue_id": "abc123",
+        "entity": "SK하이닉스",
+        "title": "청주 M15X 증설 관련 이슈",
+        "first_seen": "2026-07-05",
+        "last_updated": "2026-07-08",
+        "status": "진행중",
+        "related_article_ids": ["a", "b", "c"],
+    }
+    issue.update(overrides)
+    return issue
+
+
 def _sample_article(**overrides):
     article = {
         "title": "삼성전자, 테스트 기사",
@@ -152,3 +166,98 @@ def test_run_writes_archive_dashboard_and_index(tmp_path):
     assert (dashboard_dir / "2026-07-08.html").exists()
     assert (dashboard_dir / "index.html").exists()
     assert (dashboard_dir / "style.css").exists()
+
+
+def test_build_dashboard_html_renders_active_issue_timeline():
+    issue = _sample_issue()
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", active_issues=[issue])
+    assert "청주 M15X 증설 관련 이슈" in html_out
+    assert "SK하이닉스" in html_out
+    assert "2026-07-05" in html_out
+    assert "3건" in html_out
+
+
+def test_build_dashboard_html_escapes_issue_title_and_progress_summary():
+    issue = _sample_issue(title="<script>alert(1)</script>", progress_summary="<b>경과</b>")
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", active_issues=[issue])
+    assert "<script>alert(1)</script>" not in html_out
+    assert "<b>경과</b>" not in html_out
+    assert "&lt;script&gt;" in html_out
+
+
+def test_build_dashboard_html_no_issue_section_when_no_active_issues():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", active_issues=[])
+    assert "진행 중 이슈" not in html_out
+
+
+def test_build_briefing_renders_active_issue_timeline():
+    issue = _sample_issue()
+    md = step5_assemble.build_briefing([], [], {}, active_issues=[issue])
+    assert "진행 중 이슈" in md
+    assert "청주 M15X 증설 관련 이슈" in md
+
+
+def test_build_alert_banner_html_renders_alert():
+    alert = {"issue_id": "abc123", "entity": "SK하이닉스", "headline": "청주공장 화재 속보", "tag": "[확정]"}
+    html_out = step5_assemble.build_alert_banner_html([alert])
+    assert "청주공장 화재 속보" in html_out
+    assert 'href="alerts/abc123.html"' in html_out
+    assert "[확정]" in html_out
+
+
+def test_build_alert_banner_html_escapes_headline():
+    alert = {"issue_id": "abc123", "entity": "SK하이닉스", "headline": "<script>x</script>", "tag": "[확정]"}
+    html_out = step5_assemble.build_alert_banner_html([alert])
+    assert "<script>x</script>" not in html_out
+
+
+def test_build_alert_banner_html_empty_when_no_alerts():
+    assert step5_assemble.build_alert_banner_html([]) == ""
+
+
+def test_build_alert_detail_html_renders_issue_fields():
+    issue = _sample_issue(progress_summary="3일간 이어지는 이슈입니다.")
+    html_out = step5_assemble.build_alert_detail_html(issue)
+    assert "청주 M15X 증설 관련 이슈" in html_out
+    assert "SK하이닉스" in html_out
+    assert "3일간 이어지는 이슈입니다." in html_out
+
+
+def test_build_index_html_shows_recent_alert_banner(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    issues_path = tmp_path / "issues.json"
+    issues_path.write_text(
+        '[{"issue_id": "abc123", "entity": "SK하이닉스", "status": "진행중", '
+        '"headline": "청주공장 화재 속보", "tag": "[확정]", '
+        '"last_alerted_at": "2026-07-08T06:00:00+00:00"}]',
+        encoding="utf-8",
+    )
+
+    html_out = step5_assemble.build_index_html(
+        dashboard_dir, state_path, issues_path=issues_path, now="2026-07-08T07:00:00+00:00"
+    )
+
+    assert "청주공장 화재 속보" in html_out
+
+
+def test_build_index_html_hides_stale_alert_banner(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    issues_path = tmp_path / "issues.json"
+    issues_path.write_text(
+        '[{"issue_id": "abc123", "entity": "SK하이닉스", "status": "진행중", '
+        '"headline": "청주공장 화재 속보", "tag": "[확정]", '
+        '"last_alerted_at": "2026-07-05T06:00:00+00:00"}]',
+        encoding="utf-8",
+    )
+
+    html_out = step5_assemble.build_index_html(
+        dashboard_dir, state_path, issues_path=issues_path, now="2026-07-08T07:00:00+00:00"
+    )
+
+    assert "청주공장 화재 속보" not in html_out

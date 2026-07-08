@@ -73,6 +73,8 @@ def prepare_today_paths(base_dir: Path, today: str) -> dict:
         "archive": base_dir / "data" / "archive" / f"{today}.md",
         "dashboard_dir": base_dir / "data" / "dashboard",
         "state": base_dir / "data" / "state" / "run_status.json",
+        "issues": base_dir / "data" / "state" / "issues.json",
+        "frequency_baseline": base_dir / "data" / "state" / "frequency_baseline.json",
     }
     for key, path in paths.items():
         if key == "dashboard_dir":

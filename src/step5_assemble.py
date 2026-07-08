@@ -1,25 +1,29 @@
 """Step 5. 조립 — 브리핑 마크다운 문서 및 대시보드 HTML 생성."""
 
 import html
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
-from src import run_status
+from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
+_ALERT_SUPPRESS_WINDOW_HOURS = 24
 
 
 def build_briefing(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
     collection_stats: dict,
+    active_issues: list[dict] | None = None,
 ) -> str:
-    """오늘의 핵심 -> 카테고리별 -> 확인 필요 목록 -> 수집 상태 순으로 브리핑 문서를 조립한다.
+    """오늘의 핵심 -> 카테고리별 -> 확인 필요 목록 -> 수집 상태 -> 진행 중 이슈 순으로 브리핑 문서를 조립한다.
 
     Args:
         summarized_articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
         pending_review_articles: Step 3 결과 중 "확인 필요" tier 기사 리스트
         collection_stats: {source: {"today": int, "avg7d": float}} 형태의 소스별 수집 통계
+        active_issues: data/state/issues.json 중 status="진행중"인 이슈 리스트 (Phase 3)
 
     Returns:
         마크다운 형식의 브리핑 문서 문자열
@@ -64,6 +68,19 @@ def build_briefing(
     lines.append("|---|---|---|")
     for source, stats in collection_stats.items():
         lines.append(f"| {source} | {stats.get('today', 0)} | {stats.get('avg7d', 0):.1f} |")
+    lines.append("")
+
+    if active_issues:
+        lines.append("## 진행 중 이슈")
+        for issue in active_issues:
+            article_count = len(issue.get("related_article_ids") or [])
+            lines.append(
+                f"- [{issue.get('entity', '')}] {issue.get('title', '')} "
+                f"({issue.get('first_seen', '')} ~ {issue.get('last_updated', '')}, "
+                f"관련 기사 {article_count}건)"
+            )
+            if issue.get("progress_summary"):
+                lines.append(f"  경과 요약: {issue['progress_summary']}")
 
     return "\n".join(lines) + "\n"
 
@@ -86,14 +103,16 @@ def build_dashboard_html(
     pending_review_articles: list[dict],
     collection_stats: dict,
     target_date: str,
+    active_issues: list[dict] | None = None,
 ) -> str:
-    """오늘의 핵심 -> 카테고리별 -> 확인 필요 -> 수집 상태 순으로 카드형 HTML 대시보드 페이지를 만든다.
+    """오늘의 핵심 -> 카테고리별 -> 확인 필요 -> 수집 상태 -> 진행 중 이슈 순으로 카드형 HTML 대시보드 페이지를 만든다.
 
     Args:
         summarized_articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
         pending_review_articles: Step 3 결과 중 "확인 필요" tier 기사 리스트
         collection_stats: {source: {"today": int, "avg7d": float}} 형태의 소스별 수집 통계
         target_date: YYYY-MM-DD 형식 날짜 문자열
+        active_issues: data/state/issues.json 중 status="진행중"인 이슈 리스트 (Phase 3)
 
     Returns:
         단일 HTML 문서 문자열
@@ -167,18 +186,97 @@ def build_dashboard_html(
         )
     parts.append("</table></section>")
 
+    if active_issues:
+        parts.append("<section><h2>진행 중 이슈</h2>")
+        for issue in active_issues:
+            article_count = len(issue.get("related_article_ids") or [])
+            parts.append('<article class="card">')
+            parts.append(
+                f"<p>[{_esc(issue.get('entity', ''))}] <strong>{_esc(issue.get('title', ''))}</strong></p>"
+            )
+            parts.append(
+                f'<p class="meta">{_esc(issue.get("first_seen", ""))} ~ '
+                f'{_esc(issue.get("last_updated", ""))} · 관련 기사 {article_count}건</p>'
+            )
+            if issue.get("progress_summary"):
+                parts.append(f"<p>경과 요약: {_esc(issue['progress_summary'])}</p>")
+            parts.append("</article>")
+        parts.append("</section>")
+
     parts.append("</body></html>")
     return "\n".join(parts)
 
 
-def build_index_html(dashboard_dir: Path, state_path: Path) -> str:
+def build_alert_banner_html(alerts: list[dict]) -> str:
+    """이상 신호 감지(Phase 3)가 확정한 속보를 index.html 상단 배너로 렌더링한다.
+
+    이메일이 아니라 대시보드 즉시 갱신·재배포로 속보를 전달하는 채널이다.
+
+    Args:
+        alerts: {issue_id, entity, headline, tag} 형태의 확정 속보 리스트
+
+    Returns:
+        배너 HTML 조각 (alerts가 비어 있으면 빈 문자열)
+    """
+    if not alerts:
+        return ""
+    parts = ['<div class="alert-banner">']
+    for alert in alerts:
+        tag = _esc(alert.get("tag", ""))
+        entity = _esc(alert.get("entity", ""))
+        headline = _esc(alert.get("headline", ""))
+        issue_id = alert.get("issue_id", "")
+        parts.append(
+            f'<p>🚨 {tag} [{entity}] {headline} '
+            f'<a href="alerts/{_esc(issue_id)}.html">상세 보기</a></p>'
+        )
+    parts.append("</div>")
+    return "".join(parts)
+
+
+def build_alert_detail_html(issue: dict) -> str:
+    """속보 확정 이슈의 상세 페이지(data/dashboard/alerts/<issue_id>.html)를 만든다.
+
+    Args:
+        issue: issues.json의 이슈 항목 (entity, title/headline, tag, related_article_ids 등)
+
+    Returns:
+        단일 HTML 문서 문자열
+    """
+    title = issue.get("headline") or issue.get("title", "")
+    parts = [
+        "<!doctype html>",
+        '<html lang="ko"><head><meta charset="utf-8">',
+        f"<title>속보 — {_esc(title)}</title>",
+        '<link rel="stylesheet" href="../style.css">',
+        "</head><body>",
+        '<p><a href="../index.html">&larr; 전체 목록</a></p>',
+        f"<h1>🚨 {_esc(issue.get('tag', ''))} [{_esc(issue.get('entity', ''))}] {_esc(title)}</h1>",
+        f'<p class="meta">최초 감지: {_esc(issue.get("first_seen", ""))} · '
+        f'최근 갱신: {_esc(issue.get("last_updated", ""))}</p>',
+    ]
+    if issue.get("progress_summary"):
+        parts.append(f"<p>{_esc(issue['progress_summary'])}</p>")
+    parts.append("</body></html>")
+    return "\n".join(parts)
+
+
+def build_index_html(
+    dashboard_dir: Path,
+    state_path: Path,
+    issues_path: Path | None = None,
+    now: str | None = None,
+) -> str:
     """data/dashboard/*.html 파일 목록으로 날짜별 인덱스 페이지를 만든다.
 
     run_status.json의 마지막 실행 상태를 상단 배지로 보여준다 ("침묵 실패 방지").
+    issues_path가 주어지면 24시간 이내 확정된 속보를 상단 배너로 함께 보여준다 (Phase 3).
 
     Args:
         dashboard_dir: data/dashboard 디렉토리 경로 (날짜별 html이 이미 생성돼 있어야 함)
         state_path: data/state/run_status.json 경로
+        issues_path: data/state/issues.json 경로 (속보 배너용, 선택)
+        now: 현재 시각 ISO8601 문자열 (테스트용, 기본값은 UTC 현재 시각)
 
     Returns:
         단일 HTML 문서 문자열
@@ -212,6 +310,20 @@ def build_index_html(dashboard_dir: Path, state_path: Path) -> str:
         badge,
     ]
 
+    if issues_path is not None:
+        now_dt = datetime.fromisoformat(now) if now else datetime.now(timezone.utc)
+        issues = issue_tracking.load_issues(issues_path)
+        recent_alerts = []
+        for issue in issues:
+            if issue.get("status") != "진행중" or not issue.get("last_alerted_at"):
+                continue
+            alerted_at = datetime.fromisoformat(issue["last_alerted_at"])
+            if now_dt - alerted_at < timedelta(hours=_ALERT_SUPPRESS_WINDOW_HOURS):
+                recent_alerts.append(issue)
+        banner = build_alert_banner_html(recent_alerts)
+        if banner:
+            parts.append(banner)
+
     if not dates:
         parts.append("<p>아직 생성된 브리핑이 없습니다.</p>")
     else:
@@ -240,6 +352,8 @@ tr.warn td { background: #fff3cd; }
 .badge.fail { background: #f8d7da; color: #721c24; }
 .badge.unknown { background: #e2e3e5; color: #383d41; }
 a.latest { font-weight: bold; font-size: 1.1rem; }
+.alert-banner { background: #f8d7da; border: 1px solid #f1aeb5; border-radius: 8px; padding: 0.6rem 1rem; margin: 0.8rem 0; }
+.alert-banner p { margin: 0.2rem 0; font-weight: bold; }
 """
 
 
@@ -251,6 +365,7 @@ def run(
     dashboard_dir: str,
     today: str,
     state_path: str,
+    issues_path: str | None = None,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -262,11 +377,22 @@ def run(
         dashboard_dir: data/dashboard 디렉토리 경로
         today: YYYY-MM-DD 형식 날짜 문자열
         state_path: data/state/run_status.json 경로 (index.html 상태 배지용)
+        issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
     """
-    briefing = build_briefing(summarized_articles, pending_review_articles, collection_stats)
+    active_issues = []
+    if issues_path is not None:
+        active_issues = [
+            issue
+            for issue in issue_tracking.load_issues(Path(issues_path))
+            if issue.get("status") == "진행중"
+        ]
+
+    briefing = build_briefing(
+        summarized_articles, pending_review_articles, collection_stats, active_issues
+    )
 
     archive_path = Path(archive_path)
     archive_path.parent.mkdir(parents=True, exist_ok=True)
@@ -276,13 +402,15 @@ def run(
     dashboard_dir.mkdir(parents=True, exist_ok=True)
 
     dashboard_html = build_dashboard_html(
-        summarized_articles, pending_review_articles, collection_stats, today
+        summarized_articles, pending_review_articles, collection_stats, today, active_issues
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 
     (dashboard_dir / "style.css").write_text(_DASHBOARD_CSS, encoding="utf-8")
 
-    index_html = build_index_html(dashboard_dir, Path(state_path))
+    index_html = build_index_html(
+        dashboard_dir, Path(state_path), issues_path=Path(issues_path) if issues_path else None
+    )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 
     return briefing

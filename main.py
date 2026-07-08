@@ -13,6 +13,7 @@ from src import (
     step1_collect,
     step2_dedup,
     step3_classify,
+    step4_5_issue_match,
     step4_summarize,
     step5_assemble,
     step6_send,
@@ -82,6 +83,10 @@ def main() -> None:
         )
         steps_completed.append("summarize")
 
+        core_articles = [a for a in summarized_articles if not a.get("summary_fallback")]
+        step4_5_issue_match.run(core_articles, config["company_aliases"], paths["issues"], today)
+        steps_completed.append("issue_match")
+
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
         step5_assemble.run(
@@ -92,6 +97,7 @@ def main() -> None:
             paths["dashboard_dir"],
             today,
             paths["state"],
+            paths["issues"],
         )
         steps_completed.append("assemble")
 
@@ -111,7 +117,9 @@ def main() -> None:
                 "failed_sources": [],
             },
         )
-        index_html = step5_assemble.build_index_html(paths["dashboard_dir"], paths["state"])
+        index_html = step5_assemble.build_index_html(
+            paths["dashboard_dir"], paths["state"], issues_path=paths["issues"]
+        )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
             notify.notify_auth_error("파이프라인 실행 중 인증 오류", f"{type(exc).__name__}: {exc}")
@@ -130,7 +138,9 @@ def main() -> None:
             "failed_sources": [],
         },
     )
-    index_html = step5_assemble.build_index_html(paths["dashboard_dir"], paths["state"])
+    index_html = step5_assemble.build_index_html(
+        paths["dashboard_dir"], paths["state"], issues_path=paths["issues"]
+    )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 
 
