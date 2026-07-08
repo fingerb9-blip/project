@@ -72,15 +72,15 @@
 ### Step 5. 조립 (`step5_assemble.py`)
 
 - **Input**: Step 4 결과, 브리핑 템플릿
-- **Process**: ①오늘의 핵심 ②카테고리별 ③확인 필요 목록 ④수집 상태(소스별 건수 vs 최근 7일 평균) 순으로 마크다운/HTML 브리핑 문서 생성
-- **Output**: `data/archive/YYYY-MM-DD.md`
+- **Process**: ①오늘의 핵심 ②카테고리별 ③확인 필요 목록 ④수집 상태(소스별 건수 vs 최근 7일 평균) 순으로 마크다운 아카이브 문서와 HTML 대시보드 페이지를 함께 생성. 대시보드 생성 코드는 기사 데이터·통계만 사용하며 환경변수/Secrets를 참조하지 않고, 외부 소스 텍스트는 모두 이스케이프 처리(XSS 방지)
+- **Output**: `data/archive/YYYY-MM-DD.md` (아카이브), `data/dashboard/YYYY-MM-DD.html` (해당 날짜 대시보드), `data/dashboard/index.html` (날짜별 목록 + 최근 실행 상태 배지)
 
-### Step 6. 발송·저장 (`step6_send.py`)
+### Step 6. 저장 확인 (`step6_send.py`)
 
-- **Input**: Step 5 결과
-- **Process**: Gmail SMTP로 08:30 발송, 아카이브 저장, 실행 로그 기록
-- **Output**: 발송 완료 로그
-- **실패 처리**: 08:30까지 미완료 시 실패 알림 발송("뉴스 없는 날"과 구분되는 별도 알림)
+- **Input**: Step 5 결과 (`data/dashboard/` 산출물)
+- **Process**: 대시보드 HTML(`YYYY-MM-DD.html`, `index.html`)이 정상 생성됐는지 확인. GitHub Actions 워크플로우가 이 산출물을 GitHub Pages에 배포
+- **Output**: 저장 확인 완료 로그. 브리핑 "본문"은 더 이상 이메일로 발송하지 않고 GitHub Pages 대시보드에서 확인
+- **실패 처리**: 08:30까지 대시보드가 갱신되지 않으면 관리자 이메일로 실패 알림 발송("뉴스 없는 날"과 구분되는 별도 알림) — 이 알림 자체는 Gmail SMTP를 계속 사용
 
 ---
 

@@ -11,7 +11,7 @@
 | 운영 두뇌 | Gemini API (무료 티어, Flash/Flash-Lite) — 중복 판정·분류·요약 |
 | 개발 도구 | Claude Code (대화형) |
 | 스케줄러 | 로컬 cron / 작업 스케줄러 (Phase 1) → GitHub Actions (Phase 2~) |
-| 전달 채널 | Gmail SMTP (앱 비밀번호, 무료) |
+| 전달 채널 | GitHub Pages 대시보드 (브리핑 본문) + Gmail SMTP (앱 비밀번호, 실패 알림 전용) |
 | 비용 원칙 | 유료 API 키 없이 무료 구성. Gemini 무료 티어 한도 근접 시에만 유료 전환 검토 |
 
 ## 설계 원칙
