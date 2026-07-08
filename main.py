@@ -2,12 +2,14 @@
 
 import json
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 from src import (
+    notify,
+    run_status,
     step0_init,
     step1_collect,
     step2_dedup,
@@ -16,6 +18,8 @@ from src import (
     step5_assemble,
     step6_send,
 )
+
+KST = timezone(timedelta(hours=9))
 
 
 def _compute_collection_stats(
@@ -51,32 +55,79 @@ def main() -> None:
     base_dir = Path(__file__).resolve().parent
     today = date.today().isoformat()
 
-    config = step0_init.run(today)
+    try:
+        config = step0_init.run(today)
+    except step0_init.DuplicateRunError as exc:
+        print(f"[SKIP] {exc}")
+        return
     paths = config["paths"]
 
-    raw_articles = step1_collect.run(config["feeds"], paths["raw"])
-    dedup_articles = step2_dedup.run(
-        raw_articles, config["company_aliases"], config["source_tiers"], paths["dedup"]
-    )
-    classified_articles = step3_classify.run(
-        dedup_articles, config["categories"], config["keywords"], paths["classified"]
-    )
-    summarized_articles = step4_summarize.run(
-        classified_articles, config["source_tiers"], paths["summarized"]
-    )
+    steps_completed = []
+    raw_articles = []
+    try:
+        raw_articles = step1_collect.run(config["feeds"], paths["raw"])
+        steps_completed.append("collect")
 
-    pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
-    collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
-    step5_assemble.run(summarized_articles, pending_review, collection_stats, paths["archive"])
+        dedup_articles = step2_dedup.run(
+            raw_articles, config["company_aliases"], config["source_tiers"], paths["dedup"]
+        )
+        steps_completed.append("dedup")
 
-    smtp_config = {
-        "host": os.environ["SMTP_HOST"],
-        "port": os.environ["SMTP_PORT"],
-        "user": os.environ["SMTP_USER"],
-        "password": os.environ["SMTP_PASSWORD"],
-        "to": os.environ["SMTP_TO"],
-    }
-    step6_send.run(paths["archive"], smtp_config)
+        classified_articles = step3_classify.run(
+            dedup_articles, config["categories"], config["keywords"], paths["classified"]
+        )
+        steps_completed.append("classify")
+
+        summarized_articles = step4_summarize.run(
+            classified_articles, config["source_tiers"], paths["summarized"]
+        )
+        steps_completed.append("summarize")
+
+        pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
+        collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
+        step5_assemble.run(summarized_articles, pending_review, collection_stats, paths["archive"])
+        steps_completed.append("assemble")
+
+        smtp_config = {
+            "host": os.environ["SMTP_HOST"],
+            "port": os.environ["SMTP_PORT"],
+            "user": os.environ["SMTP_USER"],
+            "password": os.environ["SMTP_PASSWORD"],
+            "to": os.environ["SMTP_TO"],
+        }
+        if not step6_send.run(paths["archive"], smtp_config):
+            raise RuntimeError("Step 6 발송 실패 (08:30 발송 미완료)")
+        steps_completed.append("send")
+    except Exception as exc:
+        prev_status = run_status.load_status(paths["state"])
+        run_status.save_status(
+            paths["state"],
+            {
+                "last_run_date": today,
+                "last_run_status": "failed",
+                "last_success_at": prev_status.get("last_success_at") if prev_status else None,
+                "steps_completed": steps_completed,
+                "article_count": len(raw_articles),
+                "failed_sources": [],
+            },
+        )
+        if notify.looks_like_auth_error(exc):
+            notify.notify_auth_error("파이프라인 실행 중 인증 오류", f"{type(exc).__name__}: {exc}")
+        else:
+            notify.notify_failure("파이프라인 실행 실패", f"{type(exc).__name__}: {exc}")
+        raise
+
+    run_status.save_status(
+        paths["state"],
+        {
+            "last_run_date": today,
+            "last_run_status": "success",
+            "last_success_at": datetime.now(KST).isoformat(),
+            "steps_completed": steps_completed,
+            "article_count": len(raw_articles),
+            "failed_sources": [],
+        },
+    )
 
 
 if __name__ == "__main__":

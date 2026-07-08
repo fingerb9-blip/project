@@ -1,0 +1,60 @@
+name: daily-briefing
+
+on:
+  schedule:
+    - cron: "0 23 * * *" # UTC 23:00 = KST 08:00 (익일)
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: "오늘 이미 성공 실행된 이력이 있어도 강제로 재실행 (수동 테스트용)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "587"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          SEMANTIC_SCHOLAR_API_KEY: ${{ secrets.SEMANTIC_SCHOLAR_API_KEY }}
+          FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.force_run || 'false' }}
+        run: python main.py
+
+      - name: Commit state & archive
+        if: success()
+        run: |
+          git config user.name "briefing-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/archive data/state
+          git commit -m "chore: daily run $(date +%F)" || echo "no changes"
+          git push
+
+      - name: Notify on failure
+        if: failure()
+        env:
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "587"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: python src/notify.py --event pipeline_failed --run-id ${{ github.run_id }}
