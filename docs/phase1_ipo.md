@@ -1,6 +1,6 @@
 # Phase 1 (MVP) — Step 0~6 파이프라인 IPO 명세
 
-> 기획안 2-4의 Phase 1 범위. Step 1~6 핵심 경로(수집 → 중복 제거 → 분류 → 요약 → 이메일 발송)를
+> 기획안 2-4의 Phase 1 범위. Step 1~6 핵심 경로(수집 → 중복 제거 → 분류 → 요약 → 대시보드 발행)를
 > 로컬 수동 실행으로 완성해 "브리핑 한 통을 실제로 받아보는 것"이 목표.
 > Config 스키마·Gemini 연동·알림 규칙 등 이후 Phase가 공유하는 공통 기반도 이 문서에서 정의한다.
 
@@ -73,7 +73,7 @@
 
 - **Input**: Step 4 결과, 브리핑 템플릿
 - **Process**: ①오늘의 핵심 ②카테고리별 ③확인 필요 목록 ④수집 상태(소스별 건수 vs 최근 7일 평균) 순으로 마크다운 아카이브 문서와 HTML 대시보드 페이지를 함께 생성. 대시보드 생성 코드는 기사 데이터·통계만 사용하며 환경변수/Secrets를 참조하지 않고, 외부 소스 텍스트는 모두 이스케이프 처리(XSS 방지)
-- **Output**: `data/archive/YYYY-MM-DD.md` (아카이브), `data/dashboard/YYYY-MM-DD.html` (해당 날짜 대시보드), `data/dashboard/index.html` (날짜별 목록 + 최근 실행 상태 배지)
+- **Output**: `data/archive/YYYY-MM-DD.md` (아카이브), `data/dashboard/YYYY-MM-DD.html` (해당 날짜 대시보드), `data/dashboard/index.html` (날짜별 목록 + 최근 실행 상태 배지), `data/dashboard/style.css` (공유 스타일시트)
 
 ### Step 6. 저장 확인 (`step6_send.py`)
 
