@@ -1,0 +1,6 @@
+samsung_electronics:
+  aliases: ["삼성전자", "Samsung Electronics", "005930"]
+  segment: ["메모리", "파운드리", "시스템반도체"]
+sk_hynix:
+  aliases: ["SK하이닉스", "SK Hynix", "000660"]
+  segment: ["메모리", "HBM"]

@@ -1,0 +1,14 @@
+# RSS 피드 URL 목록
+# 각 항목: name(소스명, source_tiers.yaml과 일치시킬 것), url(RSS 피드 주소)
+feeds:
+  # - name: "삼성전자 뉴스룸"
+  #   url: "https://news.samsung.com/kr/feed"
+  # - name: "SK하이닉스 뉴스룸"
+  #   url: "https://news.skhynix.co.kr/feed"
+  # - name: "디일렉"
+  #   url: "https://www.thelec.kr/rss/allArticle.xml"
+
+# 네이버 뉴스 검색 API 보강 수집용 키워드
+naver_search_keywords:
+  # - "반도체"
+  # - "HBM"
