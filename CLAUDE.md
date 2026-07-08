@@ -1,207 +1,68 @@
-# 반도체 뉴스 데일리 브리핑 자동화 Agent — IPO 명세서
+# 반도체 뉴스 데일리 브리핑 자동화 Agent
 
-> 이 문서는 기획안(반도체_뉴스브리핑_기획안_v11.docx)의 Step 1~6 파이프라인을 실제 코드로 구현하기 위한 기술 명세다.
-> Claude Code에 이 문서를 컨텍스트로 제공하고 Step별 모듈을 구현·테스트한다.
+> 이 문서는 프로젝트의 **로드맵 개요**이자 Claude Code가 세션 시작 시 자동 로드하는 프로젝트 컨텍스트다.
+> Phase별 상세 IPO 스펙(Input/Process/Output, 데이터 스키마)은 `docs/phaseN_ipo.md`로 분리하고 이 문서에서 참조한다.
 
-## 0. 전체 개요
+## 프로젝트 개요
 
 | 항목 | 내용 |
 |---|---|
 | 목표 | 반도체 업계 뉴스를 매일 08:30에 자동 수집·선별·분류·요약해 이메일로 발송 |
-| 운영 두뇌 | Gemini API (무료 티어, Flash/Flash-Lite) — Step 2~4 판정 |
+| 운영 두뇌 | Gemini API (무료 티어, Flash/Flash-Lite) — 중복 판정·분류·요약 |
 | 개발 도구 | Claude Code (대화형) |
-| 스케줄러 | 로컬 cron / 작업 스케줄러 (Phase 1~2), 이후 GitHub Actions 검토 |
-| 오늘 구현 범위 | Phase 1 (MVP) — Step 1~6 핵심 경로, 로컬 수동 실행 |
+| 스케줄러 | 로컬 cron / 작업 스케줄러 (Phase 1) → GitHub Actions (Phase 2~) |
+| 전달 채널 | Gmail SMTP (앱 비밀번호, 무료) |
+| 비용 원칙 | 유료 API 키 없이 무료 구성. Gemini 무료 티어 한도 근접 시에만 유료 전환 검토 |
 
-### 디렉토리 구조
+## 설계 원칙
+
+- **"AI는 초안, 사람은 판단."** 가치가 0인 ①수집·②스크리닝·⑤요약 초안을 AI에 넘기고, ③신뢰도 판단·④맥락화·해석은 사람이 유지
+- **리스크 통제** (기획안 2-2):
+  - 약신호 누락 방지 — "핵심/확인 필요/제외" 2단 분류, 애매하면 헤드라인 목록으로 포함
+  - 요약 왜곡 방지 — 모든 요약에 원문 링크 + `[확정]`/`[관측]` 태그 필수
+  - 침묵 실패 방지 — 파이프라인 실패 시 반드시 실패 알림 ("뉴스 없는 날"과 구분)
+  - 조용한 품질 열화 방지 — 소스별 수집 건수 vs 최근 7일 평균 상시 노출, 0건 연속 시 경고
+
+## 디렉토리 구조
 
 ```
-briefing-agent/
-├── config/
+├── config/            # 기업 별칭·카테고리·키워드·소스 등급 (YAML)
 │   ├── company_aliases.yaml
 │   ├── categories.yaml
 │   ├── keywords.yaml
 │   └── source_tiers.yaml
-├── sources/
-│   └── feeds.yaml            # RSS 피드 URL 목록
-├── data/
-│   ├── raw/YYYY-MM-DD.json       # Step 1 결과
-│   ├── dedup/YYYY-MM-DD.json     # Step 2 결과
-│   ├── classified/YYYY-MM-DD.json # Step 3 결과
-│   ├── summarized/YYYY-MM-DD.json # Step 4 결과
-│   └── archive/YYYY-MM-DD.md      # Step 5 최종 브리핑
-├── logs/
-│   └── run_YYYY-MM-DD.log
-├── src/
-│   ├── step0_init.py
-│   ├── step1_collect.py
-│   ├── step2_dedup.py
-│   ├── step3_classify.py
-│   ├── step4_summarize.py
-│   ├── step5_assemble.py
-│   ├── step6_send.py
-│   ├── gemini_client.py      # Gemini API 공통 호출 래퍼
-│   └── notify.py             # 실패 알림 공통 모듈
-├── .env                      # GEMINI_API_KEY, SMTP 계정 등
-└── main.py                   # Step 0~6 순차 실행
+├── sources/           # feeds.yaml — RSS 피드 URL 목록
+├── data/              # Step별 산출물 (raw → dedup → classified → summarized → archive)
+├── logs/              # 실행 로그
+├── src/               # step0~6 모듈, gemini_client, notify
+├── docs/              # Phase별 상세 IPO 스펙 (아래 로드맵 참조)
+├── main.py            # Step 0~6 순차 실행 진입점
+└── CLAUDE.md          # (이 문서) 로드맵 개요 + 현재 진행 Phase
 ```
 
----
+## 로드맵
 
-## 1. Step별 IPO 상세
+**현재 진행: 🔨 Phase 1 (MVP)** — Step 0~6 핵심 경로를 로컬 수동 실행으로 완성 중
 
-### Step 0. 시작 (`step0_init.py`)
+| Phase | 상태 | 목표 | 상세 스펙 |
+|---|---|---|---|
+| **Phase 1 — MVP** | 🔨 진행 중 | 수집 → 중복 제거 → 분류 → 요약 → 이메일 발송. "브리핑 한 통을 실제로 받아보기" | `docs/phase1_ipo.md` |
+| **Phase 2 — 자동화 & 커버리지 확장** | ⏳ 예정 | GitHub Actions 매일 자동 실행 + 상태 저장 + 실패 알림 / R&D·특허 소스 추가 / 피드백 루프 | `docs/phase2_ipo.md` |
+| **Phase 3 — 이슈 추적 고도화** | ⏳ 예정 | 워치리스트 기반 이슈 추적 / 3일 이상 반복 이슈 증분 요약 / 긴급 즉시 알림 | `docs/phase3_ipo.md` |
+| **Phase 4 — 개인 애널리스트 확장** | 💡 제안 | 4-1 이상 신호 감지 / 4-2 이슈 지식그래프 / 4-3 경쟁 구도 레이더 | `docs/phase4_ipo.md` |
 
-- **Input**: 없음 (스케줄러가 매일 08:00 트리거)
-- **Process**:
-  1. `config/*.yaml`, `sources/feeds.yaml` 로드 및 스키마 검증
-  2. 설정 파일 파싱 실패 시 즉시 중단 + 실패 알림 발송
-  3. 오늘 날짜 기준 `data/*/YYYY-MM-DD.json` 경로 생성
-- **Output**: 검증된 설정 객체 (다음 Step에 전달) 또는 실행 중단
-- **실패 처리**: `notify.py`로 관리자 이메일에 "설정 로드 실패" 알림
+- Phase는 순차 진행하되, 각 Phase는 이전 Phase의 완성을 전제로 한다.
+- Phase 4는 MVP(Phase 1~3) 안정화 이후 도입하는 차별화 확장으로, 코어 파이프라인 변경 없이 얹는다.
 
-### Step 1. 수집 (`step1_collect.py`)
+### Phase별 상세 스펙 (자동 로드)
 
-- **Input**: `sources/feeds.yaml` (RSS URL 목록), 최근 24시간 기준 시각
-- **Process**:
-  1. `feedparser`로 각 소스 순회, 최근 24시간 내 기사만 필터링
-  2. 접속 실패 소스는 3회 재시도(exponential backoff), 최종 실패 시 로그 기록 후 계속 진행
-  3. 메타데이터 정규화: `{title, url, source, published_at, raw_text}`
-  4. 네이버 뉴스 검색 API로 국내 키워드 보강 수집
-- **Output**: `data/raw/YYYY-MM-DD.json` — 기사 배열
-- **실패 처리**: 특정 소스 3회 연속 0건이면 소스 상태 경고 로그(2-2절 "조용한 품질 열화" 대응)
+- Phase 1 — MVP 파이프라인: @docs/phase1_ipo.md
+- Phase 2 — 자동화 & 커버리지 확장: @docs/phase2_ipo.md
+- Phase 3 — 이슈 추적 고도화: @docs/phase3_ipo.md
+- Phase 4 — 개인 애널리스트 확장: @docs/phase4_ipo.md
 
-```json
-// data/raw/YYYY-MM-DD.json 스키마
-[
-  {
-    "id": "sha1(url)",
-    "title": "string",
-    "url": "string",
-    "source": "string",
-    "published_at": "ISO8601",
-    "raw_text": "string"
-  }
-]
-```
+## 작업 지침
 
-### Step 2. 중복 제거 (`step2_dedup.py`)
-
-- **Input**: Step 1 결과, `config/company_aliases.yaml`
-- **Process**:
-  1. 기업명 정규화 (`company_aliases.yaml` 매핑 적용)
-  2. Gemini API에 제목+본문 앞부분을 배치로 전달해 동일 사건 클러스터링
-  3. 클러스터별 대표 기사 선정 — `source_tiers.yaml` 1차(원출처) 우선
-- **Output**: `data/dedup/YYYY-MM-DD.json` — 중복 제거된 기사 + `cluster_id`
-- **Gemini 프롬프트 요지**: "다음 기사 목록 중 같은 사건을 다루는 것끼리 묶어 JSON 배열로 반환" (출력 포맷 강제, 아래 4장 참고)
-
-### Step 3. 분류 (`step3_classify.py`)
-
-- **Input**: Step 2 결과, `config/categories.yaml`, `config/keywords.yaml`
-- **Process**:
-  1. 화이트리스트/블랙리스트(`keywords.yaml`) 1차 필터링
-  2. Gemini API로 "핵심 / 확인 필요 / 제외" 3단 분류 + 카테고리 태깅(메모리/파운드리/장비·소재/팹리스·설계/규제·정책)
-  3. 기업 미특정 + 규제 키워드 매칭 시 "규제·정책" 분류
-- **Output**: `data/classified/YYYY-MM-DD.json` — `{tier: "핵심"|"확인 필요"|"제외", category: [...]}`
-
-### Step 4. 요약 (`step4_summarize.py`)
-
-- **Input**: Step 3 결과 중 "핵심" 태그 기사, `config/source_tiers.yaml`
-- **Process**:
-  1. Gemini API로 기사당 3~5문장 요약 생성
-  2. 소스 등급 기준 `[확정]`/`[관측]` 태그 부여 (2차 소스는 "발표했다"→확정, "알려졌다"→관측)
-  3. 요약 실패(API 에러·형식 오류) 시 헤드라인+링크만 폴백 저장
-- **Output**: `data/summarized/YYYY-MM-DD.json`
-
-### Step 5. 조립 (`step5_assemble.py`)
-
-- **Input**: Step 4 결과, 브리핑 템플릿
-- **Process**: ①오늘의 핵심 ②카테고리별 ③확인 필요 목록 ④수집 상태(소스별 건수 vs 최근 7일 평균) 순으로 마크다운/HTML 브리핑 문서 생성
-- **Output**: `data/archive/YYYY-MM-DD.md`
-
-### Step 6. 발송·저장 (`step6_send.py`)
-
-- **Input**: Step 5 결과
-- **Process**: Gmail SMTP로 08:30 발송, 아카이브 저장, 실행 로그 기록
-- **Output**: 발송 완료 로그
-- **실패 처리**: 08:30까지 미완료 시 실패 알림 발송("뉴스 없는 날"과 구분되는 별도 알림)
-
----
-
-## 2. Config 파일 스키마
-
-### `config/company_aliases.yaml`
-```yaml
-samsung_electronics:
-  aliases: ["삼성전자", "Samsung Electronics", "005930"]
-  segment: ["메모리", "파운드리", "시스템반도체"]
-sk_hynix:
-  aliases: ["SK하이닉스", "SK Hynix", "000660"]
-  segment: ["메모리", "HBM"]
-```
-
-### `config/categories.yaml`
-```yaml
-메모리:
-  segment: ["메모리", "HBM"]
-파운드리:
-  segment: ["파운드리", "시스템반도체"]
-장비·소재:
-  segment: ["장비", "EUV"]
-팹리스·설계:
-  segment: ["팹리스", "GPU", "CPU", "AI가속기", "모바일AP", "IP", "설계"]
-규제·정책:
-  segment: []   # 교차 카테고리, 키워드 매칭으로만 부여
-```
-
-### `config/keywords.yaml`
-```yaml
-whitelist:
-  공정_기술: ["EUV", "GAA", "수율", "패키징"]
-  공급망: ["HBM", "웨이퍼", "파운드리 증설"]
-  규제_무역: ["수출통제", "관세", "반도체법"]
-  기업활동: ["M&A", "합작법인", "증설"]
-  시장분석_투자의견: ["실적 전망", "투자의견"]   # 근거 있는 투자의견은 화이트리스트
-blacklist:
-  근거없는_시황: ["급등", "테마주", "찌라시"]
-```
-
-### `config/source_tiers.yaml`
-```yaml
-tier1_원출처: ["삼성전자 뉴스룸", "SK하이닉스 뉴스룸", "KIPRIS"]
-tier2_전문지: ["디일렉", "EE Times"]
-tier3_재인용: ["네이버뉴스 재배포"]
-```
-
----
-
-## 3. Gemini API 연동 스펙 (`gemini_client.py`)
-
-- **모델**: `gemini-2.5-flash` (기본), `gemini-2.5-flash-lite` (고빈도 분류처럼 가벼운 작업)
-- **인증**: `.env`의 `GEMINI_API_KEY`, `google-genai` SDK 사용
-- **공통 규칙**: 모든 호출은 `response_mime_type="application/json"` + 스키마 지정으로 구조화 출력 강제 (파싱 실패 방지)
-- **재시도**: 429/일시 오류 시 exponential backoff, 무료 티어 한도(분당 15~30회) 감안해 요청 간 최소 간격 적용
-- **Step별 사용 모델**:
-  | Step | 모델 | 이유 |
-  |---|---|---|
-  | 2. 중복 판정 | Flash-Lite | 단순 유사도 판정, 고빈도 |
-  | 3. 분류 | Flash-Lite | 단순 분류 |
-  | 4. 요약 | Flash | 문장 생성 품질 필요 |
-
----
-
-## 4. 에러·알림 규칙 (`notify.py`)
-
-| 상황 | 처리 |
-|---|---|
-| 설정 로드 실패 | 즉시 실행 중단 + 알림 |
-| 특정 소스 3회 연속 재시도 실패 | 로그만 기록, 파이프라인 계속 진행 |
-| 특정 소스 0건 연속 (7일 평균 대비) | 경고 알림 |
-| Gemini API 요약 실패 | 헤드라인+링크 폴백, 파이프라인 계속 진행 |
-| 08:30까지 미완료 | 실패 알림 발송("뉴스 없는 날"과 구분) |
-
----
-
-## 5. 다음 단계
-
-이 명세서를 기반으로 Claude Code에서 `src/` 모듈을 Step 순서대로 구현·테스트한다. 각 모듈은 독립 실행 가능하게 작성해 `main.py`에서 순차 호출하거나, 개발 중에는 Step별로 개별 테스트한다.
+- 지금은 **Phase 1**을 구현·테스트한다. 상세 IPO·Config 스키마·Gemini 연동·알림 규칙은 @docs/phase1_ipo.md를 따른다.
+- 새 Phase에 착수할 때 이 문서 상단 "현재 진행" 표시와 로드맵 표의 상태(🔨/⏳/💡/✅)를 갱신한다.
+- 각 `src/` 모듈은 독립 실행 가능하게 작성해 `main.py`에서 순차 호출하거나 Step별로 개별 테스트한다.
