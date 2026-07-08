@@ -81,3 +81,52 @@ def test_build_dashboard_html_escapes_quote_breakout_in_url():
     assert 'onmouseover="alert(1)' not in html_out
     # The escaped quote should appear in the output
     assert "&quot;" in html_out
+
+
+def test_build_index_html_lists_dates_newest_first(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    for d in ("2026-07-06", "2026-07-08", "2026-07-07"):
+        (dashboard_dir / f"{d}.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    first = html_out.index("2026-07-08")
+    second = html_out.index("2026-07-07")
+    third = html_out.index("2026-07-06")
+    assert first < second < third
+
+
+def test_build_index_html_shows_success_badge(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text(
+        '{"last_run_status": "success", "last_success_at": "2026-07-08T08:12:00+09:00"}',
+        encoding="utf-8",
+    )
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
+
+    assert "badge ok" in html_out
+    assert "2026-07-08T08:12:00+09:00" in html_out
+
+
+def test_build_index_html_shows_failure_badge(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "failed"}', encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
+
+    assert "badge fail" in html_out
+
+
+def test_build_index_html_handles_no_dashboards(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert "아직 생성된 브리핑이 없습니다" in html_out

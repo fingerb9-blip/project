@@ -171,6 +171,61 @@ def build_dashboard_html(
     return "\n".join(parts)
 
 
+def build_index_html(dashboard_dir: Path, state_path: Path) -> str:
+    """data/dashboard/*.html 파일 목록으로 날짜별 인덱스 페이지를 만든다.
+
+    run_status.json의 마지막 실행 상태를 상단 배지로 보여준다 ("침묵 실패 방지").
+
+    Args:
+        dashboard_dir: data/dashboard 디렉토리 경로 (날짜별 html이 이미 생성돼 있어야 함)
+        state_path: data/state/run_status.json 경로
+
+    Returns:
+        단일 HTML 문서 문자열
+    """
+    dates = sorted(
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"),
+        reverse=True,
+    )
+
+    status = run_status.load_status(state_path)
+    if status is None:
+        badge = '<p class="badge unknown">실행 이력 없음</p>'
+    elif status.get("last_run_status") == "success":
+        badge = (
+            f'<p class="badge ok">최근 실행 성공 '
+            f'(마지막 성공: {_esc(status.get("last_success_at", "-"))})</p>'
+        )
+    else:
+        badge = (
+            f'<p class="badge fail">최근 실행 실패 '
+            f'(마지막 성공: {_esc(status.get("last_success_at", "-"))})</p>'
+        )
+
+    parts = [
+        "<!doctype html>",
+        '<html lang="ko"><head><meta charset="utf-8">',
+        "<title>반도체 뉴스 브리핑</title>",
+        '<link rel="stylesheet" href="style.css">',
+        "</head><body>",
+        "<h1>반도체 뉴스 데일리 브리핑</h1>",
+        badge,
+    ]
+
+    if not dates:
+        parts.append("<p>아직 생성된 브리핑이 없습니다.</p>")
+    else:
+        latest = dates[0]
+        parts.append(f'<p><a class="latest" href="{latest}.html">최신 브리핑 보기 ({latest})</a></p>')
+        parts.append("<h2>지난 브리핑</h2><ul>")
+        for d in dates:
+            parts.append(f'<li><a href="{d}.html">{d}</a></li>')
+        parts.append("</ul>")
+
+    parts.append("</body></html>")
+    return "\n".join(parts)
+
+
 def run(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
