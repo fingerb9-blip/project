@@ -71,10 +71,14 @@ def prepare_today_paths(base_dir: Path, today: str) -> dict:
         "classified": base_dir / "data" / "classified" / f"{today}.json",
         "summarized": base_dir / "data" / "summarized" / f"{today}.json",
         "archive": base_dir / "data" / "archive" / f"{today}.md",
+        "dashboard_dir": base_dir / "data" / "dashboard",
         "state": base_dir / "data" / "state" / "run_status.json",
     }
-    for path in paths.values():
-        path.parent.mkdir(parents=True, exist_ok=True)
+    for key, path in paths.items():
+        if key == "dashboard_dir":
+            path.mkdir(parents=True, exist_ok=True)
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
     return paths
 
 

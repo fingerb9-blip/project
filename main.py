@@ -1,7 +1,6 @@
 """Step 0~6 순차 실행 진입점."""
 
 import json
-import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -85,18 +84,19 @@ def main() -> None:
 
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
-        step5_assemble.run(summarized_articles, pending_review, collection_stats, paths["archive"])
+        step5_assemble.run(
+            summarized_articles,
+            pending_review,
+            collection_stats,
+            paths["archive"],
+            paths["dashboard_dir"],
+            today,
+            paths["state"],
+        )
         steps_completed.append("assemble")
 
-        smtp_config = {
-            "host": os.environ["SMTP_HOST"],
-            "port": os.environ["SMTP_PORT"],
-            "user": os.environ["SMTP_USER"],
-            "password": os.environ["SMTP_PASSWORD"],
-            "to": os.environ["SMTP_TO"],
-        }
-        if not step6_send.run(paths["archive"], smtp_config):
-            raise RuntimeError("Step 6 발송 실패 (08:30 발송 미완료)")
+        if not step6_send.run(paths["dashboard_dir"], today):
+            raise RuntimeError("Step 6 검증 실패 (08:30까지 대시보드 미갱신)")
         steps_completed.append("send")
     except Exception as exc:
         prev_status = run_status.load_status(paths["state"])
@@ -111,6 +111,8 @@ def main() -> None:
                 "failed_sources": [],
             },
         )
+        index_html = step5_assemble.build_index_html(paths["dashboard_dir"], paths["state"])
+        (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
             notify.notify_auth_error("파이프라인 실행 중 인증 오류", f"{type(exc).__name__}: {exc}")
         else:
@@ -128,6 +130,8 @@ def main() -> None:
             "failed_sources": [],
         },
     )
+    index_html = step5_assemble.build_index_html(paths["dashboard_dir"], paths["state"])
+    (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 
 
 if __name__ == "__main__":

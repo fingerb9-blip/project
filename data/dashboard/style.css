@@ -1,0 +1,13 @@
+body { font-family: -apple-system, "Segoe UI", sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; background: #fafafa; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid #ddd; padding-bottom: 0.3rem; }
+.card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
+.meta { color: #666; font-size: 0.85rem; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
+tr.warn td { background: #fff3cd; }
+.badge { display: inline-block; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.9rem; }
+.badge.ok { background: #d4edda; color: #155724; }
+.badge.fail { background: #f8d7da; color: #721c24; }
+.badge.unknown { background: #e2e3e5; color: #383d41; }
+a.latest { font-weight: bold; font-size: 1.1rem; }
