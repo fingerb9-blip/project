@@ -130,3 +130,25 @@ def test_build_index_html_handles_no_dashboards(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
 
     assert "아직 생성된 브리핑이 없습니다" in html_out
+
+
+def test_run_writes_archive_dashboard_and_index(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    step5_assemble.run(
+        [_sample_article()],
+        [],
+        {},
+        str(archive_path),
+        str(dashboard_dir),
+        "2026-07-08",
+        str(state_path),
+    )
+
+    assert archive_path.exists()
+    assert (dashboard_dir / "2026-07-08.html").exists()
+    assert (dashboard_dir / "index.html").exists()
+    assert (dashboard_dir / "style.css").exists()

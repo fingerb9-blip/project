@@ -226,26 +226,63 @@ def build_index_html(dashboard_dir: Path, state_path: Path) -> str:
     return "\n".join(parts)
 
 
+_DASHBOARD_CSS = """\
+body { font-family: -apple-system, "Segoe UI", sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; background: #fafafa; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid #ddd; padding-bottom: 0.3rem; }
+.card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
+.meta { color: #666; font-size: 0.85rem; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
+tr.warn td { background: #fff3cd; }
+.badge { display: inline-block; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.9rem; }
+.badge.ok { background: #d4edda; color: #155724; }
+.badge.fail { background: #f8d7da; color: #721c24; }
+.badge.unknown { background: #e2e3e5; color: #383d41; }
+a.latest { font-weight: bold; font-size: 1.1rem; }
+"""
+
+
 def run(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
     collection_stats: dict,
-    output_path: str,
+    archive_path: str,
+    dashboard_dir: str,
+    today: str,
+    state_path: str,
 ) -> str:
-    """Step 5 진입점.
+    """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
     Args:
         summarized_articles: data/summarized/YYYY-MM-DD.json 로드 결과
         pending_review_articles: data/classified/YYYY-MM-DD.json 중 "확인 필요" tier 기사
         collection_stats: 소스별 수집 통계
-        output_path: data/archive/YYYY-MM-DD.md 저장 경로
+        archive_path: data/archive/YYYY-MM-DD.md 저장 경로
+        dashboard_dir: data/dashboard 디렉토리 경로
+        today: YYYY-MM-DD 형식 날짜 문자열
+        state_path: data/state/run_status.json 경로 (index.html 상태 배지용)
 
     Returns:
-        생성된 브리핑 문서 문자열 (output_path에도 저장)
+        생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
     """
     briefing = build_briefing(summarized_articles, pending_review_articles, collection_stats)
 
-    output_path = Path(output_path)
-    output_path.write_text(briefing, encoding="utf-8")
+    archive_path = Path(archive_path)
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    archive_path.write_text(briefing, encoding="utf-8")
+
+    dashboard_dir = Path(dashboard_dir)
+    dashboard_dir.mkdir(parents=True, exist_ok=True)
+
+    dashboard_html = build_dashboard_html(
+        summarized_articles, pending_review_articles, collection_stats, today
+    )
+    (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
+
+    (dashboard_dir / "style.css").write_text(_DASHBOARD_CSS, encoding="utf-8")
+
+    index_html = build_index_html(dashboard_dir, Path(state_path))
+    (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 
     return briefing
