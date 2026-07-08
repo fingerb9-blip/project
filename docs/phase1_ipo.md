@@ -1,52 +1,8 @@
-# 반도체 뉴스 데일리 브리핑 자동화 Agent — IPO 명세서
+# Phase 1 (MVP) — Step 0~6 파이프라인 IPO 명세
 
-> 이 문서는 기획안(반도체_뉴스브리핑_기획안_v11.docx)의 Step 1~6 파이프라인을 실제 코드로 구현하기 위한 기술 명세다.
-> Claude Code에 이 문서를 컨텍스트로 제공하고 Step별 모듈을 구현·테스트한다.
-
-## 0. 전체 개요
-
-| 항목 | 내용 |
-|---|---|
-| 목표 | 반도체 업계 뉴스를 매일 08:30에 자동 수집·선별·분류·요약해 이메일로 발송 |
-| 운영 두뇌 | Gemini API (무료 티어, Flash/Flash-Lite) — Step 2~4 판정 |
-| 개발 도구 | Claude Code (대화형) |
-| 스케줄러 | 로컬 cron / 작업 스케줄러 (Phase 1~2), 이후 GitHub Actions 검토 |
-| 오늘 구현 범위 | Phase 1 (MVP) — Step 1~6 핵심 경로, 로컬 수동 실행 |
-
-### 디렉토리 구조
-
-```
-briefing-agent/
-├── config/
-│   ├── company_aliases.yaml
-│   ├── categories.yaml
-│   ├── keywords.yaml
-│   └── source_tiers.yaml
-├── sources/
-│   └── feeds.yaml            # RSS 피드 URL 목록
-├── data/
-│   ├── raw/YYYY-MM-DD.json       # Step 1 결과
-│   ├── dedup/YYYY-MM-DD.json     # Step 2 결과
-│   ├── classified/YYYY-MM-DD.json # Step 3 결과
-│   ├── summarized/YYYY-MM-DD.json # Step 4 결과
-│   └── archive/YYYY-MM-DD.md      # Step 5 최종 브리핑
-├── logs/
-│   └── run_YYYY-MM-DD.log
-├── src/
-│   ├── step0_init.py
-│   ├── step1_collect.py
-│   ├── step2_dedup.py
-│   ├── step3_classify.py
-│   ├── step4_summarize.py
-│   ├── step5_assemble.py
-│   ├── step6_send.py
-│   ├── gemini_client.py      # Gemini API 공통 호출 래퍼
-│   └── notify.py             # 실패 알림 공통 모듈
-├── .env                      # GEMINI_API_KEY, SMTP 계정 등
-└── main.py                   # Step 0~6 순차 실행
-```
-
----
+> 기획안 2-4의 Phase 1 범위. Step 1~6 핵심 경로(수집 → 중복 제거 → 분류 → 요약 → 이메일 발송)를
+> 로컬 수동 실행으로 완성해 "브리핑 한 통을 실제로 받아보는 것"이 목표.
+> Config 스키마·Gemini 연동·알림 규칙 등 이후 Phase가 공유하는 공통 기반도 이 문서에서 정의한다.
 
 ## 1. Step별 IPO 상세
 
@@ -69,7 +25,7 @@ briefing-agent/
   3. 메타데이터 정규화: `{title, url, source, published_at, raw_text}`
   4. 네이버 뉴스 검색 API로 국내 키워드 보강 수집
 - **Output**: `data/raw/YYYY-MM-DD.json` — 기사 배열
-- **실패 처리**: 특정 소스 3회 연속 0건이면 소스 상태 경고 로그(2-2절 "조용한 품질 열화" 대응)
+- **실패 처리**: 특정 소스 3회 연속 0건이면 소스 상태 경고 로그 (2-2절 "조용한 품질 열화" 대응)
 
 ```json
 // data/raw/YYYY-MM-DD.json 스키마
@@ -93,7 +49,7 @@ briefing-agent/
   2. Gemini API에 제목+본문 앞부분을 배치로 전달해 동일 사건 클러스터링
   3. 클러스터별 대표 기사 선정 — `source_tiers.yaml` 1차(원출처) 우선
 - **Output**: `data/dedup/YYYY-MM-DD.json` — 중복 제거된 기사 + `cluster_id`
-- **Gemini 프롬프트 요지**: "다음 기사 목록 중 같은 사건을 다루는 것끼리 묶어 JSON 배열로 반환" (출력 포맷 강제, 아래 4장 참고)
+- **Gemini 프롬프트 요지**: "다음 기사 목록 중 같은 사건을 다루는 것끼리 묶어 JSON 배열로 반환" (출력 포맷 강제, 3장 참고)
 
 ### Step 3. 분류 (`step3_classify.py`)
 
@@ -202,6 +158,7 @@ tier3_재인용: ["네이버뉴스 재배포"]
 
 ---
 
-## 5. 다음 단계
+## 5. 구현 지침
 
-이 명세서를 기반으로 Claude Code에서 `src/` 모듈을 Step 순서대로 구현·테스트한다. 각 모듈은 독립 실행 가능하게 작성해 `main.py`에서 순차 호출하거나, 개발 중에는 Step별로 개별 테스트한다.
+이 명세서를 기반으로 Claude Code에서 `src/` 모듈을 Step 순서대로 구현·테스트한다.
+각 모듈은 독립 실행 가능하게 작성해 `main.py`에서 순차 호출하거나, 개발 중에는 Step별로 개별 테스트한다.

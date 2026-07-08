@@ -1,0 +1,15 @@
+{
+  "last_run_date": "2026-07-08",
+  "last_run_status": "success",
+  "last_success_at": "2026-07-08T14:27:00.062134+09:00",
+  "steps_completed": [
+    "collect",
+    "dedup",
+    "classify",
+    "summarize",
+    "assemble",
+    "send"
+  ],
+  "article_count": 124,
+  "failed_sources": []
+}

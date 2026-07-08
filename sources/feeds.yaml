@@ -10,11 +10,19 @@ feeds:
     url: "https://www.thelec.kr/rss/allArticle.xml"
   - name: "EE Times"
     url: "https://www.eetimes.com/feed/"
+  - name: "전자신문"
+    url: "https://rss.etnews.com/Section901.xml"
+  - name: "ZDNet Korea"
+    url: "https://zdnet.co.kr/feed"
 
 # 네이버 뉴스 검색 API 보강 수집용 키워드
 naver_search_keywords:
   - "반도체"
   - "HBM"
+  - "파운드리"
+  - "EUV"
+  - "AI반도체"
+  - "수출통제"
 
 # Semantic Scholar 논문 검색 API 보강 수집용 키워드 (영문 권장 - 학술 검색 특성상 매칭률이 높음)
 paper_search_keywords:
