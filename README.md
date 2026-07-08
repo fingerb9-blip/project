@@ -25,15 +25,16 @@ python main.py
 
 ## 구현 상태
 
-`src/` 각 모듈은 현재 함수 시그니처와 docstring만 정의된 스켈레톤 상태입니다.
-`CLAUDE.md`의 Step별 Input/Process/Output 정의를 따라 `TODO` 부분을 순서대로 구현하세요.
+`src/` 각 모듈은 `CLAUDE.md`의 Step별 Input/Process/Output 정의에 따라 1차 구현이 완료된 상태입니다.
+Gemini API 호출(Step 2~4)과 SMTP 발송(Step 6)은 실제 키를 넣고 동작을 검증해야 하며,
+그 외 로직(설정 로드, RSS 수집, 키워드 필터링, 브리핑 조립 등)은 목(mock) 기반 단위 테스트로 확인했습니다.
 
 | Step | 모듈 | 상태 |
 |---|---|---|
-| 0. 시작 | `src/step0_init.py` | 스켈레톤 |
-| 1. 수집 | `src/step1_collect.py` | 스켈레톤 |
-| 2. 중복 제거 | `src/step2_dedup.py` | 스켈레톤 |
-| 3. 분류 | `src/step3_classify.py` | 스켈레톤 |
-| 4. 요약 | `src/step4_summarize.py` | 스켈레톤 |
-| 5. 조립 | `src/step5_assemble.py` | 스켈레톤 |
-| 6. 발송·저장 | `src/step6_send.py` | 스켈레톤 |
+| 0. 시작 | `src/step0_init.py` | 구현 완료 |
+| 1. 수집 | `src/step1_collect.py` | 구현 완료 (RSS 목록은 `sources/feeds.yaml`에 실제 URL 추가 필요) |
+| 2. 중복 제거 | `src/step2_dedup.py` | 구현 완료 (Gemini API 키 필요) |
+| 3. 분류 | `src/step3_classify.py` | 구현 완료 (Gemini API 키 필요) |
+| 4. 요약 | `src/step4_summarize.py` | 구현 완료 (Gemini API 키 필요) |
+| 5. 조립 | `src/step5_assemble.py` | 구현 완료 |
+| 6. 발송·저장 | `src/step6_send.py` | 구현 완료 (Gmail SMTP 계정 필요) |

@@ -2,6 +2,25 @@
 
 from pathlib import Path
 
+import yaml
+
+from src import notify
+
+REQUIRED_CONFIG_FILES = [
+    "company_aliases.yaml",
+    "categories.yaml",
+    "keywords.yaml",
+    "source_tiers.yaml",
+]
+
+
+def _load_yaml(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    if data is None:
+        raise ValueError(f"{path} 이 비어 있습니다")
+    return data
+
 
 def load_configs(config_dir: Path, sources_path: Path) -> dict:
     """config/*.yaml, sources/feeds.yaml을 로드하고 스키마를 검증한다.
@@ -14,10 +33,21 @@ def load_configs(config_dir: Path, sources_path: Path) -> dict:
         검증된 설정 객체 (다음 Step에 전달)
 
     Raises:
-        ValueError: 스키마 검증 실패 시
+        ValueError: 필수 파일 누락 또는 파싱 실패 시
     """
-    # TODO: yaml 파싱 + 스키마 검증
-    raise NotImplementedError
+    configs = {}
+    for filename in REQUIRED_CONFIG_FILES:
+        path = config_dir / filename
+        if not path.exists():
+            raise ValueError(f"필수 설정 파일이 없습니다: {path}")
+        key = filename[: -len(".yaml")]
+        configs[key] = _load_yaml(path)
+
+    if not sources_path.exists():
+        raise ValueError(f"소스 목록 파일이 없습니다: {sources_path}")
+    configs["feeds"] = _load_yaml(sources_path)
+
+    return configs
 
 
 def prepare_today_paths(base_dir: Path, today: str) -> dict:
@@ -30,8 +60,16 @@ def prepare_today_paths(base_dir: Path, today: str) -> dict:
     Returns:
         Step별 출력 경로 dict
     """
-    # TODO: data/raw, dedup, classified, summarized, archive 경로 생성
-    raise NotImplementedError
+    paths = {
+        "raw": base_dir / "data" / "raw" / f"{today}.json",
+        "dedup": base_dir / "data" / "dedup" / f"{today}.json",
+        "classified": base_dir / "data" / "classified" / f"{today}.json",
+        "summarized": base_dir / "data" / "summarized" / f"{today}.json",
+        "archive": base_dir / "data" / "archive" / f"{today}.md",
+    }
+    for path in paths.values():
+        path.parent.mkdir(parents=True, exist_ok=True)
+    return paths
 
 
 def run(today: str) -> dict:
@@ -41,7 +79,13 @@ def run(today: str) -> dict:
         today: YYYY-MM-DD 형식 날짜 문자열
 
     Returns:
-        검증된 설정 객체
+        검증된 설정 객체 (config["paths"]에 Step별 출력 경로 포함)
     """
-    # TODO: load_configs 실패 시 notify.notify_failure() 호출 후 중단
-    raise NotImplementedError
+    base_dir = Path(__file__).resolve().parent.parent
+    try:
+        config = load_configs(base_dir / "config", base_dir / "sources" / "feeds.yaml")
+        config["paths"] = prepare_today_paths(base_dir, today)
+        return config
+    except (ValueError, yaml.YAMLError) as exc:
+        notify.notify_failure("설정 로드 실패", str(exc))
+        raise

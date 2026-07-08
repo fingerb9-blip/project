@@ -1,14 +1,23 @@
 # RSS 피드 URL 목록
 # 각 항목: name(소스명, source_tiers.yaml과 일치시킬 것), url(RSS 피드 주소)
+# 아래 URL은 실제 접속해 응답(200, RSS/XML)을 확인한 것들입니다.
 feeds:
-  # - name: "삼성전자 뉴스룸"
-  #   url: "https://news.samsung.com/kr/feed"
-  # - name: "SK하이닉스 뉴스룸"
-  #   url: "https://news.skhynix.co.kr/feed"
-  # - name: "디일렉"
-  #   url: "https://www.thelec.kr/rss/allArticle.xml"
+  - name: "삼성전자 뉴스룸"
+    url: "https://news.samsung.com/kr/feed"
+  - name: "SK하이닉스 뉴스룸"
+    url: "https://news.skhynix.co.kr/feed"
+  - name: "디일렉"
+    url: "https://www.thelec.kr/rss/allArticle.xml"
+  - name: "EE Times"
+    url: "https://www.eetimes.com/feed/"
 
 # 네이버 뉴스 검색 API 보강 수집용 키워드
 naver_search_keywords:
-  # - "반도체"
-  # - "HBM"
+  - "반도체"
+  - "HBM"
+
+# Semantic Scholar 논문 검색 API 보강 수집용 키워드 (영문 권장 - 학술 검색 특성상 매칭률이 높음)
+paper_search_keywords:
+  - "HBM memory"
+  - "EUV lithography"
+  - "GAA transistor"

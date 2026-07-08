@@ -1,5 +1,34 @@
 """실패 알림 공통 모듈."""
 
+import logging
+import os
+import smtplib
+from email.mime.text import MIMEText
+
+logger = logging.getLogger(__name__)
+
+
+def _send_admin_email(subject: str, message: str) -> None:
+    host = os.environ.get("SMTP_HOST")
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASSWORD")
+    to_addr = os.environ.get("SMTP_TO")
+
+    if not all([host, user, password, to_addr]):
+        logger.warning("SMTP 설정이 없어 알림 이메일을 보내지 못했습니다: %s", subject)
+        return
+
+    msg = MIMEText(message, _charset="utf-8")
+    msg["Subject"] = subject
+    msg["From"] = user
+    msg["To"] = to_addr
+
+    with smtplib.SMTP(host, port) as server:
+        server.starttls()
+        server.login(user, password)
+        server.send_message(msg)
+
 
 def notify_failure(subject: str, message: str) -> None:
     """관리자 이메일로 실패 알림을 발송한다.
@@ -10,18 +39,20 @@ def notify_failure(subject: str, message: str) -> None:
         subject: 알림 제목 (예: "설정 로드 실패", "08:30 발송 미완료")
         message: 알림 본문
     """
-    # TODO: SMTP로 관리자 이메일 발송
-    raise NotImplementedError
+    logger.error("[FAILURE] %s: %s", subject, message)
+    _send_admin_email(f"[반도체 브리핑 실패] {subject}", message)
 
 
 def notify_warning(subject: str, message: str) -> None:
-    """파이프라인은 계속 진행하되 경고성 알림을 발송한다.
+    """파이프라인은 계속 진행하되 경고 알림을 발송한다.
 
-    소스 3회 연속 0건, 특정 소스 재시도 최종 실패 등에 사용한다.
+    소스 0건이 최근 7일 평균 대비 이례적으로 지속되는 "조용한 품질 열화" 상황에 사용한다.
+    단순 접속 재시도 실패처럼 매일 있을 수 있는 일은 각 모듈에서 logging으로만 남기고
+    이 함수를 호출하지 않는다.
 
     Args:
         subject: 경고 제목
         message: 경고 본문
     """
-    # TODO: 로그 기록 + (선택) 경고 이메일 발송
-    raise NotImplementedError
+    logger.warning("[WARNING] %s: %s", subject, message)
+    _send_admin_email(f"[반도체 브리핑 경고] {subject}", message)
