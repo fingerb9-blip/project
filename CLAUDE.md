@@ -54,12 +54,15 @@
 - Phase는 순차 진행하되, 각 Phase는 이전 Phase의 완성을 전제로 한다.
 - Phase 4는 MVP(Phase 1~3) 안정화 이후 도입하는 차별화 확장으로, 코어 파이프라인 변경 없이 얹는다.
 
-### Phase별 상세 스펙 (자동 로드)
+### Phase별 상세 스펙
 
-- Phase 1 — MVP 파이프라인: @docs/phase1_ipo.md
-- Phase 2 — 자동화 & 커버리지 확장: @docs/phase2_ipo.md
-- Phase 3 — 이슈 추적 고도화: @docs/phase3_ipo.md
-- Phase 4 — 개인 애널리스트 확장: @docs/phase4_ipo.md
+> 현재 진행 중인 Phase 문서만 `@`로 자동 로드한다. Phase가 넘어가면 이전 Phase는 일반 링크로 되돌리고
+> 새 Phase 문서를 `@`로 바꾼다 (컨텍스트 낭비 방지).
+
+- Phase 1 — MVP 파이프라인: @docs/phase1_ipo.md (진행 중 — 자동 로드)
+- Phase 2 — 자동화 & 커버리지 확장: docs/phase2_ipo.md
+- Phase 3 — 이슈 추적 고도화: docs/phase3_ipo.md
+- Phase 4 — 개인 애널리스트 확장: docs/phase4_ipo.md
 
 ## 작업 지침
 
