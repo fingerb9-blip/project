@@ -37,18 +37,24 @@ def send_email(briefing_md: str, smtp_config: dict) -> bool:
         return False
 
 
-def run(briefing_path: str, smtp_config: dict) -> None:
+def run(briefing_path: str, smtp_config: dict) -> bool:
     """Step 6 진입점. 08:30까지 미완료 시 실패 알림을 발송한다("뉴스 없는 날"과 구분).
 
     Args:
         briefing_path: data/archive/YYYY-MM-DD.md 경로
         smtp_config: {"host", "port", "user", "password", "to"} 형태의 SMTP 계정 정보
+
+    Returns:
+        발송 성공 여부 (호출자가 run_status.json에 실제 결과를 반영할 수 있도록)
     """
     briefing_path = Path(briefing_path)
     if not briefing_path.exists():
         notify.notify_failure("08:30 발송 미완료", f"브리핑 파일이 없습니다: {briefing_path}")
-        return
+        return False
 
     briefing_md = briefing_path.read_text(encoding="utf-8")
     if not send_email(briefing_md, smtp_config):
         notify.notify_failure("08:30 발송 미완료", "Gmail SMTP 발송 실패")
+        return False
+
+    return True

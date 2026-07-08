@@ -1,5 +1,5 @@
-feedparser
-google-genai
-python-dotenv
-pyyaml
-requests
+feedparser==6.0.12
+google-genai==2.10.0
+python-dotenv==1.2.2
+PyYAML==6.0.3
+requests==2.32.5
