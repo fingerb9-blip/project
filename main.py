@@ -111,6 +111,8 @@ def main() -> None:
                 "failed_sources": [],
             },
         )
+        index_html = step5_assemble.build_index_html(paths["dashboard_dir"], paths["state"])
+        (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
             notify.notify_auth_error("파이프라인 실행 중 인증 오류", f"{type(exc).__name__}: {exc}")
         else:
@@ -128,6 +130,8 @@ def main() -> None:
             "failed_sources": [],
         },
     )
+    index_html = step5_assemble.build_index_html(paths["dashboard_dir"], paths["state"])
+    (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 
 
 if __name__ == "__main__":

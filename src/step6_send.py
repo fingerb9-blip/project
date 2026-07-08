@@ -1,11 +1,8 @@
 """Step 6. 저장 확인 — 대시보드 산출물이 정상 생성됐는지 확인한다."""
 
-import logging
 from pathlib import Path
 
 from src import notify
-
-logger = logging.getLogger(__name__)
 
 
 def run(dashboard_dir: str, today: str) -> bool:
