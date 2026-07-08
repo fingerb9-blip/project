@@ -2,4 +2,5 @@ feedparser==6.0.12
 google-genai==2.10.0
 python-dotenv==1.2.2
 PyYAML==6.0.3
+pytest==8.3.4
 requests==2.32.5
