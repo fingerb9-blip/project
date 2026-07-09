@@ -29,7 +29,7 @@ jobs:
       - name: Run anomaly detection
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python src/step1_5_anomaly_detect.py
+        run: python -m src.step1_5_anomaly_detect
 
       - name: Commit state & dashboard
         if: success()

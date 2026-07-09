@@ -153,7 +153,7 @@ jobs:
       - name: Run anomaly detection
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python src/step1_5_anomaly_detect.py
+        run: python -m src.step1_5_anomaly_detect
       - name: Commit state & dashboard
         if: success()
         run: |
@@ -186,6 +186,7 @@ jobs:
 
 - **Gemini 무료 티어 영향**: 매시 실행이 추가되므로 호출량이 하루 24회(빈도 집계용, 실제 Gemini 호출은 임계치 초과 시에만) 늘어나지만, 이상 신호가 실제로 자주 발생하지 않는 한 무료 티어 한도(하루 약 1,500회) 내에서 충분히 여유 있음
 - **실패 처리**: 이 워크플로우 자체가 실패해도(러너 오류 등) Phase 1/2와 동일하게 `notify.py` 경유 이메일 알림만 발송 — 대시보드 콘텐츠 전달과 실패 알림 채널을 분리하는 원칙을 그대로 유지
+- **실행 방식 주의**: `python src/step1_5_anomaly_detect.py`처럼 파일 경로로 직접 실행하면 스크립트가 위치한 `src/` 디렉토리가 기준 경로가 돼 `from src import ...` 임포트가 실패한다(`ModuleNotFoundError: No module named 'src'`). 반드시 저장소 루트에서 `python -m src.step1_5_anomaly_detect`로 모듈 실행해야 한다
 
 ---
 
