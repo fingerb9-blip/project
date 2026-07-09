@@ -250,13 +250,20 @@ def fetch_kipris_patents(keywords: list[str], since: datetime) -> list[dict]:
     for keyword in keywords:
         response = None
         for attempt in range(_KIPRIS_MAX_RETRIES):
-            response = requests.get(
-                _KIPRIS_ENDPOINT,
-                params={"word": keyword, "patent": "true", "utility": "true", "ServiceKey": api_key},
-                timeout=10,
-            )
-            if response.status_code == 200:
-                break
+            try:
+                response = requests.get(
+                    _KIPRIS_ENDPOINT,
+                    params={"word": keyword, "patent": "true", "utility": "true", "ServiceKey": api_key},
+                    timeout=10,
+                )
+                if response.status_code == 200:
+                    break
+            except requests.exceptions.RequestException as exc:
+                logger.warning(
+                    "KIPRIS 요청 실패, 재시도 %d/%d: %s (%s)", attempt + 1, _KIPRIS_MAX_RETRIES, keyword, exc
+                )
+                time.sleep(2**attempt)
+                continue
             logger.warning(
                 "KIPRIS 요청 실패, 재시도 %d/%d: %s", attempt + 1, _KIPRIS_MAX_RETRIES, keyword
             )

@@ -166,3 +166,20 @@ def test_fetch_kipris_patents_skips_keyword_after_repeated_failure(monkeypatch):
     patents = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
 
     assert patents == []
+
+
+def test_fetch_kipris_patents_catches_network_exception_and_skips_keyword(monkeypatch):
+    """Verify that network exceptions (timeout, DNS failure, etc.) don't crash the pipeline."""
+    import requests
+    monkeypatch.setenv("KIPRIS_API_KEY", "key")
+
+    def mock_get_raises(*a, **k):
+        raise requests.exceptions.RequestException("Connection failed")
+
+    monkeypatch.setattr(step1_collect.requests, "get", mock_get_raises)
+    monkeypatch.setattr(step1_collect.time, "sleep", lambda *_: None)
+
+    # Should return empty list for that keyword instead of raising
+    patents = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
+
+    assert patents == []
