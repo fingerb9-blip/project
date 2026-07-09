@@ -34,7 +34,7 @@ _SNIPPET_LEN = 300
 _TITLE_MATCH_WEIGHT = 3
 _BODY_STRONG_WEIGHT = 2
 _BODY_WEAK_WEIGHT = 1
-_RELEVANCE_EXCLUDE_THRESHOLD = 1
+_RELEVANCE_EXCLUDE_THRESHOLD = 2
 
 
 def _matched_keywords(text: str, keyword_group: dict) -> list[str]:

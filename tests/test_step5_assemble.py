@@ -344,6 +344,61 @@ def test_build_briefing_renders_active_issue_timeline():
     assert "청주 M15X 증설 관련 이슈" in md
 
 
+def test_rank_active_issues_caps_at_five():
+    issues = [
+        _sample_issue(issue_id=f"i{n}", related_article_ids=["a"], last_updated="2026-07-08")
+        for n in range(8)
+    ]
+    ranked = step5_assemble._rank_active_issues(issues)
+    assert len(ranked) == 5
+
+
+def test_rank_active_issues_prefers_more_related_articles():
+    minor = _sample_issue(issue_id="minor", related_article_ids=["a"], last_updated="2026-07-09")
+    major = _sample_issue(issue_id="major", related_article_ids=["a", "b", "c"], last_updated="2026-07-01")
+    ranked = step5_assemble._rank_active_issues([minor, major])
+    assert ranked[0]["issue_id"] == "major"
+
+
+def test_rank_active_issues_breaks_tie_by_recency():
+    older = _sample_issue(issue_id="older", related_article_ids=["a", "b"], last_updated="2026-07-01")
+    newer = _sample_issue(issue_id="newer", related_article_ids=["a", "b"], last_updated="2026-07-08")
+    ranked = step5_assemble._rank_active_issues([older, newer])
+    assert ranked[0]["issue_id"] == "newer"
+
+
+def test_run_limits_rendered_active_issues_to_five(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    issues_path = tmp_path / "issues.json"
+    issues_path.write_text(
+        json.dumps(
+            [
+                _sample_issue(
+                    issue_id=f"i{n}",
+                    title=f"이슈 {n}",
+                    related_article_ids=["a"],
+                    last_updated="2026-07-08",
+                )
+                for n in range(8)
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    step5_assemble.run(
+        [], [], {}, str(archive_path), str(dashboard_dir), "2026-07-08", str(state_path),
+        issues_path=str(issues_path),
+    )
+
+    dashboard_html = (dashboard_dir / "2026-07-08.html").read_text(encoding="utf-8")
+    rendered = sum(1 for n in range(8) if f"이슈 {n}" in dashboard_html)
+    assert rendered == 5
+
+
 def test_build_alert_banner_html_renders_alert():
     alert = {"issue_id": "abc123", "entity": "SK하이닉스", "headline": "청주공장 화재 속보", "tag": "[확정]"}
     html_out = step5_assemble.build_alert_banner_html([alert])
@@ -518,26 +573,18 @@ def test_build_dashboard_html_includes_deep_tech_filter_toggle():
     assert "학회·특허만 보기" in html_out
 
 
-def test_build_dashboard_html_omits_noise_button_when_no_repo_url():
-    html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
-    assert "노이즈로 표시" not in html_out
-
-
-def test_build_dashboard_html_renders_noise_button_with_repo_url():
+def test_build_dashboard_html_renders_noise_button_without_github_link():
+    """노이즈 신고는 GitHub 이슈로 이동하지 않고 브라우저(localStorage)에서만 처리한다."""
     article = _sample_article(id="art1", url="https://example.com/a", title="테스트 기사")
-    html_out = step5_assemble.build_dashboard_html(
-        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
-    )
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
     assert "노이즈로 표시" in html_out
-    assert "https://github.com/owner/repo/issues/new?" in html_out
-    assert "labels=noise-report" in html_out
+    assert '<button type="button" class="noise-btn" data-article-id="art1">' in html_out
+    assert "github.com" not in html_out
 
 
-def test_build_dashboard_html_noise_button_escapes_title_in_url():
-    article = _sample_article(id="art1", url="https://example.com/a", title="<script>x</script>")
-    html_out = step5_assemble.build_dashboard_html(
-        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
-    )
+def test_build_dashboard_html_noise_button_escapes_article_id():
+    article = _sample_article(id='"><script>x</script>', url="https://example.com/a")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
     assert "<script>x</script>" not in html_out
 
 
@@ -699,7 +746,8 @@ def test_build_mention_trend_section_html_empty_when_no_data():
     assert step5_assemble.build_mention_trend_section_html(None, "active") == ""
 
 
-def test_build_index_html_includes_mention_trend_section(tmp_path):
+def test_build_index_html_omits_mention_trend_section_even_with_data(tmp_path):
+    """§실시간 트렌드 도넛 섹션과 중복되므로 막대그래프형 언급량 트렌드 섹션은 렌더링하지 않는다."""
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()
     state_path = tmp_path / "state" / "run_status.json"
@@ -708,7 +756,7 @@ def test_build_index_html_includes_mention_trend_section(tmp_path):
         dashboard_dir, state_path, mention_trend_data=_TREND_DATA, cold_start_stage="active"
     )
 
-    assert "삼성전자" in html
+    assert "언급량 트렌드" not in html
 
 
 def test_build_index_html_omits_mention_trend_section_when_none(tmp_path):

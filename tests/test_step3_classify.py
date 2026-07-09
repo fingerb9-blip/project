@@ -112,6 +112,25 @@ def test_classify_forces_exclude_when_relevance_low_and_no_keyword_hints(mock_ca
 
 
 @patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_forces_exclude_when_relevance_score_is_two_and_no_hints(mock_call):
+    """필터링 기준 강화: 본문 전반부에 핵심 키워드가 한 번 언급된 정도(score=2)로는
+    핵심 근거가 부족하므로 제외한다 (기존에는 score<=1만 제외했다)."""
+    mock_call.return_value = {"results": [{"id": "a7", "tier": "확인 필요", "category": []}]}
+    article = _article(
+        id="a7",
+        title="글로벌 반도체 업계 동향 정리",
+        raw_text="이번 주 업계에서는 낸드 관련 논의가 있었다.",
+        companies=[],
+    )
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+    assert articles[0]["relevance_score"] == 2
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    assert result[0]["tier"] == "제외"
+
+
+@patch("src.step3_classify.gemini_client.call_gemini")
 def test_classify_keeps_gemini_tier_when_relevance_high(mock_call):
     mock_call.return_value = {
         "results": [{"id": "a1", "tier": "핵심", "category": ["메모리"]}]

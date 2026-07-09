@@ -12,7 +12,7 @@ from datetime import date as _date
 from datetime import datetime, timedelta, timezone
 from datetime import datetime as _datetime
 from pathlib import Path
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlparse
 
 import yaml
 
@@ -268,34 +268,26 @@ document.querySelectorAll('.filter button').forEach(function(b){
 });
 var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
 var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
+document.querySelectorAll('.noise-btn').forEach(function(b){
+  var id=b.dataset.articleId;
+  if(id&&localStorage.getItem('noise:'+id)){b.hidden=true;return;}
+  b.addEventListener('click',function(){
+    if(id) localStorage.setItem('noise:'+id,'1');
+    b.hidden=true;
+    if(b.nextElementSibling) b.nextElementSibling.hidden=false;
+  });
+});
 </script>
 """
 
 
-def _noise_report_issue_url(article: dict, repo_url: str | None) -> str | None:
-    """'노이즈로 표시' 버튼이 열 GitHub 새 이슈 URL을 만든다. repo_url이 없으면 None."""
-    if not repo_url:
-        return None
-    body = (
-        f"article_id: {article['id']}\n"
-        f"url: {article['url']}\n"
-        f"title: {article['title']}\n"
-        "reason: noise\n"
-    )
-    query = urlencode(
-        {"title": f"[노이즈 신고] {article['title']}", "body": body, "labels": "noise-report"}
-    )
-    return f"{repo_url}/issues/new?{query}"
-
-
-def _build_article_card(article: dict, repo_url: str | None = None) -> str:
+def _build_article_card(article: dict) -> str:
     """기사 하나를 §4-5 뉴스 카드(소스 배지+태그 칩+카테고리 칩+시각 -> 제목 -> 요약 -> 원문 링크)로
     렌더링한다. _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
 
     Args:
         article: 요약 결과 기사 dict. source_type이 있으면(학회/특허 등) 배지로 표시하고
             데일리 페이지의 "학회·특허만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
-        repo_url: GitHub 리포지토리 URL. 주어지면 카드 하단에 "노이즈로 표시" 버튼을 추가한다.
     """
     article_categories = article.get("category") or ["미분류"]
     cats_attr = _esc(" ".join(article_categories))
@@ -353,14 +345,11 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     parts.append('<div class="cardfoot">')
     if safe_url:
         parts.append(f'<a href="{safe_url}">원문 보기 ↗</a>')
-    issue_url = _noise_report_issue_url(article, repo_url)
-    if issue_url:
-        safe_issue_url = html.escape(issue_url, quote=True)
-        parts.append(
-            f'<a class="noise-btn" href="{safe_issue_url}" target="_blank" rel="noopener" '
-            "onclick=\"this.nextElementSibling.hidden=false\">노이즈로 표시</a> "
-            '<span class="toast" hidden>제외 대상으로 표시했습니다</span>'
-        )
+    parts.append(
+        f'<button type="button" class="noise-btn" data-article-id="{_esc(article.get("id", ""))}">'
+        "노이즈로 표시</button> "
+        '<span class="toast" hidden>제외 대상으로 표시했습니다</span>'
+    )
     parts.append("</div>")
     parts.append("</article>")
     return "".join(parts)
@@ -374,7 +363,6 @@ def build_dashboard_html(
     all_dates: list[str] | None = None,
     active_issues: list[dict] | None = None,
     updated_at: str | None = None,
-    repo_url: str | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> pill 필터 -> 오늘의 핵심(뉴스 카드) -> 확인 필요 -> 수집 상태 ->
     진행 중 이슈 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
@@ -390,7 +378,6 @@ def build_dashboard_html(
             받기 위한 자리로 시그니처를 유지한다. v2 레이아웃(§5-2)은 데일리 페이지에
             페이지 단위 "갱신" 타임스탬프를 두지 않으므로(카드별 시각·리포트 카드 쪽에서
             표시) 현재는 렌더링에 쓰이지 않는다.
-        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
 
     Returns:
         단일 HTML 문서 문자열
@@ -425,7 +412,7 @@ def build_dashboard_html(
         parts.append('<p class="summary">오늘 핵심 기사가 없습니다.</p>')
     parts.append('<div id="feed">')
     for article in summarized_articles:
-        parts.append(_build_article_card(article, repo_url))
+        parts.append(_build_article_card(article))
     parts.append("</div>")
 
     parts.append('<details class="card">')
@@ -975,9 +962,6 @@ def build_index_html(
     if radar_data:
         parts.append(build_radar_section_html(radar_data))
 
-    if mention_trend_data:
-        parts.append(build_mention_trend_section_html(mention_trend_data, cold_start_stage))
-
     if issues_path is not None:
         now_dt = datetime.fromisoformat(now) if now else datetime.now(timezone.utc)
         issues = issue_tracking.load_issues(issues_path)
@@ -1129,8 +1113,8 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 /* R&D·특허 소스 배지, 노이즈 신고 */
 .badge-type{background:#EEF0F3;color:var(--ink-soft)}
 .filter-toggle{display:inline-block;margin:0 0 10px;font-size:.85rem;color:var(--ink-soft)}
-.noise-btn{font-size:.76rem;color:#A94442;text-decoration:none;border:1px solid #A94442;
-  border-radius:6px;padding:2px 8px}
+.noise-btn{font:inherit;font-size:.76rem;color:#A94442;text-decoration:none;background:transparent;
+  border:1px solid #A94442;border-radius:6px;padding:2px 8px;cursor:pointer}
 .toast{font-size:.76rem;color:var(--confirmed);margin-left:6px}
 
 /* 실시간 트렌드 */
@@ -1150,6 +1134,21 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 @media(max-width:480px){.trend-body{flex-direction:column;align-items:stretch}.trend-donut{align-self:center}}
 """
 
+_MAX_ACTIVE_ISSUES = 5
+
+
+def _rank_active_issues(issues: list[dict]) -> list[dict]:
+    """진행 중 이슈를 관련 기사 수(반복 보도 정도) 내림차순, 최신 갱신일 내림차순으로 정렬해
+    상위 _MAX_ACTIVE_ISSUES개만 남긴다. 기사 1건짜리 단발성 이슈보다 반복 보도된 이슈를
+    우선 노출해 "진짜 중요한" 이슈만 대시보드에 보이게 한다.
+    """
+    ranked = sorted(
+        issues,
+        key=lambda i: (len(i.get("related_article_ids") or []), i.get("last_updated", "")),
+        reverse=True,
+    )
+    return ranked[:_MAX_ACTIVE_ISSUES]
+
 
 def run(
     summarized_articles: list[dict],
@@ -1161,7 +1160,6 @@ def run(
     state_path: str,
     issues_path: str | None = None,
     radar_data: dict | None = None,
-    repo_url: str | None = None,
     mention_trend_data: dict | None = None,
     cold_start_stage: str = "active",
 ) -> str:
@@ -1177,7 +1175,6 @@ def run(
         state_path: data/state/run_status.json 경로 (index.html 상태 표시용)
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
         radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
-        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
         mention_trend_data: 언급량 트렌드 데이터 (Phase 5, 선택). build_index_html로 그대로 전달된다.
         cold_start_stage: 콜드 스타트 단계 (Phase 5). build_index_html로 그대로 전달된다.
 
@@ -1186,11 +1183,13 @@ def run(
     """
     active_issues = []
     if issues_path is not None:
-        active_issues = [
-            issue
-            for issue in issue_tracking.load_issues(Path(issues_path))
-            if issue.get("status") == "진행중"
-        ]
+        active_issues = _rank_active_issues(
+            [
+                issue
+                for issue in issue_tracking.load_issues(Path(issues_path))
+                if issue.get("status") == "진행중"
+            ]
+        )
 
     briefing = build_briefing(
         summarized_articles, pending_review_articles, collection_stats, active_issues
@@ -1211,7 +1210,6 @@ def run(
         today,
         all_dates=all_dates,
         active_issues=active_issues,
-        repo_url=repo_url,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 
