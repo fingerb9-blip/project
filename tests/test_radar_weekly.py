@@ -156,3 +156,27 @@ def test_classify_tone_falls_back_to_neutral_on_failure(mock_call):
     grouped = {"samsung_electronics": [{"title": "삼성전자 뉴스"}]}
     tone = radar_weekly.classify_tone(grouped)
     assert tone == {"samsung_electronics": {"pos": 0.0, "neg": 0.0, "neu": 1.0}}
+
+
+@patch("src.radar_weekly.gemini_client.call_gemini")
+def test_generate_commentary_calls_gemini(mock_call):
+    mock_call.return_value = {"commentary": "이번 주는 삼성전자 뉴스가 두드러졌습니다."}
+    aliases = {"samsung_electronics": {"aliases": ["삼성전자"]}}
+
+    result = radar_weekly.generate_commentary({"samsung_electronics": 5}, ["[삼성전자] 이슈"], aliases)
+
+    assert result == "이번 주는 삼성전자 뉴스가 두드러졌습니다."
+
+
+@patch("src.radar_weekly.gemini_client.call_gemini", side_effect=RuntimeError("API 오류"))
+def test_generate_commentary_falls_back_to_template_with_top_company(mock_call):
+    aliases = {"samsung_electronics": {"aliases": ["삼성전자"]}}
+    result = radar_weekly.generate_commentary({"samsung_electronics": 5}, [], aliases)
+    assert "삼성전자" in result
+
+
+@patch("src.radar_weekly.gemini_client.call_gemini", side_effect=RuntimeError("API 오류"))
+def test_generate_commentary_falls_back_when_no_mentions(mock_call):
+    aliases = {"samsung_electronics": {"aliases": ["삼성전자"]}}
+    result = radar_weekly.generate_commentary({"samsung_electronics": 0}, [], aliases)
+    assert "조용" in result

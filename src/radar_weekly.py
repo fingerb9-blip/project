@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from src import gemini_client
+from src import gemini_client, issue_tracking
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +173,47 @@ def classify_tone(companies_articles: dict[str, list[dict]]) -> dict[str, dict]:
         )
 
     return tone
+
+
+_COMMENTARY_SCHEMA = {
+    "type": "object",
+    "properties": {"commentary": {"type": "string"}},
+    "required": ["commentary"],
+}
+
+
+def generate_commentary(mentions: dict[str, int], top_issues: list[str], aliases_config: dict) -> str:
+    """Gemini API(Flash)로 '이번 주 이슈의 중심' 한 문단 해설을 생성한다.
+
+    실패 시 최다 언급 기업명을 이용한 간단한 템플릿 문장으로 대체한다.
+
+    Args:
+        mentions: aggregate_mentions 결과 ({회사id: 언급 수})
+        top_issues: pick_top_issues 결과
+        aliases_config: config/company_aliases.yaml 로드 결과 (기업 표기명 변환용)
+
+    Returns:
+        한 문단 해설 텍스트
+    """
+    display_mentions = {
+        issue_tracking.entity_display_name(company, aliases_config): count
+        for company, count in mentions.items()
+    }
+    prompt = (
+        "다음은 이번 주 반도체 업계 기업별 언급 횟수와 최다 언급 이슈 목록이다. "
+        "이번 주 업계 이슈의 중심이 무엇인지 한 문단으로 해설하라.\n\n"
+        f"기업별 언급 횟수: {json.dumps(display_mentions, ensure_ascii=False)}\n"
+        f"최다 언급 이슈: {json.dumps(top_issues, ensure_ascii=False)}"
+    )
+    try:
+        result = gemini_client.call_gemini(prompt, _COMMENTARY_SCHEMA, model=gemini_client.DEFAULT_MODEL)
+        return result["commentary"]
+    except RuntimeError as exc:
+        logger.error("주간 해설 생성 실패, 템플릿 문장으로 대체: %s", exc)
+        if not display_mentions or max(display_mentions.values(), default=0) == 0:
+            return "이번 주는 뚜렷한 언급 집중 없이 조용히 지나갔습니다."
+        top_company = max(display_mentions, key=display_mentions.get)
+        return f"이번 주는 {top_company} 관련 뉴스가 가장 많이 언급됐습니다."
 
 
 _TOP_ISSUES_LIMIT = 3
