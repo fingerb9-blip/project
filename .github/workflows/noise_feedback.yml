@@ -21,6 +21,8 @@ jobs:
         with:
           python-version: "3.12"
 
+      - run: pip install -r requirements.txt
+
       - name: Record feedback
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -48,3 +50,13 @@ jobs:
           gh issue close ${{ github.event.issue.number }} \
             --repo ${{ github.repository }} \
             --comment "신고가 접수되어 feedback_queue.json에 기록됐습니다. 주간 검토 후 keywords.yaml 반영 여부가 결정됩니다."
+
+      - name: Notify on failure
+        if: failure()
+        env:
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "587"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: python src/notify.py --event pipeline_failed --run-id ${{ github.run_id }}
