@@ -168,6 +168,35 @@ def test_run_writes_archive_dashboard_and_index(tmp_path):
     assert (dashboard_dir / "style.css").exists()
 
 
+def test_run_includes_radar_section_when_provided(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    radar_data = {
+        "week": "2026-W28",
+        "mentions": {"삼성전자": 1},
+        "tone": {},
+        "top_issues": [],
+        "commentary": "해설",
+    }
+
+    step5_assemble.run(
+        [_sample_article()],
+        [],
+        {},
+        str(archive_path),
+        str(dashboard_dir),
+        "2026-07-08",
+        str(state_path),
+        radar_data=radar_data,
+    )
+
+    index_html = (dashboard_dir / "index.html").read_text(encoding="utf-8")
+    assert "2026-W28" in index_html
+    assert "해설" in index_html
+
+
 def test_build_dashboard_html_renders_active_issue_timeline():
     issue = _sample_issue()
     html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", active_issues=[issue])

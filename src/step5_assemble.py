@@ -451,6 +451,7 @@ def run(
     today: str,
     state_path: str,
     issues_path: str | None = None,
+    radar_data: dict | None = None,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -463,6 +464,7 @@ def run(
         today: YYYY-MM-DD 형식 날짜 문자열
         state_path: data/state/run_status.json 경로 (index.html 상태 배지용)
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
+        radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
@@ -494,7 +496,10 @@ def run(
     (dashboard_dir / "style.css").write_text(_DASHBOARD_CSS, encoding="utf-8")
 
     index_html = build_index_html(
-        dashboard_dir, Path(state_path), issues_path=Path(issues_path) if issues_path else None
+        dashboard_dir,
+        Path(state_path),
+        issues_path=Path(issues_path) if issues_path else None,
+        radar_data=radar_data,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

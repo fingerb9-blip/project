@@ -121,6 +121,7 @@ def main() -> None:
             today,
             paths["state"],
             paths["issues"],
+            radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
         )
         steps_completed.append("assemble")
 
