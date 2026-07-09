@@ -202,7 +202,8 @@ def _is_cross_tier_duplicate(
     """
     companies_a = set(article_a.get("companies", []))
     companies_b = set(article_b.get("companies", []))
-    if not companies_a or not companies_b or companies_a != companies_b:
+    shared_companies = companies_a & companies_b
+    if not shared_companies:
         return False
     rank_a = _tier_rank(article_a["source"], source_tiers_config)
     rank_b = _tier_rank(article_b["source"], source_tiers_config)

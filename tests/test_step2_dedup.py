@@ -204,6 +204,7 @@ def test_merge_cross_tier_duplicates_keeps_different_companies_separate():
         title="SK하이닉스, HBM4 수율 개선 발표",
         source="네이버뉴스 재배포",
         cluster_id="cluster-b",
+        raw_text="SK하이닉스가 HBM4 공정 수율을 개선했다.",
     )
     aliases = dict(_ALIASES, sk_hynix={"aliases": ["SK하이닉스"], "segment": ["메모리"]})
     articles = step2_dedup.normalize_company_names([samsung_article, hynix_article], aliases)
