@@ -29,18 +29,66 @@ _CLASSIFY_SCHEMA = {
 
 _REGULATION_CATEGORY = "규제·정책"
 _REGULATION_KEYWORD_GROUP = "규제_무역"
+_CORE_KEYWORD_GROUP = "반도체_핵심"
 _SNIPPET_LEN = 300
+_TITLE_MATCH_WEIGHT = 3
+_BODY_STRONG_WEIGHT = 2
+_BODY_WEAK_WEIGHT = 1
+_RELEVANCE_EXCLUDE_THRESHOLD = 1
 
 
 def _matched_keywords(text: str, keyword_group: dict) -> list[str]:
     return [group for group, words in keyword_group.items() if any(w in text for w in words)]
 
 
-def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict]:
-    """keywords.yaml 화이트리스트/블랙리스트로 1차 필터링한다.
+def _find_all_occurrences(text: str, keyword: str) -> list[int]:
+    positions = []
+    start = 0
+    while True:
+        idx = text.find(keyword, start)
+        if idx == -1:
+            break
+        positions.append(idx)
+        start = idx + 1
+    return positions
 
-    블랙리스트 키워드가 매칭된 기사는 제외하고, 화이트리스트 매칭 그룹은
-    keyword_hints 필드에 남겨 Gemini 분류의 참고 신호로 사용한다.
+
+def compute_relevance_score(article: dict, core_keywords: list[str]) -> int:
+    """제목/본문에서 반도체 핵심 키워드 등장 위치·빈도로 관련도 점수를 매긴다.
+
+    제목에 등장하면 가중치를 높게, 본문 후반부에 1회만 등장하면 낮게 준다.
+
+    Args:
+        article: title, raw_text 필드를 포함한 기사 dict
+        core_keywords: config/keywords.yaml의 whitelist.반도체_핵심 리스트
+
+    Returns:
+        관련도 점수 (높을수록 반도체 관련도가 높음)
+    """
+    title = article["title"]
+    body = article.get("raw_text", "")
+    midpoint = len(body) / 2
+    score = 0
+    for keyword in core_keywords:
+        if keyword in title:
+            score += _TITLE_MATCH_WEIGHT
+            continue
+        positions = _find_all_occurrences(body, keyword)
+        if not positions:
+            continue
+        if len(positions) == 1 and positions[0] >= midpoint:
+            score += _BODY_WEAK_WEIGHT
+        else:
+            score += _BODY_STRONG_WEIGHT
+    return score
+
+
+def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict]:
+    """keywords.yaml 화이트리스트/블랙리스트로 1차 필터링하고 관련도 점수를 매긴다.
+
+    블랙리스트 키워드가 매칭된 기사는 제외하고, 화이트리스트 매칭 그룹(반도체_핵심 제외)은
+    keyword_hints 필드에 남겨 Gemini 분류의 참고 신호로 사용한다. 반도체_핵심 그룹은
+    keyword_hints와 별개로 relevance_score 계산에만 사용한다.
 
     Args:
         articles: Step 2 결과 기사 리스트
@@ -51,13 +99,16 @@ def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict
     """
     whitelist = keywords_config.get("whitelist", {})
     blacklist = keywords_config.get("blacklist", {})
+    core_keywords = whitelist.get(_CORE_KEYWORD_GROUP, [])
+    hint_whitelist = {k: v for k, v in whitelist.items() if k != _CORE_KEYWORD_GROUP}
 
     filtered = []
     for article in articles:
         text = f"{article['title']} {article.get('raw_text', '')}"
         if _matched_keywords(text, blacklist):
             continue
-        article["keyword_hints"] = _matched_keywords(text, whitelist)
+        article["keyword_hints"] = _matched_keywords(text, hint_whitelist)
+        article["relevance_score"] = compute_relevance_score(article, core_keywords)
         filtered.append(article)
 
     return filtered
@@ -110,6 +161,10 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         has_regulation_hint = _REGULATION_KEYWORD_GROUP in article.get("keyword_hints", [])
         if no_company and has_regulation_hint and _REGULATION_CATEGORY not in article["category"]:
             article["category"].append(_REGULATION_CATEGORY)
+
+        low_relevance = article.get("relevance_score", 0) <= _RELEVANCE_EXCLUDE_THRESHOLD
+        if low_relevance and not article.get("keyword_hints") and not article.get("companies"):
+            article["tier"] = "제외"
 
     return articles
 

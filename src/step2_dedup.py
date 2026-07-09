@@ -26,6 +26,9 @@ _CLUSTER_SCHEMA = {
 
 _SNIPPET_LEN = 300
 _TITLE_SIMILARITY_THRESHOLD = 0.9
+_TOKEN_JACCARD_THRESHOLD = 0.3
+_MIN_TOKEN_LEN = 2
+_TOKEN_STRIP_CHARS = ",.\"'…·"
 
 
 def normalize_company_names(articles: list[dict], aliases_config: dict) -> list[dict]:
@@ -80,12 +83,13 @@ def group_by_title_similarity(articles: list[dict]) -> list[list[dict]]:
     return groups
 
 
-def cluster_same_event(articles: list[dict]) -> list[dict]:
+def cluster_same_event(articles: list[dict], source_tiers_config: dict) -> list[dict]:
     """제목 유사도로 사전 그룹핑한 뒤, 그룹 대표만 Gemini API(Flash-Lite)에 배치로 전달해
     동일 사건을 클러스터링한다.
 
     Args:
         articles: 기업명 정규화된 기사 리스트
+        source_tiers_config: config/source_tiers.yaml 로드 결과 (프롬프트 힌트에 사용)
 
     Returns:
         cluster_id가 부여된 기사 리스트
@@ -97,12 +101,20 @@ def cluster_same_event(articles: list[dict]) -> list[dict]:
     representatives = [group[0] for group in groups]
 
     payload = [
-        {"id": a["id"], "title": a["title"], "snippet": a.get("raw_text", "")[:_SNIPPET_LEN]}
+        {
+            "id": a["id"],
+            "title": a["title"],
+            "snippet": a.get("raw_text", "")[:_SNIPPET_LEN],
+            "companies": a.get("companies", []),
+            "source_tier": _tier_label(a["source"], source_tiers_config),
+        }
         for a in representatives
     ]
     prompt = (
         "다음은 오늘 수집된 반도체 업계 뉴스 기사 목록이다. "
         "같은 사건(동일 발표·계약·인사 등)을 다루는 기사끼리 id를 묶어 clusters 배열로 반환하라. "
+        "companies가 겹치고 source_tier가 다른 두 기사(예: 원출처의 공식 발표와 "
+        "전문지·재인용 매체의 후속 보도)는 표현이 달라도 같은 사건이면 반드시 같은 클러스터로 묶어라. "
         "서로 다른 사건이면 별도 클러스터로 둔다.\n\n"
         f"기사 목록: {json.dumps(payload, ensure_ascii=False)}"
     )
@@ -133,6 +145,21 @@ def cluster_same_event(articles: list[dict]) -> list[dict]:
     return articles
 
 
+def _tier_rank(source: str, source_tiers_config: dict) -> int:
+    if source in source_tiers_config.get("tier1_원출처", []):
+        return 0
+    if source in source_tiers_config.get("tier2_전문지", []):
+        return 1
+    if source in source_tiers_config.get("tier3_재인용", []):
+        return 2
+    return 3
+
+
+def _tier_label(source: str, source_tiers_config: dict) -> str:
+    labels = {0: "원출처", 1: "전문지", 2: "재인용", 3: "미분류"}
+    return labels[_tier_rank(source, source_tiers_config)]
+
+
 def pick_representative(cluster_articles: list[dict], source_tiers_config: dict) -> dict:
     """클러스터 내에서 source_tiers.yaml 1차(원출처) 우선으로 대표 기사를 선정한다.
 
@@ -143,17 +170,89 @@ def pick_representative(cluster_articles: list[dict], source_tiers_config: dict)
     Returns:
         대표 기사 dict
     """
+    return min(
+        cluster_articles,
+        key=lambda a: _tier_rank(a["source"], source_tiers_config),
+    )
 
-    def tier_rank(source: str) -> int:
-        if source in source_tiers_config.get("tier1_원출처", []):
-            return 0
-        if source in source_tiers_config.get("tier2_전문지", []):
-            return 1
-        if source in source_tiers_config.get("tier3_재인용", []):
-            return 2
-        return 3
 
-    return min(cluster_articles, key=lambda a: tier_rank(a["source"]))
+def _title_tokens(title: str) -> set[str]:
+    tokens = set()
+    for raw in title.split():
+        token = raw.strip(_TOKEN_STRIP_CHARS)
+        if len(token) >= _MIN_TOKEN_LEN:
+            tokens.add(token)
+    return tokens
+
+
+def _token_jaccard(title_a: str, title_b: str) -> float:
+    tokens_a, tokens_b = _title_tokens(title_a), _title_tokens(title_b)
+    if not tokens_a or not tokens_b:
+        return 0.0
+    return len(tokens_a & tokens_b) / len(tokens_a | tokens_b)
+
+
+def _is_cross_tier_duplicate(
+    article_a: dict, article_b: dict, source_tiers_config: dict
+) -> bool:
+    """Gemini 클러스터링이 놓친 원출처/재인용 중복을 잡는 보조 판정.
+
+    기업이 겹치고, tier가 서로 다르고(같은 발표를 다른 등급 소스가 다뤘다는 신호),
+    제목 토큰 유사도가 임계값 이상이면 동일 사건으로 간주한다.
+    """
+    companies_a = set(article_a.get("companies", []))
+    companies_b = set(article_b.get("companies", []))
+    shared_companies = companies_a & companies_b
+    if not shared_companies:
+        return False
+    rank_a = _tier_rank(article_a["source"], source_tiers_config)
+    rank_b = _tier_rank(article_b["source"], source_tiers_config)
+    if rank_a == rank_b:
+        return False
+    return _token_jaccard(article_a["title"], article_b["title"]) >= _TOKEN_JACCARD_THRESHOLD
+
+
+def merge_cross_tier_duplicates(articles: list[dict], source_tiers_config: dict) -> list[dict]:
+    """cluster_same_event 결과에 원출처/재인용 중복 병합 안전망을 적용한다.
+
+    Gemini 클러스터링이 표현 차이 때문에 놓친 동일 사건 쌍을, 기업 겹침 + tier 차이 +
+    제목 토큰 유사도 규칙으로 강제 병합한다 (Gemini 성공/실패 여부와 무관하게 동작).
+
+    Args:
+        articles: cluster_id가 부여된 기사 리스트
+        source_tiers_config: config/source_tiers.yaml 로드 결과
+
+    Returns:
+        병합된 cluster_id가 적용된 기사 리스트
+    """
+    clusters: dict[str, list[dict]] = {}
+    for article in articles:
+        clusters.setdefault(article["cluster_id"], []).append(article)
+
+    parent = {cluster_id: cluster_id for cluster_id in clusters}
+
+    def find(cluster_id: str) -> str:
+        while parent[cluster_id] != cluster_id:
+            cluster_id = parent[cluster_id]
+        return cluster_id
+
+    def union(cluster_id_a: str, cluster_id_b: str) -> None:
+        root_a, root_b = find(cluster_id_a), find(cluster_id_b)
+        if root_a != root_b:
+            parent[root_b] = root_a
+
+    cluster_ids = list(clusters.keys())
+    for i, cluster_id_a in enumerate(cluster_ids):
+        for cluster_id_b in cluster_ids[i + 1 :]:
+            if _is_cross_tier_duplicate(
+                clusters[cluster_id_a][0], clusters[cluster_id_b][0], source_tiers_config
+            ):
+                union(cluster_id_a, cluster_id_b)
+
+    for article in articles:
+        article["cluster_id"] = find(article["cluster_id"])
+
+    return articles
 
 
 def run(
@@ -174,7 +273,8 @@ def run(
         중복 제거된 기사 + cluster_id 리스트
     """
     articles = normalize_company_names(raw_articles, aliases_config)
-    articles = cluster_same_event(articles)
+    articles = cluster_same_event(articles, source_tiers_config)
+    articles = merge_cross_tier_duplicates(articles, source_tiers_config)
 
     clusters: dict[str, list[dict]] = {}
     for article in articles:

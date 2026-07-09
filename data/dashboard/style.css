@@ -105,3 +105,19 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .noise-btn{font-size:.76rem;color:#A94442;text-decoration:none;border:1px solid #A94442;
   border-radius:6px;padding:2px 8px}
 .toast{font-size:.76rem;color:var(--confirmed);margin-left:6px}
+
+/* 실시간 트렌드 */
+.trend{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 18px}
+.trend-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.trend .sub{font-size:.78rem;color:var(--ink-soft)}
+.trend-body{display:flex;gap:18px;align-items:center}
+.trend-donut{flex:0 0 160px;display:flex;justify-content:center}
+.trend-bars{flex:1;min-width:0}
+.donut-num{font-size:20px;font-weight:700;fill:var(--ink)}
+.donut-cap{font-size:10px;fill:var(--ink-soft)}
+.tbar{display:flex;align-items:center;gap:8px;margin:7px 0}
+.tbar .k{flex:0 0 84px;font-size:.82rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbar .track{flex:1;height:10px;background:#EEF0F3;border-radius:999px;overflow:hidden}
+.tbar .fill{display:block;height:100%;border-radius:999px}
+.tbar .p{flex:0 0 42px;text-align:right;font-size:.8rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+@media(max-width:480px){.trend-body{flex-direction:column;align-items:stretch}.trend-donut{align-self:center}}

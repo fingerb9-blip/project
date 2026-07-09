@@ -492,7 +492,11 @@
     "last_updated": "2026-07-09",
     "status": "진행중",
     "related_article_ids": [
-      "3f5360a79e3bf3a9310273d1d3ef915e683e54c2"
+      "3f5360a79e3bf3a9310273d1d3ef915e683e54c2",
+      "3b0d735eb3eb53c6e5aa8ba317a33a06ae46afcd",
+      "eba668d9a37ef72c79a514ecaad016b3fd512665",
+      "08bed367f8d3d73d104d4cb63cfe07862eb35669",
+      "cc5f9c7ec1bd2afd3e0a2eaf975f32f74e46805a"
     ]
   },
   {
@@ -999,6 +1003,149 @@
     "status": "진행중",
     "related_article_ids": [
       "87f20dee56fce8b51fe8a235e6812a7e337bbfa2"
+    ]
+  },
+  {
+    "issue_id": "c7b940ad35b7",
+    "entity": "삼성전자",
+    "title": "정부, 삼성·LG 스마트TV 방송에 AI 더빙 지원",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5f9964a2cd43d2000e6623e1c4e84497f5529274"
+    ]
+  },
+  {
+    "issue_id": "d861acc7a24b",
+    "entity": "삼성전자",
+    "title": "'삼전·닉스+레버리지', 거래대금 비중이 국내 증시의 83%",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "9ee17002659eb92561770bf5b2bd93dc8b1e1251"
+    ]
+  },
+  {
+    "issue_id": "1255d858cb21",
+    "entity": "삼성전자",
+    "title": "[자막뉴스] '역사적 저PER'에도 \"투자 조심\" 경고…\"빅테크 ROI 흔들릴 정...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "194fb36b952a60638ab222677a461882cec28ca0"
+    ]
+  },
+  {
+    "issue_id": "c0cf5b9b1a2a",
+    "entity": "엔비디아",
+    "title": "\"갈팡질팡\", 코스피 '상승'...삼성물산·車 주가는 '뚝'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "1988c7efe72349c0a2bba2de90a86044c1241912"
+    ]
+  },
+  {
+    "issue_id": "9ccc1bbcdce1",
+    "entity": "삼성전자",
+    "title": "코스피, 등락 후 소폭 반등…0.62% 오른 7200선 마감",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5c6381d9cb9f07a42677f24d2af17816d5c85950"
+    ]
+  },
+  {
+    "issue_id": "66022b05b173",
+    "entity": "삼성전자",
+    "title": "코스피 소폭 상승 환율 1500원대로",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "bc1eaf4e6341a08d062a8ae90f5c3f0357f71f22"
+    ]
+  },
+  {
+    "issue_id": "b46e74d1707e",
+    "entity": "삼성전자",
+    "title": "실탄 확보 나선 中 CXMT…삼성·SK엔 위협이자 재평가 기회",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "8e979031deea2b09e5c2269b68693d2ebb1c2ca4"
+    ]
+  },
+  {
+    "issue_id": "ef0be58968bc",
+    "entity": "미상",
+    "title": "삼성전기, AI 반도체판 흔들 유리기판 '소재 승부수'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "12f3a0e30408f583285481cbf9adc2f36392f750"
+    ]
+  },
+  {
+    "issue_id": "351ed637b72d",
+    "entity": "삼성전자",
+    "title": "삼성전자, 3000조원대 AI 반도체 투자···한국·미국·중국 아우른다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "84ecaf398b1d3425ea0f22e4c0bda328a232aa01"
+    ]
+  },
+  {
+    "issue_id": "27def1e23277",
+    "entity": "미상",
+    "title": "AI 투자 경쟁 과열이 ‘칩플레이션’ 부른다...스마트폰 가격의 대격변",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "daa8e39bd7ed25e9108672c8b02bc9466fcca89f"
+    ]
+  },
+  {
+    "issue_id": "40c9dbabc2cc",
+    "entity": "TSMC",
+    "title": "[비즈톡톡] TSMC 쫓는 삼성·인텔, 기술적 리스크에도 승부수로 차별화...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "e6471a58cbe5194a417286b17ffb600486ecdaa6"
+    ]
+  },
+  {
+    "issue_id": "5fd143e4d743",
+    "entity": "TSMC",
+    "title": "'일본 정부 주도' 라피더스, TSMC와 가격 경쟁 예고…\"같거나 낮게\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "96d2f5dd3e791026f77c982d11849490531c6441"
+    ]
+  },
+  {
+    "issue_id": "0c6fd6c31d34",
+    "entity": "미상",
+    "title": "가술패권 시대… 산업부, 무역안보 '산업안보'로 넓힌다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "ef6438a812eeba736e4feb0548735746966535b4"
     ]
   }
 ]
