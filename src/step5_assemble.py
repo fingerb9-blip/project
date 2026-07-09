@@ -942,6 +942,8 @@ def run(
     issues_path: str | None = None,
     radar_data: dict | None = None,
     repo_url: str | None = None,
+    mention_trend_data: dict | None = None,
+    cold_start_stage: str = "active",
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -956,6 +958,8 @@ def run(
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
         radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
         repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
+        mention_trend_data: 언급량 트렌드 데이터 (Phase 5, 선택). build_index_html로 그대로 전달된다.
+        cold_start_stage: 콜드 스타트 단계 (Phase 5). build_index_html로 그대로 전달된다.
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
@@ -998,6 +1002,8 @@ def run(
         Path(state_path),
         issues_path=Path(issues_path) if issues_path else None,
         radar_data=radar_data,
+        mention_trend_data=mention_trend_data,
+        cold_start_stage=cold_start_stage,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

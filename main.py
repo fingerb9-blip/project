@@ -19,6 +19,8 @@ from src import (
     step4_summarize,
     step5_assemble,
     step6_send,
+    step_mention_trend,
+    step_stock_price,
 )
 
 KST = timezone(timedelta(hours=9))
@@ -93,6 +95,8 @@ def main() -> None:
 
     steps_completed = []
     raw_articles = []
+    trend_data = None
+    cold_start_stage = "hidden"
     try:
         raw_articles = step1_collect.run(config["feeds"], paths["raw"])
         steps_completed.append("collect")
@@ -116,6 +120,27 @@ def main() -> None:
         step4_5_issue_match.run(core_articles, config["company_aliases"], paths["issues"], today)
         steps_completed.append("issue_match")
 
+        trends_dir = base_dir / "data" / "trends"
+        tech_keywords = step_mention_trend.load_tech_keywords(base_dir / "config" / "tech_keywords.yaml")
+        accumulated_days = step_mention_trend.count_accumulated_days(str(trends_dir), today)
+        cold_start_stage = step_mention_trend.cold_start_stage(accumulated_days)
+
+        trend_data = step_mention_trend.run(
+            classified_articles, config["company_aliases"], tech_keywords, str(trends_dir), today
+        )
+        steps_completed.append("mention_trend")
+
+        watch_tickers = step_stock_price.load_watch_tickers(base_dir / "config" / "watch_tickers.yaml")
+        stock_data = step_stock_price.run(
+            watch_tickers, str(base_dir / "data" / "stock" / f"{today}.json"), today
+        )
+        steps_completed.append("stock_price")
+
+        if cold_start_stage == "hidden":
+            trend_data = None
+        else:
+            summarized_articles = step_stock_price.match_articles_to_stocks(summarized_articles, stock_data)
+
         _maybe_run_weekly_radar(base_dir, config, today, datetime.now(KST).weekday())
 
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
@@ -133,6 +158,8 @@ def main() -> None:
             paths["issues"],
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
             repo_url=repo_url,
+            mention_trend_data=trend_data,
+            cold_start_stage=cold_start_stage,
         )
         steps_completed.append("assemble")
 
@@ -158,6 +185,8 @@ def main() -> None:
             issues_path=paths["issues"],
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
             pending_keywords=step5_assemble.load_pending_keywords(pending_path),
+            mention_trend_data=trend_data,
+            cold_start_stage=cold_start_stage,
         )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
@@ -183,6 +212,8 @@ def main() -> None:
         issues_path=paths["issues"],
         radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
         pending_keywords=step5_assemble.load_pending_keywords(pending_path),
+        mention_trend_data=trend_data,
+        cold_start_stage=cold_start_stage,
     )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 
