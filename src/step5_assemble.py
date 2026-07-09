@@ -272,7 +272,7 @@ function applyFilters(){
     var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
     var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
     var t=c.dataset.sourceType;
-    var okDeep=!deepOnly||(t==='학회'||t==='특허');
+    var okDeep=!deepOnly||(t==='학회');
     c.style.display=(okCat&&okQ&&okDeep)?'':'none';
   });
 }
@@ -302,8 +302,8 @@ def _build_article_card(article: dict) -> str:
     렌더링한다. _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
 
     Args:
-        article: 요약 결과 기사 dict. source_type이 있으면(학회/특허 등) 배지로 표시하고
-            데일리 페이지의 "학회·특허만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
+        article: 요약 결과 기사 dict. source_type이 있으면(학회 등) 배지로 표시하고
+            데일리 페이지의 "학회만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
     """
     article_categories = _split_categories(article.get("category") or ["미분류"])
     cats_attr = _esc(" ".join(article_categories))
@@ -545,7 +545,7 @@ def build_dashboard_html(
     parts.append(_build_highlight_strip(select_highlights(summarized_articles)))
     parts.append(
         '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
-        "학회·특허만 보기</label>"
+        "학회만 보기</label>"
     )
     if not summarized_articles:
         parts.append('<p class="summary">오늘 핵심 기사가 없습니다.</p>')

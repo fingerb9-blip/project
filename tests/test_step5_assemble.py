@@ -630,7 +630,7 @@ def test_build_dashboard_html_defaults_source_type_to_news_when_missing():
 def test_build_dashboard_html_includes_deep_tech_filter_toggle():
     html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
     assert 'id="deep-tech-filter"' in html_out
-    assert "학회·특허만 보기" in html_out
+    assert "학회만 보기" in html_out
 
 
 def test_build_dashboard_html_renders_noise_button_without_github_link():
@@ -697,7 +697,7 @@ def test_build_pending_keywords_section_html_flags_priority_candidate():
 
 
 def test_build_dashboard_html_deep_tech_filter_scoped_to_today_core_section():
-    """학회·특허만 보기 필터는 '오늘의 핵심' 섹션 카드만 대상으로 해야 한다.
+    """학회만 보기 필터는 '오늘의 핵심' 섹션 카드만 대상으로 해야 한다.
 
     '진행 중 이슈' 섹션의 카드는 data-source-type이 없어 전역 .card 셀렉터를
     쓰면 필터 체크 시 같이 숨겨진다 (Finding 1). #feed로 스코핑해야 한다 ("오늘의 핵심"

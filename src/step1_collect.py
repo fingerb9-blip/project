@@ -6,7 +6,6 @@ import json
 import logging
 import os
 import time
-import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -142,16 +141,29 @@ def fetch_naver_news(keywords: list[str]) -> list[dict]:
     return articles
 
 
-_PAPER_SOURCE = "Semantic Scholar"
-_SEMANTIC_SCHOLAR_MAX_RETRIES = 3
+_PAPER_SOURCE = "OpenAlex"
+_OPENALEX_MAX_RETRIES = 3
 
 
-def fetch_semantic_scholar_papers(keywords: list[str], since: datetime) -> list[dict]:
-    """Semantic Scholar API로 키워드 관련 최신 논문을 보강 수집한다.
+def _reconstruct_openalex_abstract(inverted_index: dict | None) -> str:
+    """OpenAlex의 abstract_inverted_index({단어: [등장 위치, ...]})를 평문으로 복원한다.
+    OpenAlex는 저작권 문제로 초록을 위치 인덱스 형태로만 제공한다."""
+    if not inverted_index:
+        return ""
+    max_pos = max(pos for positions in inverted_index.values() for pos in positions)
+    words = [""] * (max_pos + 1)
+    for word, positions in inverted_index.items():
+        for pos in positions:
+            words[pos] = word
+    return " ".join(words)
 
-    무료 API키 없이도 호출 가능하지만 비인증 요청은 전역 공유 한도가 매우 낮아
-    429가 자주 발생한다. SEMANTIC_SCHOLAR_API_KEY가 설정돼 있으면 헤더에 실어
-    보낸다. 429/일시 오류는 재시도 후 그래도 실패하면 해당 키워드만 건너뛴다.
+
+def fetch_openalex_papers(keywords: list[str], since: datetime) -> list[dict]:
+    """OpenAlex API로 키워드 관련 최신 논문을 보강 수집한다.
+
+    API 키 등록 없이 무료로 호출 가능(공용 요청 풀). title_and_abstract.search 필터로
+    제목·초록에 키워드가 실제로 포함된 논문만 매칭해 노이즈를 줄인다. 429/일시 오류는
+    재시도 후 그래도 실패하면 해당 키워드만 건너뛴다.
 
     Args:
         keywords: 검색 키워드 목록 (예: "HBM memory", "EUV lithography")
@@ -160,150 +172,53 @@ def fetch_semantic_scholar_papers(keywords: list[str], since: datetime) -> list[
     Returns:
         fetch_rss_articles와 동일한 스키마의 기사(논문) dict 리스트
     """
-    headers = {}
-    api_key = os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
-    if api_key:
-        headers["x-api-key"] = api_key
-
-    date_range = f"{since.date().isoformat()}:"
     papers: list[dict] = []
 
     for keyword in keywords:
         response = None
-        for attempt in range(_SEMANTIC_SCHOLAR_MAX_RETRIES):
+        for attempt in range(_OPENALEX_MAX_RETRIES):
             response = requests.get(
-                "https://api.semanticscholar.org/graph/v1/paper/search",
-                headers=headers,
+                "https://api.openalex.org/works",
                 params={
-                    "query": keyword,
-                    "fields": "title,abstract,url,venue,publicationDate",
-                    "publicationDateOrYear": date_range,
-                    "limit": 20,
+                    "filter": f"title_and_abstract.search:{keyword},from_publication_date:{since.date().isoformat()}",
+                    "sort": "publication_date:desc",
+                    "per-page": 20,
                 },
                 timeout=10,
             )
             if response.status_code != 429:
                 break
             logger.warning(
-                "Semantic Scholar 요청 한도 초과, 재시도 %d/%d: %s",
+                "OpenAlex 요청 한도 초과, 재시도 %d/%d: %s",
                 attempt + 1,
-                _SEMANTIC_SCHOLAR_MAX_RETRIES,
+                _OPENALEX_MAX_RETRIES,
                 keyword,
             )
             time.sleep(2**attempt)
 
         if response is None or response.status_code == 429:
-            logger.error("Semantic Scholar 요청 한도 초과, 키워드 건너뜀: %s", keyword)
+            logger.error("OpenAlex 요청 한도 초과, 키워드 건너뜀: %s", keyword)
             continue
         response.raise_for_status()
 
-        for paper in response.json().get("data", []):
-            url = paper.get("url")
+        for work in response.json().get("results", []):
+            url = (work.get("primary_location") or {}).get("landing_page_url") or work.get("doi")
             if not url:
                 continue
-            published_at = paper.get("publicationDate")
+            published_at = work.get("publication_date")
             papers.append(
                 {
                     "id": _make_id(url),
-                    "title": paper.get("title", ""),
+                    "title": work.get("title") or work.get("display_name") or "",
                     "url": url,
                     "source": _PAPER_SOURCE,
                     "published_at": f"{published_at}T00:00:00+00:00" if published_at else since.isoformat(),
-                    "raw_text": paper.get("abstract") or "",
+                    "raw_text": _reconstruct_openalex_abstract(work.get("abstract_inverted_index")),
                     "source_type": "학회",
                 }
             )
 
     return papers
-
-
-_PATENT_SOURCE = "KIPRIS"
-_KIPRIS_MAX_RETRIES = 3
-_KIPRIS_ENDPOINT = "https://plus.kipris.or.kr/kipo-api/kipi/patUtiModInfoSearchSevice/getWordSearch"
-
-
-def _parse_kipris_date(value: str | None) -> str | None:
-    """KIPRIS의 YYYYMMDD 날짜 문자열을 ISO8601로 변환한다."""
-    if not value or len(value) != 8:
-        return None
-    return f"{value[:4]}-{value[4:6]}-{value[6:8]}T00:00:00+00:00"
-
-
-def fetch_kipris_patents(keywords: list[str], since: datetime) -> list[dict]:
-    """KIPRIS Open API(getWordSearch)로 키워드 관련 신규 공개 특허를 보강 수집한다.
-
-    KIPRIS_API_KEY가 설정돼 있지 않으면 특허 수집을 건너뛴다(Naver/Semantic Scholar와 동일한 패턴).
-    호출 실패(비-200 응답)는 재시도 후에도 실패하면 해당 키워드만 건너뛰고 계속 진행한다.
-
-    Args:
-        keywords: 특허 검색 키워드 목록 (예: "HBM", "EUV 노광")
-        since: 수집 기준 시각 (이 시각 이후 공개된 특허만 포함)
-
-    Returns:
-        fetch_rss_articles와 동일한 스키마 + source_type="특허" 기사(특허) dict 리스트
-    """
-    api_key = os.environ.get("KIPRIS_API_KEY")
-    if not api_key:
-        logger.debug("KIPRIS_API_KEY 미설정, 특허 보강 수집을 건너뜁니다")
-        return []
-
-    patents: list[dict] = []
-
-    for keyword in keywords:
-        response = None
-        for attempt in range(_KIPRIS_MAX_RETRIES):
-            try:
-                response = requests.get(
-                    _KIPRIS_ENDPOINT,
-                    params={"word": keyword, "patent": "true", "utility": "true", "ServiceKey": api_key},
-                    timeout=10,
-                )
-                if response.status_code == 200:
-                    break
-            except requests.exceptions.RequestException as exc:
-                logger.warning(
-                    "KIPRIS 요청 실패, 재시도 %d/%d: %s (%s)", attempt + 1, _KIPRIS_MAX_RETRIES, keyword, exc
-                )
-                time.sleep(2**attempt)
-                continue
-            logger.warning(
-                "KIPRIS 요청 실패, 재시도 %d/%d: %s", attempt + 1, _KIPRIS_MAX_RETRIES, keyword
-            )
-            time.sleep(2**attempt)
-
-        if response is None or response.status_code != 200:
-            logger.error("KIPRIS 요청 %d회 연속 실패, 키워드 건너뜀: %s", _KIPRIS_MAX_RETRIES, keyword)
-            continue
-
-        try:
-            root = ET.fromstring(response.text)
-        except ET.ParseError as exc:
-            logger.error("KIPRIS 응답 파싱 실패, 키워드 건너뜀: %s (%s)", keyword, exc)
-            continue
-
-        for item in root.findall(".//item"):
-            application_number = (item.findtext("application_number") or "").strip()
-            if not application_number:
-                continue
-            published_at = _parse_kipris_date(
-                item.findtext("open_date") or item.findtext("application_date")
-            )
-            if published_at and datetime.fromisoformat(published_at) < since:
-                continue
-            url = f"https://doi.kipris.or.kr/doi/patentInfo.do?applno={application_number}"
-            patents.append(
-                {
-                    "id": _make_id(url),
-                    "title": item.findtext("invention_title") or "",
-                    "url": url,
-                    "source": _PATENT_SOURCE,
-                    "published_at": published_at or since.isoformat(),
-                    "raw_text": item.findtext("abstract_text") or "",
-                    "source_type": "특허",
-                }
-            )
-
-    return patents
 
 
 def _check_consecutive_zero(raw_dir: Path, source: str, today_count: int) -> bool:
@@ -341,13 +256,11 @@ def run(feeds_config: dict, output_path: str) -> list[dict]:
     feeds = feeds_config.get("feeds") or []
     keywords = feeds_config.get("naver_search_keywords") or []
     paper_keywords = feeds_config.get("paper_search_keywords") or []
-    patent_keywords = feeds_config.get("patent_search_keywords") or []
 
     rss_articles = fetch_rss_articles(feeds, since)
     naver_articles = fetch_naver_news(keywords)
-    paper_articles = fetch_semantic_scholar_papers(paper_keywords, since)
-    patent_articles = fetch_kipris_patents(patent_keywords, since)
-    articles = rss_articles + naver_articles + paper_articles + patent_articles
+    paper_articles = fetch_openalex_papers(paper_keywords, since)
+    articles = rss_articles + naver_articles + paper_articles
 
     for feed in feeds:
         name = feed["name"]
