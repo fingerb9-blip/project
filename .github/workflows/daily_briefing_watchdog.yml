@@ -1,0 +1,31 @@
+name: daily-briefing-watchdog
+
+on:
+  schedule:
+    - cron: "0 1 * * *" # UTC 01:00 = KST 10:00 (08:30 목표보다 1.5시간 늦은 안전 마진)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Check today's daily-briefing run landed
+        env:
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "587"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: python scripts/check_daily_run_freshness.py
