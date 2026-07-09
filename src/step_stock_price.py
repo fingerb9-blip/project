@@ -101,3 +101,22 @@ def run(watch_tickers: list[dict], output_path: str, today: str) -> dict:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
     return data
+
+
+def match_articles_to_stocks(articles: list[dict], stock_data: dict) -> list[dict]:
+    """기사 제목/본문에 언급된 관심 종목의 당일 등락률을 related_stock 필드로 붙인다.
+
+    Args:
+        articles: 기사 dict 리스트 (title, raw_text 포함)
+        stock_data: run() 결과 ({"date", "tickers": [...]})
+
+    Returns:
+        각 기사에 related_stock: [{"name","change_pct"}] 필드가 추가된 동일 리스트
+    """
+    tickers = stock_data.get("tickers", [])
+    for article in articles:
+        text = f"{article['title']} {article.get('raw_text', '')}"
+        article["related_stock"] = [
+            {"name": t["name"], "change_pct": t["change_pct"]} for t in tickers if t["name"] in text
+        ]
+    return articles

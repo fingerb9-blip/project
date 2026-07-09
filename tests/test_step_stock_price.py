@@ -82,3 +82,27 @@ def test_run_omits_ticker_when_fetch_fails_and_no_previous_value_exists(tmp_path
     result = step_stock_price.run(watch_tickers, str(output_path), "2026-07-09")
 
     assert result["tickers"] == []
+
+
+def test_match_articles_to_stocks_adds_related_stock_when_name_mentioned():
+    stock_data = {
+        "date": "2026-07-09",
+        "tickers": [{"ticker": "005930", "name": "삼성전자", "close": 92300.0, "change_pct": 1.8}],
+    }
+    articles = [{"id": "a1", "title": "삼성전자, HBM4 수율 개선 발표", "raw_text": ""}]
+
+    result = step_stock_price.match_articles_to_stocks(articles, stock_data)
+
+    assert result[0]["related_stock"] == [{"name": "삼성전자", "change_pct": 1.8}]
+
+
+def test_match_articles_to_stocks_leaves_empty_list_when_no_ticker_mentioned():
+    stock_data = {
+        "date": "2026-07-09",
+        "tickers": [{"ticker": "005930", "name": "삼성전자", "close": 92300.0, "change_pct": 1.8}],
+    }
+    articles = [{"id": "a1", "title": "TSMC, 2나노 공정 수율 개선", "raw_text": ""}]
+
+    result = step_stock_price.match_articles_to_stocks(articles, stock_data)
+
+    assert result[0]["related_stock"] == []
