@@ -243,6 +243,39 @@ def test_build_index_html_shows_recent_alert_banner(tmp_path):
     assert "청주공장 화재 속보" in html_out
 
 
+_VIEWPORT_META = '<meta name="viewport" content="width=device-width, initial-scale=1">'
+
+
+def test_build_dashboard_html_has_viewport_meta():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert _VIEWPORT_META in html_out
+
+
+def test_build_index_html_has_viewport_meta(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+    assert _VIEWPORT_META in html_out
+
+
+def test_build_alert_detail_html_has_viewport_meta():
+    issue = _sample_issue()
+    html_out = step5_assemble.build_alert_detail_html(issue)
+    assert _VIEWPORT_META in html_out
+
+
+def test_build_dashboard_html_collection_table_has_data_labels():
+    stats = {"디일렉": {"today": 1, "avg7d": 10.0}}
+    html_out = step5_assemble.build_dashboard_html([], [], stats, "2026-07-08")
+    assert 'data-label="소스"' in html_out
+    assert 'data-label="오늘 건수"' in html_out
+    assert 'data-label="최근 7일 평균"' in html_out
+
+
+def test_dashboard_css_has_mobile_media_query():
+    assert "@media (max-width: 480px)" in step5_assemble._DASHBOARD_CSS
+
+
 def test_build_index_html_hides_stale_alert_banner(tmp_path):
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()

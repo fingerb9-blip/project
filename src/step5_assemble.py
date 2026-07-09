@@ -120,6 +120,7 @@ def build_dashboard_html(
     parts = [
         "<!doctype html>",
         '<html lang="ko"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
         f"<title>반도체 뉴스 브리핑 {_esc(target_date)}</title>",
         '<link rel="stylesheet" href="style.css">',
         "</head><body>",
@@ -182,7 +183,11 @@ def build_dashboard_html(
         avg7d = stats.get("avg7d", 0)
         warn = ' class="warn"' if avg7d > 0 and today_count < avg7d * 0.3 else ""
         parts.append(
-            f"<tr{warn}><td>{_esc(source)}</td><td>{today_count}</td><td>{avg7d:.1f}</td></tr>"
+            f"<tr{warn}>"
+            f'<td data-label="소스">{_esc(source)}</td>'
+            f'<td data-label="오늘 건수">{today_count}</td>'
+            f'<td data-label="최근 7일 평균">{avg7d:.1f}</td>'
+            "</tr>"
         )
     parts.append("</table></section>")
 
@@ -247,6 +252,7 @@ def build_alert_detail_html(issue: dict) -> str:
     parts = [
         "<!doctype html>",
         '<html lang="ko"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
         f"<title>속보 — {_esc(title)}</title>",
         '<link rel="stylesheet" href="../style.css">',
         "</head><body>",
@@ -303,6 +309,7 @@ def build_index_html(
     parts = [
         "<!doctype html>",
         '<html lang="ko"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
         "<title>반도체 뉴스 브리핑</title>",
         '<link rel="stylesheet" href="style.css">',
         "</head><body>",
@@ -339,21 +346,64 @@ def build_index_html(
 
 
 _DASHBOARD_CSS = """\
-body { font-family: -apple-system, "Segoe UI", sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; background: #fafafa; }
+:root {
+  --bg: #fafafa;
+  --fg: #1a1a1a;
+  --card-bg: #fff;
+  --card-border: #e0e0e0;
+  --meta: #666;
+  --hr: #ddd;
+  --table-border: #ddd;
+  --warn-bg: #fff3cd;
+  --badge-ok-bg: #d4edda; --badge-ok-fg: #155724;
+  --badge-fail-bg: #f8d7da; --badge-fail-fg: #721c24;
+  --badge-unknown-bg: #e2e3e5; --badge-unknown-fg: #383d41;
+  --alert-bg: #f8d7da; --alert-border: #f1aeb5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --fg: #e6e6e6;
+    --card-bg: #1e1e1e;
+    --card-border: #333;
+    --meta: #a0a0a0;
+    --hr: #333;
+    --table-border: #333;
+    --warn-bg: #4a3b12;
+    --badge-ok-bg: #17381f; --badge-ok-fg: #7fd99a;
+    --badge-fail-bg: #3d1a1e; --badge-fail-fg: #f2a3ab;
+    --badge-unknown-bg: #2a2a2c; --badge-unknown-fg: #b0b0b3;
+    --alert-bg: #3d1a1e; --alert-border: #6b2c33;
+  }
+  a { color: #6ea8fe; }
+}
+body { font-family: -apple-system, "Segoe UI", sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: var(--fg); background: var(--bg); }
 h1 { font-size: 1.5rem; }
-h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid #ddd; padding-bottom: 0.3rem; }
-.card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
-.meta { color: #666; font-size: 0.85rem; }
+h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid var(--hr); padding-bottom: 0.3rem; }
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
+.meta { color: var(--meta); font-size: 0.85rem; }
 table { border-collapse: collapse; width: 100%; }
-th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
-tr.warn td { background: #fff3cd; }
+th, td { border: 1px solid var(--table-border); padding: 0.4rem 0.6rem; text-align: left; }
+tr.warn td { background: var(--warn-bg); }
 .badge { display: inline-block; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.9rem; }
-.badge.ok { background: #d4edda; color: #155724; }
-.badge.fail { background: #f8d7da; color: #721c24; }
-.badge.unknown { background: #e2e3e5; color: #383d41; }
+.badge.ok { background: var(--badge-ok-bg); color: var(--badge-ok-fg); }
+.badge.fail { background: var(--badge-fail-bg); color: var(--badge-fail-fg); }
+.badge.unknown { background: var(--badge-unknown-bg); color: var(--badge-unknown-fg); }
 a.latest { font-weight: bold; font-size: 1.1rem; }
-.alert-banner { background: #f8d7da; border: 1px solid #f1aeb5; border-radius: 8px; padding: 0.6rem 1rem; margin: 0.8rem 0; }
+.alert-banner { background: var(--alert-bg); border: 1px solid var(--alert-border); border-radius: 8px; padding: 0.6rem 1rem; margin: 0.8rem 0; }
 .alert-banner p { margin: 0.2rem 0; font-weight: bold; }
+@media (max-width: 480px) {
+  body { margin: 1rem auto; padding: 0 0.6rem; font-size: 0.95rem; }
+  h1 { font-size: 1.2rem; }
+  h2 { font-size: 1.05rem; margin-top: 1.5rem; }
+  .card { padding: 0.6rem 0.7rem; }
+  table, tbody, tr { display: block; width: 100%; }
+  th { display: none; }
+  tr { border: 1px solid var(--table-border); border-radius: 6px; margin-bottom: 0.6rem; }
+  tr.warn { background: var(--warn-bg); }
+  td { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.35rem 0.6rem; border: none; }
+  td::before { content: attr(data-label); font-weight: bold; color: var(--meta); }
+}
 """
 
 
