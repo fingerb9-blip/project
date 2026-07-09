@@ -232,7 +232,7 @@ def pick_top_issues(issues: list[dict], today: str, limit: int = _TOP_ISSUES_LIM
         limit: 상위 몇 건을 고를지
 
     Returns:
-        "[기업] 제목" 형식의 이슈 헤드라인 문자열 리스트 (관련 기사 수 내림차순)
+        "[기업] 제목" 형식의 이슈 헤드라인 문자열 리스트(관련 기사 수 내림차순)
     """
     cutoff = date.fromisoformat(today) - timedelta(days=_WINDOW_DAYS - 1)
     recent = []
@@ -245,3 +245,58 @@ def pick_top_issues(issues: list[dict], today: str, limit: int = _TOP_ISSUES_LIM
     ranked = sorted(recent, key=lambda i: len(i.get("related_article_ids") or []), reverse=True)
     top = ranked[:limit]
     return [f"[{issue.get('entity', '')}] {issue.get('title', '')}" for issue in top]
+
+
+def run(
+    dedup_dir: str,
+    issues_path: str,
+    aliases_config: dict,
+    tracked_companies: list[str],
+    today: str,
+    output_dir: str,
+) -> dict:
+    """Phase 4 경쟁 구도 레이더 진입점. 매주 월요일 main.py에서 호출된다.
+
+    Args:
+        dedup_dir: data/dedup 디렉토리 경로
+        issues_path: data/state/issues.json 경로
+        aliases_config: config/company_aliases.yaml 로드 결과
+        tracked_companies: 집계 대상 기업 id 목록
+        today: YYYY-MM-DD 형식 날짜 문자열 (집계 기준일)
+        output_dir: data/radar 디렉토리 경로
+
+    Returns:
+        생성된 주간 레이더 데이터 dict (data/radar/weekly-YYYY-Www.json에도 저장)
+    """
+    articles = load_week_dedup_articles(Path(dedup_dir), today)
+    mentions = aggregate_mentions(articles, tracked_companies)
+    grouped = group_articles_by_company(articles, tracked_companies)
+    tone = classify_tone(grouped)
+
+    issues = issue_tracking.load_issues(Path(issues_path))
+    top_issues = pick_top_issues(issues, today)
+
+    commentary = generate_commentary(mentions, top_issues, aliases_config)
+
+    display_mentions = {
+        issue_tracking.entity_display_name(company, aliases_config): count
+        for company, count in mentions.items()
+    }
+    display_tone = {
+        issue_tracking.entity_display_name(company, aliases_config): t for company, t in tone.items()
+    }
+
+    data = {
+        "week": week_label(today),
+        "mentions": display_mentions,
+        "tone": display_tone,
+        "top_issues": top_issues,
+        "commentary": commentary,
+    }
+
+    output_path = Path(output_dir) / f"weekly-{data['week']}.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+    return data

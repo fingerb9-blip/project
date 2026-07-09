@@ -180,3 +180,47 @@ def test_generate_commentary_falls_back_when_no_mentions(mock_call):
     aliases = {"samsung_electronics": {"aliases": ["삼성전자"]}}
     result = radar_weekly.generate_commentary({"samsung_electronics": 0}, [], aliases)
     assert "조용" in result
+
+
+@patch("src.radar_weekly.gemini_client.call_gemini")
+def test_run_writes_weekly_json(mock_call, tmp_path):
+    mock_call.side_effect = [
+        {"tone": [{"company": "samsung_electronics", "pos": 0.6, "neg": 0.1, "neu": 0.3}]},
+        {"commentary": "이번 주 해설"},
+    ]
+    dedup_dir = tmp_path / "dedup"
+    dedup_dir.mkdir()
+    (dedup_dir / "2026-07-09.json").write_text(
+        json.dumps([{"id": "a1", "title": "삼성전자 실적", "companies": ["samsung_electronics"]}]),
+        encoding="utf-8",
+    )
+    issues_path = tmp_path / "issues.json"
+    issues_path.write_text(
+        json.dumps(
+            [
+                {
+                    "issue_id": "i1", "entity": "삼성전자", "title": "실적 이슈",
+                    "last_updated": "2026-07-09", "related_article_ids": ["a1"],
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "radar"
+    aliases_config = {"samsung_electronics": {"aliases": ["삼성전자"]}}
+
+    data = radar_weekly.run(
+        dedup_dir=str(dedup_dir),
+        issues_path=str(issues_path),
+        aliases_config=aliases_config,
+        tracked_companies=["samsung_electronics"],
+        today="2026-07-09",
+        output_dir=str(output_dir),
+    )
+
+    assert data["week"] == "2026-W28"
+    assert data["mentions"] == {"삼성전자": 1}
+    assert data["tone"] == {"삼성전자": {"pos": 0.6, "neg": 0.1, "neu": 0.3}}
+    assert data["top_issues"] == ["[삼성전자] 실적 이슈"]
+    assert data["commentary"] == "이번 주 해설"
+    assert (output_dir / "weekly-2026-W28.json").exists()
