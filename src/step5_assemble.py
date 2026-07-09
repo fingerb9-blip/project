@@ -325,6 +325,14 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
         parts.append(f'<span class="tag {tag_class}">{_esc(tag_label)}</span>')
     for category in article_categories:
         parts.append(f'<span class="chip">{_esc(category)}</span>')
+    for stock_entry in article.get("related_stock") or []:
+        change_pct = stock_entry["change_pct"]
+        direction_class = "stock-up" if change_pct >= 0 else "stock-down"
+        arrow = "▲" if change_pct >= 0 else "▼"
+        parts.append(
+            f'<span class="chip {direction_class}">{_esc(stock_entry["name"])} '
+            f'{arrow}{abs(change_pct):.1f}%</span>'
+        )
     time_label = _format_card_time(article.get("published_at"))
     parts.append('<span class="spacer"></span>')
     if time_label:
@@ -829,6 +837,8 @@ a:hover{text-decoration:underline}
 .tag.obs{background:rgba(201,130,26,.14);color:var(--observed)}
 .tag.mut{background:#EEF0F3;color:var(--muted)}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
+.chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
+.chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
 
 /* 리포트 카드(인덱스) */
 .report .datetitle{font-size:1.05rem;font-weight:700;margin:.5rem 0 .6rem}

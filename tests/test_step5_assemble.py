@@ -600,3 +600,58 @@ def test_build_index_html_includes_pending_keywords_section(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path, pending_keywords=candidates)
 
     assert "테마주" in html_out
+
+
+def test_build_article_card_renders_positive_stock_badge():
+    article = {
+        "id": "a1",
+        "title": "삼성전자, HBM4 수율 개선",
+        "url": "https://example.com/1",
+        "source": "삼성전자 뉴스룸",
+        "category": ["메모리"],
+        "summary": "요약",
+        "confirmation_tag": "[확정]",
+        "related_stock": [{"name": "삼성전자", "change_pct": 1.8}],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-up" in html
+    assert "삼성전자" in html
+    assert "1.8%" in html
+
+
+def test_build_article_card_renders_negative_stock_badge():
+    article = {
+        "id": "a1",
+        "title": "삼성전자, HBM4 수율 개선",
+        "url": "https://example.com/1",
+        "source": "삼성전자 뉴스룸",
+        "category": ["메모리"],
+        "summary": "요약",
+        "confirmation_tag": "[확정]",
+        "related_stock": [{"name": "삼성전자", "change_pct": -2.3}],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-down" in html
+    assert "2.3%" in html
+
+
+def test_build_article_card_omits_stock_badge_when_no_related_stock():
+    article = {
+        "id": "a1",
+        "title": "TSMC, 2나노 공정 발표",
+        "url": "https://example.com/1",
+        "source": "디일렉",
+        "category": ["파운드리"],
+        "summary": "요약",
+        "confirmation_tag": "[관측]",
+        "related_stock": [],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-up" not in html
+    assert "stock-down" not in html
