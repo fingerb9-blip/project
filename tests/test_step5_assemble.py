@@ -309,3 +309,29 @@ def test_build_radar_section_html_escapes_company_name():
     }
     html_out = step5_assemble.build_radar_section_html(radar_data)
     assert "<script>x</script>" not in html_out
+
+
+def test_build_index_html_includes_radar_section(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    radar_data = {
+        "week": "2026-W28", "mentions": {"삼성전자": 1}, "tone": {}, "top_issues": [], "commentary": "해설",
+    }
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path, radar_data=radar_data)
+
+    assert "2026-W28" in html_out
+    assert "해설" in html_out
+
+
+def test_build_index_html_omits_radar_section_when_none(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
+
+    assert "경쟁 구도 레이더" not in html_out

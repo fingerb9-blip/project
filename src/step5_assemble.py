@@ -343,6 +343,7 @@ def build_index_html(
     state_path: Path,
     issues_path: Path | None = None,
     now: str | None = None,
+    radar_data: dict | None = None,
 ) -> str:
     """data/dashboard/*.html 파일 목록으로 날짜별 인덱스 페이지를 만든다.
 
@@ -386,6 +387,9 @@ def build_index_html(
         "<h1>반도체 뉴스 데일리 브리핑</h1>",
         badge,
     ]
+
+    if radar_data:
+        parts.append(build_radar_section_html(radar_data))
 
     if issues_path is not None:
         now_dt = datetime.fromisoformat(now) if now else datetime.now(timezone.utc)
