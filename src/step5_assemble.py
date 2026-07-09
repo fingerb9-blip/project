@@ -34,13 +34,13 @@ _SOURCE_BADGE_CLASS = {
     "SK하이닉스 뉴스룸": "s-hynix",
     "디일렉": "s-thelec",
     "EE Times": "s-eetimes",
-    "전자신문": "s-etnews",
-    "ZDNet Korea": "s-zdnet",
+    "DigiTimes": "s-digitimes",
+    "Semiconductor Engineering": "s-semieng",
 }
 
 _SITE_FOOTER = (
     '<p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · '
-    "EE Times · 전자신문 · ZDNet Korea</p>"
+    "EE Times · DigiTimes · Semiconductor Engineering</p>"
 )
 
 # 실시간 트렌드 섹션(§3-3) — 정렬 순서대로 배정, "기타"는 마지막 그레이 고정.
@@ -1274,8 +1274,8 @@ a:hover{text-decoration:underline}
 .badge.s-hynix{background:#E4F0FB;color:#2C6BB5}
 .badge.s-thelec{background:#E1F1EF;color:#1F7A6B}
 .badge.s-eetimes{background:#FDE9DD;color:#C2652A}
-.badge.s-etnews{background:#FDF1D6;color:#A9790B}
-.badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
+.badge.s-digitimes{background:#FDF1D6;color:#A9790B}
+.badge.s-semieng{background:#E7F2E6;color:#3B8B4E}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 .chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
 .chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}

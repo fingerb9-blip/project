@@ -14,11 +14,11 @@ feeds:
   - name: "EE Times"
     url: "https://www.eetimes.com/feed/"
     source_type: "언론"
-  - name: "전자신문"
-    url: "https://rss.etnews.com/Section901.xml"
+  - name: "DigiTimes"
+    url: "https://www.digitimes.com/rss/daily.xml"
     source_type: "언론"
-  - name: "ZDNet Korea"
-    url: "https://zdnet.co.kr/feed"
+  - name: "Semiconductor Engineering"
+    url: "https://semiengineering.com/feed/"
     source_type: "언론"
 
 # 네이버 뉴스 검색 API 보강 수집용 키워드
