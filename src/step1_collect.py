@@ -49,6 +49,7 @@ def fetch_rss_articles(feed_urls: list[dict], since: datetime) -> list[dict]:
     for feed in feed_urls:
         name = feed["name"]
         url = feed["url"]
+        source_type = feed.get("source_type", "언론")
 
         parsed = None
         for attempt in range(_MAX_RETRIES):
@@ -77,6 +78,7 @@ def fetch_rss_articles(feed_urls: list[dict], since: datetime) -> list[dict]:
                     "source": name,
                     "published_at": published_at or since.isoformat(),
                     "raw_text": entry.get("summary", ""),
+                    "source_type": source_type,
                 }
             )
 
@@ -130,6 +132,7 @@ def fetch_naver_news(keywords: list[str]) -> list[dict]:
                     "source": "네이버뉴스 재배포",
                     "published_at": item.get("pubDate", ""),
                     "raw_text": _clean_naver_text(item.get("description", "")),
+                    "source_type": "언론",
                 }
             )
 

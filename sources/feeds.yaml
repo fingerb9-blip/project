@@ -4,16 +4,22 @@
 feeds:
   - name: "삼성전자 뉴스룸"
     url: "https://news.samsung.com/kr/feed"
+    source_type: "언론"
   - name: "SK하이닉스 뉴스룸"
     url: "https://news.skhynix.co.kr/feed"
+    source_type: "언론"
   - name: "디일렉"
     url: "https://www.thelec.kr/rss/allArticle.xml"
+    source_type: "언론"
   - name: "EE Times"
     url: "https://www.eetimes.com/feed/"
+    source_type: "언론"
   - name: "전자신문"
     url: "https://rss.etnews.com/Section901.xml"
+    source_type: "언론"
   - name: "ZDNet Korea"
     url: "https://zdnet.co.kr/feed"
+    source_type: "언론"
 
 # 네이버 뉴스 검색 API 보강 수집용 키워드
 naver_search_keywords:
