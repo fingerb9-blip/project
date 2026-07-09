@@ -4,3 +4,12 @@ samsung_electronics:
 sk_hynix:
   aliases: ["SK하이닉스", "SK Hynix", "000660"]
   segment: ["메모리", "HBM"]
+tsmc:
+  aliases: ["TSMC", "대만반도체", "티에스엠씨"]
+  segment: ["파운드리"]
+intel:
+  aliases: ["인텔", "Intel"]
+  segment: ["시스템반도체", "파운드리"]
+nvidia:
+  aliases: ["엔비디아", "NVIDIA", "Nvidia"]
+  segment: ["AI가속기", "GPU"]
