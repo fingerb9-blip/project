@@ -54,6 +54,14 @@ a:hover{text-decoration:underline}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
 
+/* 오늘의 핵심 하이라이트 */
+.highlight-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 0 14px;scroll-snap-type:x proximity}
+.highlight-card{flex:0 0 220px;scroll-snap-align:start;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:14px;padding:13px 14px}
+.highlight-card .title{font-size:.92rem;margin:.5rem 0;-webkit-line-clamp:2}
+.highlight-card .summary{font-size:.82rem;margin:.3rem 0;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
 /* 배지·칩 */
 .badge{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#EEF0F3;color:#5A6472}
 .badge.s-samsung{background:#ECEBFB;color:#5B4FC4}
