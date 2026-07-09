@@ -29,11 +29,58 @@ _CLASSIFY_SCHEMA = {
 
 _REGULATION_CATEGORY = "규제·정책"
 _REGULATION_KEYWORD_GROUP = "규제_무역"
+_CORE_KEYWORD_GROUP = "반도체_핵심"
 _SNIPPET_LEN = 300
+_TITLE_MATCH_WEIGHT = 3
+_BODY_STRONG_WEIGHT = 2
+_BODY_WEAK_WEIGHT = 1
+_RELEVANCE_EXCLUDE_THRESHOLD = 1
 
 
 def _matched_keywords(text: str, keyword_group: dict) -> list[str]:
     return [group for group, words in keyword_group.items() if any(w in text for w in words)]
+
+
+def _find_all_occurrences(text: str, keyword: str) -> list[int]:
+    positions = []
+    start = 0
+    while True:
+        idx = text.find(keyword, start)
+        if idx == -1:
+            break
+        positions.append(idx)
+        start = idx + 1
+    return positions
+
+
+def compute_relevance_score(article: dict, core_keywords: list[str]) -> int:
+    """제목/본문에서 반도체 핵심 키워드 등장 위치·빈도로 관련도 점수를 매긴다.
+
+    제목에 등장하면 가중치를 높게, 본문 후반부에 1회만 등장하면 낮게 준다.
+
+    Args:
+        article: title, raw_text 필드를 포함한 기사 dict
+        core_keywords: config/keywords.yaml의 whitelist.반도체_핵심 리스트
+
+    Returns:
+        관련도 점수 (높을수록 반도체 관련도가 높음)
+    """
+    title = article["title"]
+    body = article.get("raw_text", "")
+    midpoint = len(body) / 2
+    score = 0
+    for keyword in core_keywords:
+        if keyword in title:
+            score += _TITLE_MATCH_WEIGHT
+            continue
+        positions = _find_all_occurrences(body, keyword)
+        if not positions:
+            continue
+        if len(positions) == 1 and positions[0] >= midpoint:
+            score += _BODY_WEAK_WEIGHT
+        else:
+            score += _BODY_STRONG_WEIGHT
+    return score
 
 
 def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict]:
