@@ -163,7 +163,7 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
             article["category"].append(_REGULATION_CATEGORY)
 
         low_relevance = article.get("relevance_score", 0) <= _RELEVANCE_EXCLUDE_THRESHOLD
-        if low_relevance and not article.get("keyword_hints"):
+        if low_relevance and not article.get("keyword_hints") and not article.get("companies"):
             article["tier"] = "제외"
 
     return articles

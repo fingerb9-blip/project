@@ -141,3 +141,22 @@ def test_classify_does_not_exclude_low_relevance_article_with_regulation_hint(mo
     result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
 
     assert result[0]["tier"] == "확인 필요"
+
+
+@patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_does_not_exclude_low_relevance_article_with_detected_company(mock_call):
+    # 기업이 특정된 기사는 핵심 키워드/화이트리스트 힌트가 없어도 강제 제외하지 않는다
+    mock_call.return_value = {
+        "results": [{"id": "a6", "tier": "핵심", "category": ["파운드리"]}]
+    }
+    article = _article(
+        id="a6",
+        title="삼성전자, 공정 설비 신규 구매 계획",
+        raw_text="",
+        companies=["samsung_electronics"],
+    )
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    assert result[0]["tier"] == "핵심"
