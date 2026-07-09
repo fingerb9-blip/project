@@ -35,3 +35,11 @@ paper_search_keywords:
   - "HBM memory"
   - "EUV lithography"
   - "GAA transistor"
+
+# KIPRIS 특허 공개 검색 API(getWordSearch) 보강 수집용 키워드 (한글 권장 - 국내 출원 특허 제목/초록 매칭)
+# KIPRIS_API_KEY 미설정 시 이 소스는 자동으로 건너뜁니다.
+patent_search_keywords:
+  - "HBM"
+  - "EUV 노광"
+  - "GAA 트랜지스터"
+  - "반도체 패키징"

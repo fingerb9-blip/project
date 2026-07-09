@@ -97,3 +97,72 @@ def test_fetch_semantic_scholar_papers_tags_source_type_academic(monkeypatch):
     papers = step1_collect.fetch_semantic_scholar_papers(["HBM memory"], since)
 
     assert papers[0]["source_type"] == "학회"
+
+
+_KIPRIS_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<response><body><items>
+<item>
+  <application_number>1020240012345</application_number>
+  <invention_title>고대역폭 메모리 패키징 구조</invention_title>
+  <open_date>{open_date}</open_date>
+  <abstract_text>초록 내용</abstract_text>
+</item>
+</items></body></response>
+"""
+
+
+def test_fetch_kipris_patents_returns_empty_without_api_key(monkeypatch):
+    monkeypatch.delenv("KIPRIS_API_KEY", raising=False)
+
+    result = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
+
+    assert result == []
+
+
+def test_fetch_kipris_patents_parses_xml_response(monkeypatch):
+    monkeypatch.setenv("KIPRIS_API_KEY", "key")
+    since = datetime(2020, 1, 1, tzinfo=timezone.utc)
+
+    class _Resp:
+        status_code = 200
+        text = _KIPRIS_XML.format(open_date="20240601")
+
+    monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
+
+    patents = step1_collect.fetch_kipris_patents(["HBM"], since)
+
+    assert len(patents) == 1
+    assert patents[0]["title"] == "고대역폭 메모리 패키징 구조"
+    assert patents[0]["source_type"] == "특허"
+    assert patents[0]["source"] == "KIPRIS"
+    assert "1020240012345" in patents[0]["url"]
+
+
+def test_fetch_kipris_patents_filters_articles_before_since(monkeypatch):
+    monkeypatch.setenv("KIPRIS_API_KEY", "key")
+    since = datetime(2024, 6, 2, tzinfo=timezone.utc)
+
+    class _Resp:
+        status_code = 200
+        text = _KIPRIS_XML.format(open_date="20240601")
+
+    monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
+
+    patents = step1_collect.fetch_kipris_patents(["HBM"], since)
+
+    assert patents == []
+
+
+def test_fetch_kipris_patents_skips_keyword_after_repeated_failure(monkeypatch):
+    monkeypatch.setenv("KIPRIS_API_KEY", "key")
+
+    class _Resp:
+        status_code = 500
+        text = ""
+
+    monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
+    monkeypatch.setattr(step1_collect.time, "sleep", lambda *_: None)
+
+    patents = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
+
+    assert patents == []
