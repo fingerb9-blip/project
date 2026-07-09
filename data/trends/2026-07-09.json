@@ -23,14 +23,14 @@
     },
     {
       "name": "인텔",
-      "count": 2,
+      "count": 1,
       "is_spike": false
     }
   ],
   "keywords": [
     {
       "name": "HBM",
-      "count": 14,
+      "count": 15,
       "is_spike": true
     },
     {
