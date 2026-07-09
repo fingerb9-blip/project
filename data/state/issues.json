@@ -227,7 +227,8 @@
     "last_updated": "2026-07-09",
     "status": "진행중",
     "related_article_ids": [
-      "79d34c2dd935b352a6aa98c6c93c6e49fbbea555"
+      "79d34c2dd935b352a6aa98c6c93c6e49fbbea555",
+      "d120d9c6d133b15316aa53bfc81d759c0c41a841"
     ]
   },
   {
@@ -250,6 +251,754 @@
     "status": "진행중",
     "related_article_ids": [
       "ff54ab9d47e52ab0d4c0b7429f80f645ce0dfb51"
+    ]
+  },
+  {
+    "issue_id": "acdd3d469789",
+    "entity": "미상",
+    "title": "SK AX, 제조기업 RX 돕는 '풀스택 서비스' 본격 출시",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a95e9f00aa605ea5a24cd04dff9424f17e558e79"
+    ]
+  },
+  {
+    "issue_id": "7f14d8c5c4be",
+    "entity": "미상",
+    "title": "애플, '보급형 XR 디스플레이' 개발 백지화",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5008fa3dc24cbfa1377a0b48084832a8a9997d68"
+    ]
+  },
+  {
+    "issue_id": "817d0d3a6047",
+    "entity": "미상",
+    "title": "온세미, 필리핀·미국 제조시설 2곳 매각 계약 체결",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "db33e63dd100cfe7feca07d01b96211f14d021ae"
+    ]
+  },
+  {
+    "issue_id": "1a6ae63dd1a9",
+    "entity": "미상",
+    "title": "Rise of the AI Data Center – Why Infrastructure Strategy Is Now a Board-Level Issue",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5caf34f23863ca6ace80f98d3a4a827dc4225aa2"
+    ]
+  },
+  {
+    "issue_id": "dfe68b171f72",
+    "entity": "미상",
+    "title": "SambaNova Raises $1B, Signs JPMorganChase as a Customer",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "e88421300171ff0b015e2c55491c375a08acc4b9"
+    ]
+  },
+  {
+    "issue_id": "115f4c652c55",
+    "entity": "미상",
+    "title": "MEMS Heralds an Overdue Step Change in Switching Technology",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "c92f43f70499f188493936a8a837f6443c49dd87"
+    ]
+  },
+  {
+    "issue_id": "2e505ddb96b9",
+    "entity": "미상",
+    "title": "박홍근 “교육교부금 재구조화 적기…미래인재 투자로 재정체계 개편”",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "e23e683c42d8d1a51a1607de54339e403ae0e268"
+    ]
+  },
+  {
+    "issue_id": "c77da76652f1",
+    "entity": "미상",
+    "title": "與 당권 주자들 '호남 대전' 본격화…계파 신경전도 격화",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "ba7c34e6c870a0a5dcaf1c65e4cd375989543a59"
+    ]
+  },
+  {
+    "issue_id": "37d93793e4af",
+    "entity": "미상",
+    "title": "[기고]반도체 메가 투자, 대기업 '그들만의 잔치'가 되지 않으려면",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "04a3b199be745f5bfb7ce393b641027a63afb2fc"
+    ]
+  },
+  {
+    "issue_id": "069c9cf32e42",
+    "entity": "미상",
+    "title": "호남 반도체 산단 전력망 구축 본격화…원전 확대 필요성도 부상",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "2b7444fca4a2bb8dd272050a73d46b1fe8ebcca3"
+    ]
+  },
+  {
+    "issue_id": "2c2d0de94296",
+    "entity": "미상",
+    "title": "주담대에 '빚투'까지…은행 가계대출 7.6조 늘었다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "752df736940b2ab646a861f7e9c32f9348907c97"
+    ]
+  },
+  {
+    "issue_id": "36eb37d32879",
+    "entity": "미상",
+    "title": "원·달러 환율 1500원선 공방… 한은 \"금리 인상 필요\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "67bf04a4fb935f4ee8688a5b305784e133395b79"
+    ]
+  },
+  {
+    "issue_id": "da426fb9650d",
+    "entity": "미상",
+    "title": "이성훈 LH 사장, 용인 반도체산단 찾아 “행정절차 신속처리” 속도전 ...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5957615151eba2048e0717b5f5f07efd46ec9250"
+    ]
+  },
+  {
+    "issue_id": "0746fac24d1d",
+    "entity": "미상",
+    "title": "역대급 찬성률 나온 포스코 노조…\"파업 원해서 아닌 현장의 절박한 경...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "4c347381e71c8f757d92f0769236e4cdf9e5c8ae"
+    ]
+  },
+  {
+    "issue_id": "ae04359a0a12",
+    "entity": "미상",
+    "title": "교육부, 지방대 학생 정원 유연화 추진…'3대 메가 프로젝트 지원'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "dd4d856c56748fa90f1fa28fa5c06ccab07e60dd"
+    ]
+  },
+  {
+    "issue_id": "040b92dacef5",
+    "entity": "미상",
+    "title": "한은 \"국내 주가 추세적 하락 전환 가능성은 제한적\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "4c8457225ccd9c7df734fa92336ac457529355bf"
+    ]
+  },
+  {
+    "issue_id": "5f5c5b8bb844",
+    "entity": "미상",
+    "title": "이 대통령, IMF ‘올해 한국 성장률 상향’에 “모두의 성장 되도록 노...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "ae753f0183c1607c015888ff0393ae2c29fa8a93"
+    ]
+  },
+  {
+    "issue_id": "bd59f073a4cc",
+    "entity": "미상",
+    "title": "미래운용 \"美 제재, 中반도체 키웠다…애플도 구매 접근\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "3d9a6f2b6d8d723c834d254433cb714f953b285a"
+    ]
+  },
+  {
+    "issue_id": "21cf48c9c02b",
+    "entity": "미상",
+    "title": "교육부, 반도체·AI 등 '3대 메가프로젝트' 인재 양성 팔 걷어…첨단분...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "4d8959f6d6a66a75681bcda2a5a5e9e00f3c35f7"
+    ]
+  },
+  {
+    "issue_id": "c202a2ee252c",
+    "entity": "미상",
+    "title": "레이저쎌, 반도체 장비 공급 계약에 12% 강세[특징주]",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a22cbd5841fca1b648032e954063b70f07c5f953"
+    ]
+  },
+  {
+    "issue_id": "78cea82d2c21",
+    "entity": "미상",
+    "title": "[바뀌는 우리동네]첨단 반도체 도시 용인, 사라지는 ‘마을의 기억’ 시...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "caaac76b22584f6771611f47af1e1a9359ca4f18"
+    ]
+  },
+  {
+    "issue_id": "ca8348220b59",
+    "entity": "SK하이닉스",
+    "title": "최태원 SK 회장 방미, 하이닉스 ADR 나스닥 상장…빅테크와 AI 메모리 협...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "3f5360a79e3bf3a9310273d1d3ef915e683e54c2"
+    ]
+  },
+  {
+    "issue_id": "537fff0edf73",
+    "entity": "SK하이닉스",
+    "title": "AI 반도체 승부는 고객…미국 간 이재용·최태원 '톱세일즈'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "41070d40d38064eb8aebccb16bf777a52d784460"
+    ]
+  },
+  {
+    "issue_id": "dbbee9091be7",
+    "entity": "SK하이닉스",
+    "title": "월가가 찍은 SK하이닉스…258조 몰린 ADR, 리레이팅 기대 커졌다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a28160437123be124a9a4d6119e71528d608b227"
+    ]
+  },
+  {
+    "issue_id": "31d78fa54634",
+    "entity": "미상",
+    "title": "빅테크향 맞춤형 칩 수요 폭발… 가온칩스, 글로벌 AI 반도체 수주 봇물",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "bafaca9eb792524d336c10067df3e8d6d85253c9"
+    ]
+  },
+  {
+    "issue_id": "e4dafcf74562",
+    "entity": "미상",
+    "title": "이주완 \"반도체 고점, 이미 공급과잉으로 전환\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "bf401f97622d7765087bcd3375bae52b50619247"
+    ]
+  },
+  {
+    "issue_id": "20e0bd114c89",
+    "entity": "삼성전자",
+    "title": "전쟁은 끝나도 시장은 안 돌아간다... 미국-이란 충돌 후 '질서 전환의 ...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "cf36c52468391c69e723196795bdcc1f8b439def"
+    ]
+  },
+  {
+    "issue_id": "94f65cea01db",
+    "entity": "삼성전자",
+    "title": "호남에 또 밀리나…소부장 특화단지 지정 앞두고 충남 '촉각'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "43f22bff770984c9d8bec548e72041e6e1b42890"
+    ]
+  },
+  {
+    "issue_id": "7688f5ba70eb",
+    "entity": "SK하이닉스",
+    "title": "37조 조달 SK하이닉스, 나스닥 입성…최태원 AI 세일즈 나선다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5975c930ac2951db2ae15f8c7ca1d2765de3ffef"
+    ]
+  },
+  {
+    "issue_id": "5472b2b479ed",
+    "entity": "삼성전자",
+    "title": "SK하이닉스 '시총 1위'가 바꾼 투자지도…증권가 리서치, 삼성전자에서...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "617e898f4e69d35d3d6ae270ced5d0351f5d8e0d"
+    ]
+  },
+  {
+    "issue_id": "ce1f8b80bf86",
+    "entity": "미상",
+    "title": "동부 최태원, 서부 이재용 ⋯ 美서 ‘K-반도체’ 영토 확장 ‘동분서주...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "8a830ddf94890026f610562126df25ed46dd9047"
+    ]
+  },
+  {
+    "issue_id": "4c714b52e08d",
+    "entity": "SK하이닉스",
+    "title": "최태원 SK그룹 회장, 글로벌 투자자 직접 만난다... SK하이닉스 나스닥...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "86c3f530ed83303b59cb93816ae5c8633d9859f3"
+    ]
+  },
+  {
+    "issue_id": "77499193e291",
+    "entity": "SK하이닉스",
+    "title": "[이슈story] 43조 실탄 들고 나스닥 가는 SK하이닉스…'코리아 디스카운...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "ecb3a917be4699d2a813bf8d21663767818acbcb"
+    ]
+  },
+  {
+    "issue_id": "b22c8095d7e3",
+    "entity": "삼성전자",
+    "title": "[경제를 부탁해]삼성전자 역대급 실적 발표…SK하이닉스, 나스닥 상장 추...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "d015363d2b525a934b9db0df55be01db45e32b29"
+    ]
+  },
+  {
+    "issue_id": "87f9090cebd4",
+    "entity": "SK하이닉스",
+    "title": "충청권 시민사회 \"지역 희생하는 메가프로젝트 재검토하라\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "2b7c580d88b2c7aa08ae149b7c0ae308254b3886"
+    ]
+  },
+  {
+    "issue_id": "9f70101e3505",
+    "entity": "엔비디아",
+    "title": "엔비디아 차세대 GPU 탑재 겨냥…심텍, GDDR7 패키지 기판 수요 선점",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "9412c7b4396eaf9be7dbaffe11644360f8ea11c4"
+    ]
+  },
+  {
+    "issue_id": "2c04f6d3939d",
+    "entity": "미상",
+    "title": "[포커스] 애플도 中메모리 '노크'… \"美 제재가 자립 앞당겼다\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "0a660ae3371ed046a18811f70ea8fbf13188fae7"
+    ]
+  },
+  {
+    "issue_id": "2717ee01f96f",
+    "entity": "SK하이닉스",
+    "title": "SK그룹 'AI 키맨' 부상한 SK텔레콤 정재헌",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "55eb38f86132104e8ec0788247ffc6b6578114d6"
+    ]
+  },
+  {
+    "issue_id": "371d938adcf6",
+    "entity": "미상",
+    "title": "중국 반도체, 서방 턱밑까지 추격",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "6f4e0f141edb8bdee6eb45d5051bb63612b26672"
+    ]
+  },
+  {
+    "issue_id": "ecc6da0f7198",
+    "entity": "미상",
+    "title": "미래에셋운용 \"중국 반도체 자립 현실화…밸류체인 투자 주목\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "6ef8dc1b00faf4f6a98516fa87b4358239907002"
+    ]
+  },
+  {
+    "issue_id": "c34bb5f3d695",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 ADR 상장이 호재인 이유…TSMC가 증명한 본주·ADR 동반 재평...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "e1c28d4e31a9b7f4447fb53c12692739b8078f25"
+    ]
+  },
+  {
+    "issue_id": "e8210af18ab8",
+    "entity": "삼성전자",
+    "title": "이재용, '억만장자의 여름캠프' 출격…글로벌 빅테크와 AI 동맹 논의",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "e498575c5d5b43eaabcdaa9637dc63cbbe414062"
+    ]
+  },
+  {
+    "issue_id": "bb13619518ef",
+    "entity": "미상",
+    "title": "애플은 법원서 막히고, 딥시크는 칩으로 뚫었다… AI 패권전은 '통제권...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "2aa8f608ab1f35a6a2a4d3c73b915b2ebd7c31cc"
+    ]
+  },
+  {
+    "issue_id": "b02007223cfe",
+    "entity": "미상",
+    "title": "中 CXMT, 43억달러 IPO로 메모리 굴기 시험대",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a3f2ce839767cc8ae58dd483f3ff349d29c1b78b"
+    ]
+  },
+  {
+    "issue_id": "126150f95f16",
+    "entity": "TSMC",
+    "title": "[기업해부] 기업을 보면 시장이 보인다 - 삼성편 ② \"89조 실적의 의미…...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "91db03f7d95697006b36dde06ba6aaf1b233223a"
+    ]
+  },
+  {
+    "issue_id": "5d16cd8e23bd",
+    "entity": "미상",
+    "title": "링크솔루션, 'AM 코리아 2026’에서 AI 로봇 하드웨어 적층제조 혁신 전...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "faa2c1aab97711b0d9cfcc6d7f13060773ffdcf3"
+    ]
+  },
+  {
+    "issue_id": "43085fa318e0",
+    "entity": "미상",
+    "title": "中 CXMT·유니트리, '과창판' 출격 임박...중국증시 영향은?",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "d0b185ed00ef84a4d03f1710299fc2ff5b330f8e"
+    ]
+  },
+  {
+    "issue_id": "e75082d4a26e",
+    "entity": "삼성전자",
+    "title": "이재용은 선밸리, 최태원은 뉴욕…미국서 AI 반도체 세일즈 총력전",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "e3cc102446fcada9b12dec040586539121139aec"
+    ]
+  },
+  {
+    "issue_id": "bf00698d8770",
+    "entity": "미상",
+    "title": "미래운용 \"中 반도체 자립 현실화, 中 밸류체인 투자할 때\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "b1cac57dc95491b3f0fc6c82c537ff5035c767f1"
+    ]
+  },
+  {
+    "issue_id": "fcdc8d9de0e4",
+    "entity": "TSMC",
+    "title": "日라피더스 \"TSMC보다 싸게\"…가격으로 반도체 재건 승부수",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "368a06c972acd8bd7dbcd6aac780c22095cc6a1c"
+    ]
+  },
+  {
+    "issue_id": "dacb77ffa47a",
+    "entity": "삼성전자",
+    "title": "미래에셋운용 \"中반도체 성장 잠재력, 삼전닉스 웃돌아\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "177fb391c5da4f49d3dff04e58155d35e4966e24"
+    ]
+  },
+  {
+    "issue_id": "a62f588fd22a",
+    "entity": "SK하이닉스",
+    "title": "최태원 시간표대로 간다…주가 흔들려도 월가는 하이닉스에 베팅",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "94a3c0a1256631a0ebb432e71d1231d525051143"
+    ]
+  },
+  {
+    "issue_id": "b408eac29462",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 美 ADR 청약 마감, 주문액 260조원 몰려…최태원 회장 나스닥...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "cad48a0061a5d563085301820ed141f0fbac64be"
+    ]
+  },
+  {
+    "issue_id": "aa997f6c1f7b",
+    "entity": "SK하이닉스",
+    "title": "최태원, 미국서 SK하이닉스 나스닥 상장 직접 챙긴다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "1dcc41924b3825dd34a0039a6e136da288821fbf"
+    ]
+  },
+  {
+    "issue_id": "9be772f1a315",
+    "entity": "미상",
+    "title": "SK 최태원 방미에 쏠린 눈...빅테크와 AI 협력 가속화 주목",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "25d2e0b43ee1689a2149b257b5b4b7e2823e6438"
+    ]
+  },
+  {
+    "issue_id": "1d4e061b57b8",
+    "entity": "SK하이닉스",
+    "title": "최태원, '260조 잭팟' SK하이닉스 미래 제시",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "27bfcc848bd7b07721797028f9c62b5d244e6672"
+    ]
+  },
+  {
+    "issue_id": "9d26075f9164",
+    "entity": "SK하이닉스",
+    "title": "최태원, 美서 SK하이닉스 나스닥 상장 직접 챙긴다… 37조원 조달 본격...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "c96d7d8b8e9d21aaf9e15bfc43389f16498b6e19"
+    ]
+  },
+  {
+    "issue_id": "303d064e7a66",
+    "entity": "SK하이닉스",
+    "title": "[특징주] SK하이닉스, ADR 상장 기대감에 강세",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a846467b8ae3d40e5e3224669533be7c55687cf9"
+    ]
+  },
+  {
+    "issue_id": "af82a796c956",
+    "entity": "SK하이닉스",
+    "title": "나스닥 공모 7배 초과 흥행 SK하이닉스…40조 안팎 실탄 어디에 쓰나",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "2d0f5e661eb1dbfd06f18bfadc6a8fc3f21d2351"
+    ]
+  },
+  {
+    "issue_id": "762149ecb888",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 10일 나스닥 ADR 상장",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "5ed313d698a96309473f982ce5b59616947ca2bf"
+    ]
+  },
+  {
+    "issue_id": "b5983e720d48",
+    "entity": "SK하이닉스",
+    "title": "최태원, SK하이닉스 나스닥 데뷔 이끈다…AI 반도체 '글로벌 세일즈'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "4e5a0007516aca4d12f794d3dc21ac7d6ec00884"
+    ]
+  },
+  {
+    "issue_id": "a186193a99ee",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 10일 나스닥 상장…최태원·곽노정 등 수뇌부 '총출동'",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "2800a7596bb6df7138019a2decfb5e36b81f8bf5"
+    ]
+  },
+  {
+    "issue_id": "1d7fec4a8dfd",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 나스닥 상륙...최태원의 AI 속도전, 글로벌 AI 영토 확장",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "17a3469b12dde9954830e99e9e64e759e7b917f9"
+    ]
+  },
+  {
+    "issue_id": "8abf8206a86d",
+    "entity": "미상",
+    "title": "신현송 \"적절한 시기 기준금리 인상 필요\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "dac1e1e92ef5727d62ebda984d8b7da904297f9c"
+    ]
+  },
+  {
+    "issue_id": "a065b8378290",
+    "entity": "미상",
+    "title": "인천시교육청, 인천 협약형 특성화고 컨소시엄 운영 위원회 개최",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "f5e6c98fdc179cf6eac05b8b0b33b79d66a6c224"
+    ]
+  },
+  {
+    "issue_id": "592b6158fc86",
+    "entity": "미상",
+    "title": "IMF 韓 경제성장률 2.6%로 상향…섬유패션, 회복 기회 될까",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "aa3cd720c750eeeffd3bf618a10deec2aafd4c91"
+    ]
+  },
+  {
+    "issue_id": "ac6bb7bdd62e",
+    "entity": "미상",
+    "title": "李 \"IMF, 韓 경제성장률 2.6%로 상향…'모두의 성장' 위해 노력하겠다\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "80f11a156f4ee48112cbe2b7cfe563ad788e096d"
+    ]
+  },
+  {
+    "issue_id": "93b0963bfb2b",
+    "entity": "미상",
+    "title": "미중 AI 경쟁 표적 된 앤트로픽, 중국 AI도 해외접근 차단",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "87f20dee56fce8b51fe8a235e6812a7e337bbfa2"
     ]
   }
 ]

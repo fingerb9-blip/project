@@ -91,3 +91,17 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .site-footer{margin-top:2.4rem;padding-top:1rem;border-top:1px solid var(--line);font-size:.76rem;color:var(--ink-soft)}
 :focus-visible{outline:2px solid var(--action);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* 경쟁 구도 레이더 */
+.radar-bars{margin:.4rem 0 1rem}
+.radar-row{display:flex;align-items:center;gap:8px;margin:.3rem 0}
+.radar-label{width:100px;font-size:.82rem;color:var(--ink-soft)}
+.radar-bar{display:block;height:.85rem;background:var(--brand);border-radius:3px}
+.radar-count{font-size:.8rem;color:var(--ink-soft)}
+
+/* R&D·특허 소스 배지, 노이즈 신고 */
+.badge-type{background:#EEF0F3;color:var(--ink-soft)}
+.filter-toggle{display:inline-block;margin:0 0 10px;font-size:.85rem;color:var(--ink-soft)}
+.noise-btn{font-size:.76rem;color:#A94442;text-decoration:none;border:1px solid #A94442;
+  border-radius:6px;padding:2px 8px}
+.toast{font-size:.76rem;color:var(--confirmed);margin-left:6px}
