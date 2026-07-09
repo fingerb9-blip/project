@@ -57,6 +57,11 @@ def extract_common_keywords(flagged_articles: list[dict]) -> list[str]:
         return titles
 
 
+def _count_keyword_matches(keyword: str, titles: list[str]) -> int:
+    """키워드가 신고된 기사 제목들에 부분 문자열로 몇 번 등장하는지 센다."""
+    return sum(1 for title in titles if keyword in title)
+
+
 def load_pending(pending_path) -> dict:
     """config/keywords_pending.yaml을 로드한다. 파일이 없으면 빈 후보 목록을 반환한다."""
     pending_path = Path(pending_path)
@@ -67,15 +72,16 @@ def load_pending(pending_path) -> dict:
     return data or {"candidates": []}
 
 
-def merge_candidates(pending: dict, new_keywords: list[str], batch_at: str) -> dict:
-    """새 키워드 후보를 기존 대기열에 병합한다. 이미 있으면 신고 횟수만 늘린다.
+def merge_candidates(pending: dict, keyword_counts: dict[str, int], batch_at: str) -> dict:
+    """새 키워드 후보를 기존 대기열에 병합한다. 이미 있으면 신고 횟수를 실제 매칭 건수만큼 늘린다.
 
     동일 키워드가 report_count >= 3(임계치)이 되면 priority=True로 표시해
     주 1회 표본 검토에서 우선순위를 높인다.
 
     Args:
         pending: load_pending() 결과
-        new_keywords: extract_common_keywords() 결과
+        keyword_counts: {키워드: 이번 배치에서 실제 매칭된 기사 건수} (run()에서
+            _count_keyword_matches()로 계산)
         batch_at: 이번 배치 실행 시각 (ISO8601)
 
     Returns:
@@ -83,14 +89,14 @@ def merge_candidates(pending: dict, new_keywords: list[str], batch_at: str) -> d
     """
     by_keyword = {c["keyword"]: c for c in pending.get("candidates", [])}
 
-    for keyword in new_keywords:
+    for keyword, count in keyword_counts.items():
         if keyword in by_keyword:
-            by_keyword[keyword]["report_count"] += 1
+            by_keyword[keyword]["report_count"] += count
             by_keyword[keyword]["last_flagged_at"] = batch_at
         else:
             by_keyword[keyword] = {
                 "keyword": keyword,
-                "report_count": 1,
+                "report_count": count,
                 "first_flagged_at": batch_at,
                 "last_flagged_at": batch_at,
                 "priority": False,
@@ -116,9 +122,13 @@ def run(queue_path: str, pending_path: str, batch_at: str) -> dict:
 
     flagged_articles = load_queue(queue_path)
     new_keywords = extract_common_keywords(flagged_articles)
+    titles = [a.get("title", "") for a in flagged_articles if a.get("title")]
+    keyword_counts = {
+        keyword: max(1, _count_keyword_matches(keyword, titles)) for keyword in new_keywords
+    }
 
     pending = load_pending(pending_path)
-    updated = merge_candidates(pending, new_keywords, batch_at)
+    updated = merge_candidates(pending, keyword_counts, batch_at)
 
     pending_path.parent.mkdir(parents=True, exist_ok=True)
     with pending_path.open("w", encoding="utf-8") as f:
