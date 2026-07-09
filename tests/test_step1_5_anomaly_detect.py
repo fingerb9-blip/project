@@ -293,6 +293,44 @@ def test_run_keeps_mention_trend_section_when_alert_fires(mock_fetch, mock_norma
 @patch("src.step1_5_anomaly_detect.confirm_breaking_news")
 @patch("src.step1_5_anomaly_detect.step2_dedup.normalize_company_names")
 @patch("src.step1_5_anomaly_detect.step1_collect.fetch_rss_articles")
+def test_run_hides_mention_trend_during_cold_start_hidden_stage(mock_fetch, mock_normalize, mock_confirm, tmp_path):
+    """When accumulated_days < 14 (cold-start 'hidden' stage), the mention trend
+    section should NOT be rendered in index.html, matching daily pipeline behavior.
+    """
+    articles = _hourly_articles()
+    mock_fetch.return_value = articles
+    for a in articles:
+        a["companies"] = ["sk_hynix"]
+    mock_normalize.return_value = articles
+    mock_confirm.return_value = {"is_breaking": True, "tag": "[확정]", "headline": "SK하이닉스 청주공장 화재 속보"}
+
+    # Create only 1 trend file (< 14 days = hidden stage)
+    trends_dir = tmp_path / "trends"
+    trends_dir.mkdir()
+    (trends_dir / "2026-07-08.json").write_text(
+        json.dumps(
+            {
+                "date": "2026-07-08",
+                "companies": [{"name": "삼성전자_trend", "count": 5, "is_spike": True}],
+                "keywords": [{"name": "HBM_trend", "count": 3, "is_spike": False}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    kwargs = _run_kwargs(tmp_path)
+    kwargs["dashboard_dir"].mkdir()
+    anomaly.run(**kwargs)
+
+    index_html = (kwargs["dashboard_dir"] / "index.html").read_text(encoding="utf-8")
+    # Hidden stage nulls out trend_data, so trend content should NOT appear
+    assert "삼성전자_trend" not in index_html
+    assert "HBM_trend" not in index_html
+
+
+@patch("src.step1_5_anomaly_detect.confirm_breaking_news")
+@patch("src.step1_5_anomaly_detect.step2_dedup.normalize_company_names")
+@patch("src.step1_5_anomaly_detect.step1_collect.fetch_rss_articles")
 def test_run_skips_gemini_call_when_suppressed(mock_fetch, mock_normalize, mock_confirm, tmp_path):
     articles = _hourly_articles()
     mock_fetch.return_value = articles

@@ -272,6 +272,8 @@ def run(
         trend_data = step5_assemble.load_latest_trend(trends_dir)
         accumulated_days = step_mention_trend.count_accumulated_days(str(trends_dir), today)
         stage = step_mention_trend.cold_start_stage(accumulated_days)
+        if stage == "hidden":
+            trend_data = None
         index_html = step5_assemble.build_index_html(
             dashboard_dir,
             Path(state_path),
