@@ -20,6 +20,7 @@ from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
 _CATEGORY_ORDER = ["메모리", "파운드리", "장비·소재", "팹리스·설계", "규제·정책"]
+_HIGHLIGHT_MAX_COUNT = 5
 _ALERT_SUPPRESS_WINDOW_HOURS = 24
 _KOREAN_WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
 _KST = timezone(timedelta(hours=9))
@@ -358,6 +359,109 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     return "".join(parts)
 
 
+def _highlight_sort_timestamp(article: dict) -> float:
+    """최신순 정렬용 published_at epoch 타임스탬프. 파싱 불가·누락 시 가장 오래된 값(0.0)으로 취급한다."""
+    published_at = article.get("published_at")
+    if not published_at:
+        return 0.0
+    try:
+        dt = datetime.fromisoformat(published_at)
+    except ValueError:
+        return 0.0
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.timestamp()
+
+
+def select_highlights(articles: list[dict], max_count: int = _HIGHLIGHT_MAX_COUNT) -> list[dict]:
+    """"오늘의 핵심" 상단에 노출할 하이라이트 기사를 선정한다.
+
+    선정 기준: (a) confirmation_tag에 "확정"이 포함된 기사 우선, (b) 이미 선정된 기사와
+    카테고리가 겹치지 않는 기사 우선(다양성 확보), (c) 최신순. 요약이 없는 기사
+    (summary_fallback 또는 summary 미기재)는 후보에서 제외한다.
+
+    Args:
+        articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
+        max_count: 최대 선정 개수 (기본 5)
+
+    Returns:
+        하이라이트로 선정된 기사 리스트. 후보가 부족하면 max_count보다 적게 반환한다.
+    """
+    candidates = [
+        article for article in articles
+        if not article.get("summary_fallback") and article.get("summary")
+    ]
+    candidates.sort(
+        key=lambda a: (
+            "확정" not in (a.get("confirmation_tag") or ""),
+            -_highlight_sort_timestamp(a),
+        )
+    )
+
+    selected: list[dict] = []
+    used_categories: set[str] = set()
+    leftover: list[dict] = []
+    for article in candidates:
+        article_categories = set(article.get("category") or [])
+        if article_categories & used_categories:
+            leftover.append(article)
+            continue
+        selected.append(article)
+        used_categories |= article_categories
+        if len(selected) >= max_count:
+            return selected
+
+    for article in leftover:
+        if len(selected) >= max_count:
+            break
+        selected.append(article)
+
+    return selected
+
+
+def _build_highlight_card(article: dict) -> str:
+    """하이라이트 카드 — 제목 + 1줄 요약 + 확정/관측 태그 + 카테고리 칩으로 축약 렌더링한다.
+    _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
+    """
+    safe_url = _safe_url(article["url"])
+    title = _esc(article["title"])
+    link_open = f'<a href="{safe_url}">' if safe_url else ""
+    link_close = "</a>" if safe_url else ""
+
+    tag = article.get("confirmation_tag") or ""
+    if "확정" in tag:
+        tag_class = "ok"
+    elif "관측" in tag:
+        tag_class = "obs"
+    else:
+        tag_class = "mut"
+
+    parts = ['<article class="highlight-card">']
+    parts.append('<div class="row">')
+    if tag:
+        parts.append(f'<span class="tag {tag_class}">{_esc(tag)}</span>')
+    for category in article.get("category") or []:
+        parts.append(f'<span class="chip">{_esc(category)}</span>')
+    parts.append("</div>")
+    parts.append(f'<p class="title">{link_open}{title}{link_close}</p>')
+    parts.append(f'<p class="summary">{_esc(article["summary"])}</p>')
+    parts.append("</article>")
+    return "".join(parts)
+
+
+def _build_highlight_strip(articles: list[dict]) -> str:
+    """select_highlights() 결과를 가로 스크롤 하이라이트 스트립으로 렌더링한다.
+    후보가 없으면 빈 문자열(빈 컨테이너를 남기지 않는다).
+    """
+    if not articles:
+        return ""
+    parts = ['<div class="highlight-strip">']
+    for article in articles:
+        parts.append(_build_highlight_card(article))
+    parts.append("</div>")
+    return "".join(parts)
+
+
 def build_dashboard_html(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
@@ -409,6 +513,7 @@ def build_dashboard_html(
     parts.append(_build_filter_bar(categories))
 
     parts.append('<h2 class="sec">오늘의 핵심</h2>')
+    parts.append(_build_highlight_strip(select_highlights(summarized_articles)))
     parts.append(
         '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
         "학회·특허만 보기</label>"
@@ -997,6 +1102,14 @@ a:hover{text-decoration:underline}
 .summary{font-size:.9rem;color:var(--ink);margin:.35rem 0}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
+
+/* 오늘의 핵심 하이라이트 */
+.highlight-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 0 14px;scroll-snap-type:x proximity}
+.highlight-card{flex:0 0 220px;scroll-snap-align:start;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:14px;padding:13px 14px}
+.highlight-card .title{font-size:.92rem;margin:.5rem 0;-webkit-line-clamp:2}
+.highlight-card .summary{font-size:.82rem;margin:.3rem 0;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 
 /* 배지·칩 */
 .badge{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#EEF0F3;color:#5A6472}
