@@ -1,3 +1,5 @@
+import json
+
 from src import step5_assemble
 
 
@@ -600,3 +602,166 @@ def test_build_index_html_includes_pending_keywords_section(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path, pending_keywords=candidates)
 
     assert "테마주" in html_out
+
+
+# --- 실시간 트렌드 섹션 (실시간_트렌드_섹션_명세.md) ---
+
+
+def test_compute_keyword_trends_aggregates_companies_and_topics():
+    articles = [
+        {"title": "삼성전자 HBM4 공개", "summary": "삼성전자가 HBM4를 공개했다"},
+        {"title": "삼성전자 파운드리 증설", "summary": "삼성전자 파운드리 증설 발표"},
+        {"title": "SK하이닉스 HBM 공급 확대", "summary": "SK하이닉스가 HBM을 공급한다"},
+        {"title": "수출통제 이슈", "summary": "미국의 수출통제 강화"},
+    ]
+
+    trends = step5_assemble._compute_keyword_trends(articles)
+
+    counts = {t["keyword"]: t["count"] for t in trends}
+    assert counts["삼성전자"] == 2  # 기업(별칭 매칭), 같은 기사 내 중복 미집계
+    assert counts["HBM"] == 2  # 토픽 키워드
+    assert counts["SK하이닉스"] == 1
+    assert counts["파운드리 증설"] == 1
+    assert counts["수출통제"] == 1
+
+
+def test_compute_keyword_trends_sorts_descending_by_count():
+    articles = [
+        {"title": "삼성전자", "summary": ""},
+        {"title": "삼성전자", "summary": ""},
+        {"title": "삼성전자", "summary": ""},
+        {"title": "SK하이닉스", "summary": ""},
+    ]
+
+    trends = step5_assemble._compute_keyword_trends(articles)
+    counts_in_order = [t["count"] for t in trends]
+
+    assert counts_in_order == sorted(counts_in_order, reverse=True)
+    assert trends[0]["keyword"] == "삼성전자"
+
+
+def test_compute_keyword_trends_percentages_sum_to_about_100():
+    articles = [
+        {"title": "삼성전자", "summary": ""},
+        {"title": "삼성전자", "summary": ""},
+        {"title": "SK하이닉스", "summary": ""},
+        {"title": "TSMC", "summary": ""},
+        {"title": "인텔", "summary": ""},
+        {"title": "엔비디아", "summary": ""},
+        {"title": "HBM", "summary": ""},
+    ]
+
+    trends = step5_assemble._compute_keyword_trends(articles)
+
+    assert abs(sum(t["pct"] for t in trends) - 100.0) < 1.0
+
+
+def test_compute_keyword_trends_truncates_to_top_n_with_other_bucket():
+    articles = [
+        {"title": "삼성전자", "summary": ""},
+        {"title": "삼성전자", "summary": ""},
+        {"title": "SK하이닉스", "summary": ""},
+        {"title": "TSMC", "summary": ""},
+    ]
+
+    trends = step5_assemble._compute_keyword_trends(articles, top_n=2)
+
+    assert len(trends) == 3  # 상위 2개 + 기타
+    assert trends[0]["keyword"] == "삼성전자"
+    assert trends[-1]["keyword"] == "기타"
+    assert trends[-1]["color"] == step5_assemble._TREND_OTHER_COLOR
+
+
+def test_compute_keyword_trends_empty_when_no_matches():
+    articles = [{"title": "관계없는 기사", "summary": "아무 키워드도 없음"}]
+    assert step5_assemble._compute_keyword_trends(articles) == []
+
+
+def test_compute_keyword_trends_empty_articles_returns_empty():
+    assert step5_assemble._compute_keyword_trends([]) == []
+
+
+def test_donut_svg_renders_circles_with_formatted_floats():
+    trends = [
+        {"keyword": "삼성전자", "count": 6, "pct": 60.0, "color": "#6C5CE7"},
+        {"keyword": "SK하이닉스", "count": 4, "pct": 40.0, "color": "#3D6FE6"},
+    ]
+
+    svg = step5_assemble._donut_svg(trends, 10)
+
+    assert 'role="img"' in svg
+    assert svg.count("<circle") == 2
+    assert ">10<" in svg  # 중앙 총 카운트
+    assert "stroke-dasharray=\"169.646 113.097\"" in svg  # 60% of C≈282.743
+
+
+def test_donut_svg_escapes_keyword_in_title():
+    trends = [{"keyword": "<script>alert(1)</script>", "count": 1, "pct": 100.0, "color": "#000"}]
+
+    svg = step5_assemble._donut_svg(trends, 1)
+
+    assert "<script>alert(1)</script>" not in svg
+    assert "&lt;script&gt;" in svg
+
+
+def test_render_trend_section_empty_when_no_trends():
+    assert step5_assemble.render_trend_section([], 0) == ""
+
+
+def test_render_trend_section_renders_bars_matching_donut_colors():
+    trends = [
+        {"keyword": "삼성전자", "count": 6, "pct": 60.0, "color": "#6C5CE7"},
+        {"keyword": "SK하이닉스", "count": 4, "pct": 40.0, "color": "#3D6FE6"},
+    ]
+
+    html_out = step5_assemble.render_trend_section(trends, 10)
+
+    assert 'class="trend"' in html_out
+    assert "최신 브리핑 기준" in html_out
+    assert "background:#6C5CE7" in html_out
+    assert "background:#3D6FE6" in html_out
+    assert "60.0%" in html_out
+
+
+def test_render_trend_section_escapes_keyword_label():
+    trends = [{"keyword": "<script>alert(1)</script>", "count": 5, "pct": 100.0, "color": "#000"}]
+
+    html_out = step5_assemble.render_trend_section(trends, 5)
+
+    assert "<script>alert(1)</script>" not in html_out
+    assert "&lt;script&gt;" in html_out
+
+
+def test_build_index_html_includes_trend_section_from_latest_summarized(tmp_path):
+    dashboard_dir = tmp_path / "data" / "dashboard"
+    dashboard_dir.mkdir(parents=True)
+    (dashboard_dir / "2026-07-09.html").write_text("<html></html>", encoding="utf-8")
+
+    summarized_dir = tmp_path / "data" / "summarized"
+    summarized_dir.mkdir(parents=True)
+    (summarized_dir / "2026-07-09.json").write_text(
+        json.dumps(
+            [
+                {"title": "삼성전자 HBM4 공개", "summary": "삼성전자가 HBM4를 공개했다"},
+                {"title": "SK하이닉스 HBM 공급 확대", "summary": ""},
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert "실시간 트렌드" in html_out
+    assert 'class="trend"' in html_out
+    assert "삼성전자" in html_out
+
+
+def test_build_index_html_omits_trend_section_when_no_source_data(tmp_path):
+    dashboard_dir = tmp_path / "data" / "dashboard"
+    dashboard_dir.mkdir(parents=True)
+    (dashboard_dir / "2026-07-09.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert "실시간 트렌드" not in html_out
