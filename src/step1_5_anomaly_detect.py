@@ -268,7 +268,11 @@ def run(
             (alerts_dir / f"{issue['issue_id']}.html").write_text(detail_html, encoding="utf-8")
 
         index_html = step5_assemble.build_index_html(
-            dashboard_dir, Path(state_path), issues_path=Path(issues_path), now=now_iso
+            dashboard_dir,
+            Path(state_path),
+            issues_path=Path(issues_path),
+            now=now_iso,
+            radar_data=step5_assemble.load_latest_radar(dashboard_dir.parent / "radar"),
         )
         (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

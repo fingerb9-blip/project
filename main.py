@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from src import (
     notify,
+    radar_weekly,
     run_status,
     step0_init,
     step1_collect,
@@ -49,6 +50,32 @@ def _compute_collection_stats(
     return stats
 
 
+def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str, weekday: int) -> None:
+    """매주 월요일(KST)에만 경쟁 구도 레이더를 갱신한다. 실패해도 파이프라인은 계속 진행한다.
+
+    Args:
+        weekday: KST 기준 요일(datetime.weekday(), 월요일=0). today는 파이프라인 전체에서
+            공유하는 UTC 라벨 날짜이므로 여기서 요일을 다시 계산하면 안 된다 — 호출부가
+            KST 기준으로 계산한 값을 그대로 넘겨야 한다.
+    """
+    if not radar_weekly.is_radar_day(weekday):
+        return
+    try:
+        tracked_companies = radar_weekly.load_tracked_companies(
+            base_dir / "config" / "radar_companies.yaml"
+        )
+        radar_weekly.run(
+            dedup_dir=str(base_dir / "data" / "dedup"),
+            issues_path=str(base_dir / "data" / "state" / "issues.json"),
+            aliases_config=config["company_aliases"],
+            tracked_companies=tracked_companies,
+            today=today,
+            output_dir=str(base_dir / "data" / "radar"),
+        )
+    except Exception as exc:
+        notify.notify_warning("경쟁 구도 레이더 갱신 실패", f"{type(exc).__name__}: {exc}")
+
+
 def main() -> None:
     """오늘 날짜 기준으로 Step 0부터 Step 6까지 순차 실행한다."""
     load_dotenv()
@@ -87,6 +114,8 @@ def main() -> None:
         step4_5_issue_match.run(core_articles, config["company_aliases"], paths["issues"], today)
         steps_completed.append("issue_match")
 
+        _maybe_run_weekly_radar(base_dir, config, today, datetime.now(KST).weekday())
+
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
         step5_assemble.run(
@@ -98,6 +127,7 @@ def main() -> None:
             today,
             paths["state"],
             paths["issues"],
+            radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
         )
         steps_completed.append("assemble")
 
@@ -118,7 +148,10 @@ def main() -> None:
             },
         )
         index_html = step5_assemble.build_index_html(
-            paths["dashboard_dir"], paths["state"], issues_path=paths["issues"]
+            paths["dashboard_dir"],
+            paths["state"],
+            issues_path=paths["issues"],
+            radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
         )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
@@ -139,7 +172,10 @@ def main() -> None:
         },
     )
     index_html = step5_assemble.build_index_html(
-        paths["dashboard_dir"], paths["state"], issues_path=paths["issues"]
+        paths["dashboard_dir"],
+        paths["state"],
+        issues_path=paths["issues"],
+        radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
     )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 

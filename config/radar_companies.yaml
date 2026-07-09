@@ -1,0 +1,8 @@
+# 경쟁 구도 레이더(Phase 4) 주간 집계 대상 기업.
+# 각 항목은 config/company_aliases.yaml의 키와 일치해야 한다.
+companies:
+  - samsung_electronics
+  - sk_hynix
+  - tsmc
+  - intel
+  - nvidia
