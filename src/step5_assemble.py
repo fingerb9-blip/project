@@ -620,6 +620,46 @@ def build_radar_section_html(radar_data: dict | None) -> str:
     return "".join(parts)
 
 
+def build_mention_trend_section_html(trend_data: dict | None, stage: str) -> str:
+    """기업/기술 키워드 언급량 트렌드를 index.html 섹션으로 렌더링한다 (Phase 5).
+
+    stage가 "preview"면 제목에 "(참고용)"을 붙인다. trend_data가 없으면 빈 문자열을 반환한다
+    (호출부가 cold_start_stage == "hidden"일 때 넘기지 않는다).
+
+    Args:
+        trend_data: step_mention_trend.run() 결과 ({"date","companies","keywords"})
+        stage: step_mention_trend.cold_start_stage() 결과
+
+    Returns:
+        섹션 HTML 조각 (trend_data가 비어 있으면 빈 문자열)
+    """
+    if not trend_data:
+        return ""
+
+    label = " (참고용)" if stage == "preview" else ""
+    parts = [f"<section><h2>기업·기술 키워드 언급량 트렌드{_esc(label)}</h2>"]
+
+    for title, field in (("기업", "companies"), ("기술 키워드", "keywords")):
+        entries = trend_data.get(field) or []
+        if not entries:
+            continue
+        parts.append(f"<h3>{_esc(title)}</h3>")
+        parts.append('<div class="radar-bars">')
+        max_count = max((e["count"] for e in entries), default=0)
+        for entry in entries:
+            width = int(entry["count"] / max_count * 100) if max_count > 0 else 0
+            spike_chip = ' <span class="chip warn-chip">급증</span>' if entry.get("is_spike") else ""
+            parts.append(
+                f'<div class="radar-row"><span class="radar-label">{_esc(entry["name"])}</span>'
+                f'<span class="radar-bar" style="width:{width}%"></span>'
+                f'<span class="radar-count">{_esc(entry["count"])}</span>{spike_chip}</div>'
+            )
+        parts.append("</div>")
+
+    parts.append("</section>")
+    return "".join(parts)
+
+
 def load_pending_keywords(pending_path: Path) -> list[dict]:
     """config/keywords_pending.yaml의 candidates를 로드한다 (없으면 빈 리스트).
 
@@ -675,6 +715,8 @@ def build_index_html(
     latest_headlines: list[str] | None = None,
     radar_data: dict | None = None,
     pending_keywords: list[dict] | None = None,
+    mention_trend_data: dict | None = None,
+    cold_start_stage: str = "active",
 ) -> str:
     """헤더(브랜드+검색) -> 히어로 배너(최신 브리핑) -> 리포트 카드 목록 순으로 인덱스 페이지를
     만든다 (§5-1 레이아웃, SAVE 스타일). 조회수·알림 등은 §0 스코프 밖이라 표시하지 않는다.
@@ -691,7 +733,12 @@ def build_index_html(
         latest_core_count: 최신 날짜의 "오늘의 핵심" 기사 수 (현재 v2 히어로에는 표시하지
             않지만 v1과의 호출 호환을 위해 인자는 유지한다)
         latest_headlines: 최신 날짜의 헤드라인 미리보기 목록 (위와 동일한 이유로 유지, 미사용)
+        radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
         pending_keywords: config/keywords_pending.yaml의 candidates 리스트 (관리자 섹션용, 선택)
+        mention_trend_data: step_mention_trend.run() 결과 (Phase 5, 선택). cold_start_stage가
+            "hidden"이면 호출부가 아예 넘기지 않아 섹션이 렌더링되지 않는다.
+        cold_start_stage: step_mention_trend.cold_start_stage() 결과. "preview"면 섹션 제목에
+            "(참고용)" 라벨이 붙는다.
 
     Returns:
         단일 HTML 문서 문자열
@@ -727,6 +774,9 @@ def build_index_html(
 
     if radar_data:
         parts.append(build_radar_section_html(radar_data))
+
+    if mention_trend_data:
+        parts.append(build_mention_trend_section_html(mention_trend_data, cold_start_stage))
 
     if issues_path is not None:
         now_dt = datetime.fromisoformat(now) if now else datetime.now(timezone.utc)
@@ -839,6 +889,7 @@ a:hover{text-decoration:underline}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 .chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
 .chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
+.chip.warn-chip{background:var(--warn-bg);border:1px solid var(--warn-line);color:#A9790B}
 
 /* 리포트 카드(인덱스) */
 .report .datetitle{font-size:1.05rem;font-weight:700;margin:.5rem 0 .6rem}
