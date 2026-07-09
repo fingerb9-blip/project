@@ -1,6 +1,7 @@
 """Step 5. 조립 — 브리핑 마크다운 문서 및 대시보드 HTML 생성."""
 
 import html
+import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -261,6 +262,82 @@ def build_alert_detail_html(issue: dict) -> str:
     return "\n".join(parts)
 
 
+def load_latest_radar(radar_dir: Path) -> dict | None:
+    """data/radar/weekly-*.json 중 가장 최근 파일을 읽는다. 없으면 None.
+
+    Args:
+        radar_dir: data/radar 디렉토리 경로
+
+    Returns:
+        가장 최근 주간 레이더 데이터 dict, 또는 파일이 없으면 None
+    """
+    radar_dir = Path(radar_dir)
+    if not radar_dir.exists():
+        return None
+    files = sorted(radar_dir.glob("weekly-*.json"), reverse=True)
+    if not files:
+        return None
+    with files[0].open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+def build_radar_section_html(radar_data: dict | None) -> str:
+    """경쟁 구도 레이더 주간 데이터를 index.html 섹션으로 렌더링한다.
+
+    기업별 언급량은 CSS 너비 기반 가로 막대 그래프로, 톤 비율은 표로,
+    최다 언급 이슈와 주간 해설을 함께 보여준다.
+
+    Args:
+        radar_data: radar_weekly.run() 결과 dict
+            ({week, mentions, tone, top_issues, commentary})
+
+    Returns:
+        섹션 HTML 조각 (radar_data가 비어 있으면 빈 문자열)
+    """
+    if not radar_data:
+        return ""
+
+    mentions = radar_data.get("mentions") or {}
+    max_mentions = max(mentions.values(), default=0)
+
+    parts = [f"<section><h2>경쟁 구도 레이더 ({_esc(radar_data.get('week', ''))})</h2>"]
+
+    parts.append('<div class="radar-bars">')
+    for company, count in mentions.items():
+        width = int(count / max_mentions * 100) if max_mentions > 0 else 0
+        parts.append(
+            f'<div class="radar-row"><span class="radar-label">{_esc(company)}</span>'
+            f'<span class="radar-bar" style="width:{width}%"></span>'
+            f'<span class="radar-count">{_esc(count)}</span></div>'
+        )
+    parts.append("</div>")
+
+    tone = radar_data.get("tone") or {}
+    if tone:
+        parts.append("<table><tr><th>기업</th><th>긍정</th><th>부정</th><th>중립</th></tr>")
+        for company, t in tone.items():
+            parts.append(
+                f"<tr><td>{_esc(company)}</td>"
+                f"<td>{_esc(round(t.get('pos', 0) * 100))}%</td>"
+                f"<td>{_esc(round(t.get('neg', 0) * 100))}%</td>"
+                f"<td>{_esc(round(t.get('neu', 0) * 100))}%</td></tr>"
+            )
+        parts.append("</table>")
+
+    top_issues = radar_data.get("top_issues") or []
+    if top_issues:
+        parts.append("<h3>최다 언급 이슈</h3><ul>")
+        for issue in top_issues:
+            parts.append(f"<li>{_esc(issue)}</li>")
+        parts.append("</ul>")
+
+    if radar_data.get("commentary"):
+        parts.append(f"<p>{_esc(radar_data['commentary'])}</p>")
+
+    parts.append("</section>")
+    return "".join(parts)
+
+
 def build_index_html(
     dashboard_dir: Path,
     state_path: Path,
@@ -354,6 +431,10 @@ tr.warn td { background: #fff3cd; }
 a.latest { font-weight: bold; font-size: 1.1rem; }
 .alert-banner { background: #f8d7da; border: 1px solid #f1aeb5; border-radius: 8px; padding: 0.6rem 1rem; margin: 0.8rem 0; }
 .alert-banner p { margin: 0.2rem 0; font-weight: bold; }
+.radar-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
+.radar-label { width: 100px; font-size: 0.85rem; }
+.radar-bar { display: block; height: 0.9rem; background: #4a90d9; border-radius: 3px; }
+.radar-count { font-size: 0.8rem; color: #666; }
 """
 
 

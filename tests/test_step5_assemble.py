@@ -261,3 +261,51 @@ def test_build_index_html_hides_stale_alert_banner(tmp_path):
     )
 
     assert "청주공장 화재 속보" not in html_out
+
+
+def test_load_latest_radar_returns_none_when_missing(tmp_path):
+    assert step5_assemble.load_latest_radar(tmp_path / "radar") is None
+
+
+def test_load_latest_radar_returns_most_recent_week(tmp_path):
+    radar_dir = tmp_path / "radar"
+    radar_dir.mkdir()
+    (radar_dir / "weekly-2026-W27.json").write_text('{"week": "2026-W27"}', encoding="utf-8")
+    (radar_dir / "weekly-2026-W28.json").write_text('{"week": "2026-W28"}', encoding="utf-8")
+
+    data = step5_assemble.load_latest_radar(radar_dir)
+
+    assert data["week"] == "2026-W28"
+
+
+def test_build_radar_section_html_renders_bars_and_commentary():
+    radar_data = {
+        "week": "2026-W28",
+        "mentions": {"삼성전자": 10, "SK하이닉스": 5},
+        "tone": {"삼성전자": {"pos": 0.6, "neg": 0.1, "neu": 0.3}},
+        "top_issues": ["[삼성전자] HBM4 발표"],
+        "commentary": "이번 주는 HBM 경쟁이 두드러졌습니다.",
+    }
+    html_out = step5_assemble.build_radar_section_html(radar_data)
+    assert "2026-W28" in html_out
+    assert "삼성전자" in html_out
+    assert "HBM4 발표" in html_out
+    assert "HBM 경쟁이 두드러졌습니다" in html_out
+    assert "width:100%" in html_out
+
+
+def test_build_radar_section_html_empty_when_no_data():
+    assert step5_assemble.build_radar_section_html(None) == ""
+    assert step5_assemble.build_radar_section_html({}) == ""
+
+
+def test_build_radar_section_html_escapes_company_name():
+    radar_data = {
+        "week": "2026-W28",
+        "mentions": {"<script>x</script>": 1},
+        "tone": {},
+        "top_issues": [],
+        "commentary": "",
+    }
+    html_out = step5_assemble.build_radar_section_html(radar_data)
+    assert "<script>x</script>" not in html_out
