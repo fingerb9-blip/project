@@ -30,6 +30,10 @@ _CLASSIFY_SCHEMA = {
 _REGULATION_CATEGORY = "규제·정책"
 _REGULATION_KEYWORD_GROUP = "규제_무역"
 _CORE_KEYWORD_GROUP = "반도체_핵심"
+# "관세"/"수출통제"는 반도체 무관 기사(자동차 관세, 농산물 수출통제 등)에도 흔히 등장해
+# 그 자체로는 반도체 관련성의 증거가 되지 못한다. "반도체법"만 이름 자체로 반도체 특정적이라
+# 다른 반도체 신호 없이도 규제·정책 카테고리를 강제할 수 있는 유일한 예외로 둔다.
+_UNAMBIGUOUS_REGULATION_TERM = "반도체법"
 _SNIPPET_LEN = 300
 _TITLE_MATCH_WEIGHT = 3
 _BODY_STRONG_WEIGHT = 2
@@ -172,7 +176,16 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         article["category"] = list(result["category"])
         no_company = not article.get("companies")
         has_regulation_hint = _REGULATION_KEYWORD_GROUP in article.get("keyword_hints", [])
-        if no_company and has_regulation_hint and _REGULATION_CATEGORY not in article["category"]:
+        text = f"{article.get('title', '')} {article.get('raw_text', '')}"
+        has_semiconductor_signal = (
+            article.get("relevance_score", 0) > 0 or _UNAMBIGUOUS_REGULATION_TERM in text
+        )
+        if (
+            no_company
+            and has_regulation_hint
+            and has_semiconductor_signal
+            and _REGULATION_CATEGORY not in article["category"]
+        ):
             article["category"].append(_REGULATION_CATEGORY)
 
         low_relevance = article.get("relevance_score", 0) <= _RELEVANCE_EXCLUDE_THRESHOLD

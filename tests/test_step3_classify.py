@@ -160,6 +160,43 @@ def test_classify_does_not_exclude_low_relevance_article_with_regulation_hint(mo
     result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
 
     assert result[0]["tier"] == "확인 필요"
+    assert "규제·정책" in result[0]["category"]
+
+
+@patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_does_not_force_regulation_category_for_generic_tariff_article(mock_call):
+    """실제 버그 재현: "관세"는 반도체와 무관한 기사(자동차 관세 등)에도 흔히 등장해,
+    기업 미탐지 + "관세" 매칭만으로 규제·정책 카테고리를 강제하면 반도체와 무관한
+    기사가 규제·정책 카테고리에 잔뜩 쌓인다."""
+    mock_call.return_value = {"results": [{"id": "a8", "tier": "확인 필요", "category": []}]}
+    article = _article(
+        id="a8",
+        title="美, 자동차 관세 25% 부과 방침 재확인",
+        raw_text="반도체 업종 전반에도 통상 여파가 우려된다.",
+        companies=[],
+    )
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    assert "규제·정책" not in result[0]["category"]
+
+
+@patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_forces_regulation_category_when_core_keyword_also_present(mock_call):
+    # "관세"만으로는 강제하지 않지만, 반도체_핵심 키워드가 함께 있으면 여전히 강제한다
+    mock_call.return_value = {"results": [{"id": "a9", "tier": "확인 필요", "category": []}]}
+    article = _article(
+        id="a9",
+        title="파운드리 업계, 미국 관세 부과에 긴장",
+        raw_text="",
+        companies=[],
+    )
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    assert "규제·정책" in result[0]["category"]
 
 
 @patch("src.step3_classify.gemini_client.call_gemini")
