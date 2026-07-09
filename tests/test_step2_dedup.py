@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from src import step2_dedup
 
 _SOURCE_TIERS = {
@@ -59,70 +57,22 @@ def test_group_by_title_similarity_merges_titles_differing_only_by_whitespace():
     assert len(groups) == 1
 
 
-@patch("src.step2_dedup.gemini_client.call_gemini")
-def test_cluster_same_event_sends_one_representative_per_title_group(mock_call):
-    mock_call.return_value = {"clusters": [["a1"]]}
+def test_assign_title_clusters_groups_identical_titles_without_llm():
     articles = [
         _article(id="a1", url="https://a.com/1"),
         _article(id="a2", url="https://b.com/1"),  # 동일 제목, 다른 URL (재배포)
         _article(id="a3", title="SK하이닉스, 청주 공장 증설 착공", url="https://c.com/1"),
     ]
 
-    step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
-
-    prompt = mock_call.call_args[0][0]
-    assert '"a1"' in prompt
-    assert '"a3"' in prompt
-    assert '"a2"' not in prompt  # a2는 a1과 같은 그룹이라 대표(a1)로만 전달됨
-
-
-@patch("src.step2_dedup.gemini_client.call_gemini")
-def test_cluster_same_event_includes_tier_and_company_hints_in_prompt(mock_call):
-    mock_call.return_value = {"clusters": [["a1"]]}
-    articles = step2_dedup.normalize_company_names(
-        [_article(id="a1", source="삼성전자 뉴스룸")], _ALIASES
-    )
-
-    step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
-
-    prompt = mock_call.call_args[0][0]
-    assert "원출처" in prompt
-    assert "samsung_electronics" in prompt
-
-
-@patch("src.step2_dedup.gemini_client.call_gemini")
-def test_cluster_same_event_assigns_same_cluster_id_within_title_group(mock_call):
-    mock_call.return_value = {"clusters": [["a1"]]}
-    articles = [
-        _article(id="a1", url="https://a.com/1"),
-        _article(id="a2", url="https://b.com/1"),
-    ]
-
-    result = step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
+    result = step2_dedup.assign_title_clusters(articles)
 
     by_id = {a["id"]: a for a in result}
-    assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
+    assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]  # 같은 제목끼리 병합
+    assert by_id["a1"]["cluster_id"] != by_id["a3"]["cluster_id"]  # 다른 사건은 분리
 
 
-@patch("src.step2_dedup.notify.notify_warning")
-@patch("src.step2_dedup.gemini_client.call_gemini", side_effect=RuntimeError("boom"))
-def test_cluster_same_event_keeps_title_group_merged_when_gemini_fails(mock_call, mock_notify):
-    articles = [
-        _article(id="a1", url="https://a.com/1"),
-        _article(id="a2", url="https://b.com/1"),
-        _article(id="a3", title="SK하이닉스, 청주 공장 증설 착공", url="https://c.com/1"),
-    ]
-
-    result = step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
-
-    by_id = {a["id"]: a for a in result}
-    assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
-    assert by_id["a1"]["cluster_id"] != by_id["a3"]["cluster_id"]
-    mock_notify.assert_called_once()
-
-
-def test_cluster_same_event_handles_empty_list():
-    assert step2_dedup.cluster_same_event([], _SOURCE_TIERS) == []
+def test_assign_title_clusters_handles_empty_list():
+    assert step2_dedup.assign_title_clusters([]) == []
 
 
 def test_normalize_company_names_matches_alias():

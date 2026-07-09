@@ -18,6 +18,9 @@ logger = logging.getLogger(__name__)
 
 _MAX_RETRIES = 3
 _CONSECUTIVE_ZERO_DAYS = 3
+# 네이버 뉴스 재배포는 같은 사건을 여러 매체가 반복 보도해 중복·저품질 유입이 많다.
+# 키워드당 가져오는 건수(기존 20)를 줄여 재배포 물량 자체를 제한한다.
+_NAVER_DISPLAY_PER_KEYWORD = 8
 
 
 def _make_id(url: str) -> str:
@@ -117,7 +120,7 @@ def fetch_naver_news(keywords: list[str]) -> list[dict]:
         response = requests.get(
             "https://openapi.naver.com/v1/search/news.json",
             headers=headers,
-            params={"query": keyword, "display": 20, "sort": "date"},
+            params={"query": keyword, "display": _NAVER_DISPLAY_PER_KEYWORD, "sort": "date"},
             timeout=10,
         )
         response.raise_for_status()

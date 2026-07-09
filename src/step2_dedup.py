@@ -1,4 +1,9 @@
-"""Step 2. 중복 제거 — 기업명 정규화 + Gemini 클러스터링."""
+"""Step 2. 중복 제거 — 기업명 정규화 + 결정적(무-LLM) 중복 병합.
+
+과거에는 Gemini로 동일 사건을 클러스터링했으나, 무료 티어 503/429가 잦아 실제로
+거의 성공하지 못했다. 그래서 LLM 호출을 완전히 걷어내고 (1) 제목 유사도 그룹핑,
+(2) 기업 겹침 + 제목 토큰 유사도 병합의 두 결정적 규칙만으로 중복을 제거한다.
+"""
 
 import difflib
 import hashlib
@@ -6,25 +11,8 @@ import json
 import logging
 from pathlib import Path
 
-from src import gemini_client, notify
-
 logger = logging.getLogger(__name__)
 
-_CLUSTER_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "clusters": {
-            "type": "array",
-            "items": {
-                "type": "array",
-                "items": {"type": "string"},
-            },
-        }
-    },
-    "required": ["clusters"],
-}
-
-_SNIPPET_LEN = 300
 _TITLE_SIMILARITY_THRESHOLD = 0.9
 _TOKEN_JACCARD_THRESHOLD = 0.3
 _MIN_TOKEN_LEN = 2
@@ -83,13 +71,14 @@ def group_by_title_similarity(articles: list[dict]) -> list[list[dict]]:
     return groups
 
 
-def cluster_same_event(articles: list[dict], source_tiers_config: dict) -> list[dict]:
-    """제목 유사도로 사전 그룹핑한 뒤, 그룹 대표만 Gemini API(Flash-Lite)에 배치로 전달해
-    동일 사건을 클러스터링한다.
+def assign_title_clusters(articles: list[dict]) -> list[dict]:
+    """제목이 거의 동일한 기사끼리 묶어 cluster_id를 부여한다 (LLM 없이 결정적으로 동작).
+
+    표현 차이가 큰 동일 사건은 이 단계 뒤에 merge_near_duplicates()가 기업 겹침 +
+    제목 토큰 유사도로 추가 병합한다.
 
     Args:
         articles: 기업명 정규화된 기사 리스트
-        source_tiers_config: config/source_tiers.yaml 로드 결과 (프롬프트 힌트에 사용)
 
     Returns:
         cluster_id가 부여된 기사 리스트
@@ -97,53 +86,8 @@ def cluster_same_event(articles: list[dict], source_tiers_config: dict) -> list[
     if not articles:
         return articles
 
-    groups = group_by_title_similarity(articles)
-    representatives = [group[0] for group in groups]
-
-    payload = [
-        {
-            "id": a["id"],
-            "title": a["title"],
-            "snippet": a.get("raw_text", "")[:_SNIPPET_LEN],
-            "companies": a.get("companies", []),
-            "source_tier": _tier_label(a["source"], source_tiers_config),
-        }
-        for a in representatives
-    ]
-    prompt = (
-        "다음은 오늘 수집된 반도체 업계 뉴스 기사 목록이다. "
-        "같은 사건(동일 발표·계약·인사 등)을 다루는 기사끼리 id를 묶어 clusters 배열로 반환하라. "
-        "companies가 겹치고 source_tier가 다른 두 기사(예: 원출처의 공식 발표와 "
-        "전문지·재인용 매체의 후속 보도)는 표현이 달라도 같은 사건이면 반드시 같은 클러스터로 묶어라. "
-        "서로 다른 사건이면 별도 클러스터로 둔다.\n\n"
-        f"기사 목록: {json.dumps(payload, ensure_ascii=False)}"
-    )
-
-    try:
-        result = gemini_client.call_gemini(prompt, _CLUSTER_SCHEMA, model=gemini_client.LITE_MODEL)
-        clusters = result.get("clusters", [])
-    except RuntimeError as exc:
-        logger.error("클러스터링 실패, 제목 유사도 그룹 단위로 대체: %s", exc)
-        notify.notify_warning(
-            "기사 중복 클러스터링 실패",
-            f"Gemini 클러스터링 호출이 실패해 제목 유사도 그룹 단위로만 중복을 제거합니다"
-            f"(중복 기사가 더 많이 남을 수 있음): {type(exc).__name__}: {exc}",
-        )
-        clusters = []
-
-    rep_id_to_cluster: dict[str, str] = {}
-    for member_ids in clusters:
-        if not member_ids:
-            continue
-        cluster_id = hashlib.sha1("|".join(sorted(member_ids)).encode("utf-8")).hexdigest()[:12]
-        for member_id in member_ids:
-            rep_id_to_cluster[member_id] = cluster_id
-
-    for group in groups:
-        rep_id = group[0]["id"]
-        if rep_id not in rep_id_to_cluster:
-            rep_id_to_cluster[rep_id] = hashlib.sha1(rep_id.encode("utf-8")).hexdigest()[:12]
-        cluster_id = rep_id_to_cluster[rep_id]
+    for group in group_by_title_similarity(articles):
+        cluster_id = hashlib.sha1(group[0]["id"].encode("utf-8")).hexdigest()[:12]
         for article in group:
             article["cluster_id"] = cluster_id
 
@@ -158,11 +102,6 @@ def _tier_rank(source: str, source_tiers_config: dict) -> int:
     if source in source_tiers_config.get("tier3_재인용", []):
         return 2
     return 3
-
-
-def _tier_label(source: str, source_tiers_config: dict) -> str:
-    labels = {0: "원출처", 1: "전문지", 2: "재인용", 3: "미분류"}
-    return labels[_tier_rank(source, source_tiers_config)]
 
 
 def pick_representative(cluster_articles: list[dict], source_tiers_config: dict) -> dict:
@@ -213,10 +152,10 @@ def _is_near_duplicate(article_a: dict, article_b: dict) -> bool:
 
 
 def merge_near_duplicates(articles: list[dict]) -> list[dict]:
-    """cluster_same_event 결과에 동일 사건 중복 병합 안전망을 적용한다.
+    """assign_title_clusters 결과에 동일 사건 중복 병합을 적용한다.
 
-    Gemini 클러스터링이 표현 차이 때문에 놓친 동일 사건 쌍을, 기업 겹침 + 제목 토큰
-    유사도 규칙으로 강제 병합한다 (Gemini 성공/실패 여부와 무관하게 동작).
+    제목이 완전히 같지는 않아 제목 그룹핑이 놓친 동일 사건 쌍을, 기업 겹침 + 제목
+    토큰 유사도 규칙으로 병합한다.
 
     Args:
         articles: cluster_id가 부여된 기사 리스트
@@ -270,7 +209,7 @@ def run(
         중복 제거된 기사 + cluster_id 리스트
     """
     articles = normalize_company_names(raw_articles, aliases_config)
-    articles = cluster_same_event(articles, source_tiers_config)
+    articles = assign_title_clusters(articles)
     articles = merge_near_duplicates(articles)
 
     clusters: dict[str, list[dict]] = {}
