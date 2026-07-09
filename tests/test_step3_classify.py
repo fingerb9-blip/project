@@ -238,6 +238,21 @@ def test_classify_notifies_and_promotes_strong_signal_article_on_total_failure(m
 
 @patch("src.step3_classify.notify.notify_warning")
 @patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_assigns_categories_heuristically_on_total_failure(mock_call, mock_notify):
+    """실제 버그 재현: Gemini 분류가 실패하면 카테고리가 전부 비어 대시보드
+    카테고리 pill 필터(전체/메모리/파운드리/…)가 통째로 사라졌다. segment 키워드
+    매칭으로 AI 없이도 카테고리를 채워 필터가 유지되게 한다."""
+    mock_call.side_effect = RuntimeError("503 UNAVAILABLE")
+    article = _article(title="삼성전자, HBM4 웨이퍼 수율 개선 발표", raw_text="")
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    assert result[0]["category"] == ["메모리"]  # "HBM"이 메모리 segment에 매칭
+
+
+@patch("src.step3_classify.notify.notify_warning")
+@patch("src.step3_classify.gemini_client.call_gemini")
 def test_classify_notifies_and_keeps_weak_signal_article_pending_on_total_failure(mock_call, mock_notify):
     # 기업도 특정 안 되고 반도체_핵심 키워드도 없는 약한 신호는 휴리스틱으로도 승격하지 않는다
     mock_call.side_effect = RuntimeError("429 quota exceeded")

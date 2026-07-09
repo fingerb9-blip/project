@@ -132,6 +132,23 @@ def _heuristic_tier(article: dict) -> str:
     return "확인 필요"
 
 
+def _heuristic_categories(article: dict, categories_config: dict) -> list[str]:
+    """Gemini 분류 응답이 없을 때 카테고리를 결정적으로 추정한다.
+
+    각 카테고리의 segment 키워드(config/categories.yaml)를 제목+본문에서 매칭한다.
+    카테고리를 하나도 못 붙이면 대시보드 pill 필터가 통째로 사라지므로(Gemini 장애 중
+    "메모리/파운드리/…" 필터 실종의 원인), AI 없이도 최소한의 카테고리를 채운다.
+    규제·정책은 segment가 비어 있어 여기선 안 잡히고, 이후 규제 키워드 로직이 부여한다.
+    """
+    text = f"{article.get('title', '')} {article.get('raw_text', '')}"
+    matched = []
+    for category, spec in categories_config.items():
+        segments = (spec or {}).get("segment") or []
+        if any(segment in text for segment in segments):
+            matched.append(category)
+    return matched
+
+
 def classify_tier_and_category(articles: list[dict], categories_config: dict) -> list[dict]:
     """Gemini API(Flash-Lite)로 핵심/확인 필요/제외 3단 분류 및 카테고리 태깅을 수행한다.
 
@@ -188,7 +205,7 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         result = by_id.get(article["id"])
         if result is None:
             article["tier"] = _heuristic_tier(article)
-            article["category"] = []
+            article["category"] = _heuristic_categories(article, categories_config)
         else:
             article["tier"] = result["tier"]
             article["category"] = list(result["category"])
