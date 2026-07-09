@@ -304,3 +304,38 @@ def test_build_dashboard_html_noise_button_escapes_title_in_url():
         [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
     )
     assert "<script>x</script>" not in html_out
+
+
+def test_build_pending_keywords_section_html_renders_candidates():
+    candidates = [
+        {"keyword": "테마주", "report_count": 2, "last_flagged_at": "2026-07-09T00:00:00+00:00", "priority": False}
+    ]
+    html_out = step5_assemble.build_pending_keywords_section_html(candidates)
+    assert "테마주" in html_out
+    assert ">2<" in html_out
+
+
+def test_build_pending_keywords_section_html_empty_when_no_candidates():
+    assert step5_assemble.build_pending_keywords_section_html([]) == ""
+
+
+def test_build_pending_keywords_section_html_flags_priority_candidate():
+    candidates = [
+        {"keyword": "테마주", "report_count": 3, "last_flagged_at": "x", "priority": True}
+    ]
+    html_out = step5_assemble.build_pending_keywords_section_html(candidates)
+    assert 'class="warn"' in html_out
+
+
+def test_build_index_html_includes_pending_keywords_section(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    candidates = [
+        {"keyword": "테마주", "report_count": 2, "last_flagged_at": "x", "priority": False}
+    ]
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path, pending_keywords=candidates)
+
+    assert "테마주" in html_out

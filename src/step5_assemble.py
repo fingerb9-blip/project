@@ -311,22 +311,51 @@ def build_alert_detail_html(issue: dict) -> str:
     return "\n".join(parts)
 
 
+def build_pending_keywords_section_html(candidates: list[dict]) -> str:
+    """config/keywords_pending.yaml 후보 목록을 index.html 관리자 섹션으로 렌더링한다.
+
+    Args:
+        candidates: keywords_pending.yaml의 candidates 리스트
+
+    Returns:
+        섹션 HTML 조각 (candidates가 비어 있으면 빈 문자열)
+    """
+    if not candidates:
+        return ""
+    parts = [
+        "<section><h2>피드백 키워드 후보 (승인 대기)</h2><table>",
+        "<tr><th>키워드</th><th>신고 횟수</th><th>최근 신고</th></tr>",
+    ]
+    for candidate in sorted(candidates, key=lambda c: c.get("report_count", 0), reverse=True):
+        warn = ' class="warn"' if candidate.get("priority") else ""
+        parts.append(
+            f"<tr{warn}><td>{_esc(candidate.get('keyword', ''))}</td>"
+            f"<td>{_esc(candidate.get('report_count', 0))}</td>"
+            f"<td>{_esc(candidate.get('last_flagged_at', ''))}</td></tr>"
+        )
+    parts.append("</table></section>")
+    return "".join(parts)
+
+
 def build_index_html(
     dashboard_dir: Path,
     state_path: Path,
     issues_path: Path | None = None,
     now: str | None = None,
+    pending_keywords: list[dict] | None = None,
 ) -> str:
     """data/dashboard/*.html 파일 목록으로 날짜별 인덱스 페이지를 만든다.
 
     run_status.json의 마지막 실행 상태를 상단 배지로 보여준다 ("침묵 실패 방지").
     issues_path가 주어지면 24시간 이내 확정된 속보를 상단 배너로 함께 보여준다 (Phase 3).
+    pending_keywords가 주어지면 관리자용 키워드 후보 섹션을 함께 보여준다.
 
     Args:
         dashboard_dir: data/dashboard 디렉토리 경로 (날짜별 html이 이미 생성돼 있어야 함)
         state_path: data/state/run_status.json 경로
         issues_path: data/state/issues.json 경로 (속보 배너용, 선택)
         now: 현재 시각 ISO8601 문자열 (테스트용, 기본값은 UTC 현재 시각)
+        pending_keywords: config/keywords_pending.yaml의 candidates 리스트 (관리자 섹션용, 선택)
 
     Returns:
         단일 HTML 문서 문자열
@@ -373,6 +402,9 @@ def build_index_html(
         banner = build_alert_banner_html(recent_alerts)
         if banner:
             parts.append(banner)
+
+    if pending_keywords:
+        parts.append(build_pending_keywords_section_html(pending_keywords))
 
     if not dates:
         parts.append("<p>아직 생성된 브리핑이 없습니다.</p>")
