@@ -55,12 +55,14 @@ def fetch_rss_articles(feed_urls: list[dict], since: datetime) -> list[dict]:
         parsed = None
         for attempt in range(_MAX_RETRIES):
             parsed = feedparser.parse(url)
-            if not parsed.bozo:
+            if parsed.entries:
+                # bozo=True만으로는 접속 실패로 보지 않는다 — 인코딩 선언 불일치 등
+                # 경고성 quirk라도 entries가 있으면 정상 수집된 것으로 간주한다.
                 break
             logger.warning("%s 접속 재시도 %d/%d: %s", name, attempt + 1, _MAX_RETRIES, url)
             time.sleep(2**attempt)
 
-        if parsed is None or parsed.bozo:
+        if parsed is None or not parsed.entries:
             logger.error("%s 소스 %d회 연속 접속 실패, 건너뜀: %s", name, _MAX_RETRIES, url)
             continue
 
@@ -242,7 +244,7 @@ def fetch_kipris_patents(keywords: list[str], since: datetime) -> list[dict]:
     """
     api_key = os.environ.get("KIPRIS_API_KEY")
     if not api_key:
-        logger.warning("KIPRIS_API_KEY 미설정, 특허 보강 수집을 건너뜁니다")
+        logger.debug("KIPRIS_API_KEY 미설정, 특허 보강 수집을 건너뜁니다")
         return []
 
     patents: list[dict] = []
