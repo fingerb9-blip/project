@@ -391,14 +391,18 @@ def select_highlights(articles: list[dict], max_count: int = _HIGHLIGHT_MAX_COUN
 
     선정 기준: (a) confirmation_tag에 "확정"이 포함된 기사 우선, (b) 이미 선정된 기사와
     카테고리가 겹치지 않는 기사 우선(다양성 확보), (c) 최신순. 요약이 없는 기사
-    (summary_fallback 또는 summary 미기재)는 후보에서 제외한다.
+    (summary_fallback 또는 summary 미기재)는 1·2단계 후보에서는 제외하지만, "핵심" tier
+    기사 자체가 max_count개 이상 있는데도 요약 품질 필터 때문에 결과가 부족해지는 것을
+    막기 위해 3단계에서 요약 유무와 무관하게 최신순으로 채워 넣는다("핵심" 섹션이 뉴스가
+    있는 날에도 비어 보이는 문제 방지).
 
     Args:
         articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
         max_count: 최대 선정 개수 (기본 5)
 
     Returns:
-        하이라이트로 선정된 기사 리스트. 후보가 부족하면 max_count보다 적게 반환한다.
+        하이라이트로 선정된 기사 리스트. "핵심" tier 기사 자체가 max_count보다 적을 때만
+        max_count보다 적게 반환한다.
     """
     candidates = [
         article for article in articles
@@ -426,8 +430,17 @@ def select_highlights(articles: list[dict], max_count: int = _HIGHLIGHT_MAX_COUN
 
     for article in leftover:
         if len(selected) >= max_count:
-            break
+            return selected
         selected.append(article)
+
+    if len(selected) < max_count:
+        selected_ids = {id(article) for article in selected}
+        remaining = [article for article in articles if id(article) not in selected_ids]
+        remaining.sort(key=_highlight_sort_timestamp, reverse=True)
+        for article in remaining:
+            if len(selected) >= max_count:
+                break
+            selected.append(article)
 
     return selected
 
@@ -458,7 +471,11 @@ def _build_highlight_card(article: dict) -> str:
         parts.append(f'<span class="badge-category">{_esc(category)}</span>')
     parts.append("</div>")
     parts.append(f'<p class="title">{link_open}{title}{link_close}</p>')
-    parts.append(f'<p class="summary">{_esc(article["summary"])}</p>')
+    summary = article.get("summary")
+    if summary:
+        parts.append(f'<p class="summary">{_esc(summary)}</p>')
+    else:
+        parts.append('<p class="summary mut">요약 준비 중 — 원문에서 확인하세요.</p>')
     parts.append("</article>")
     return "".join(parts)
 
@@ -1239,6 +1256,7 @@ a:hover{text-decoration:underline}
 .title{font-size:1rem;font-weight:700;line-height:1.4;margin:.55rem 0;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .summary{font-size:.9rem;color:var(--ink);margin:.35rem 0}
+.summary.mut{color:#4B5563;font-style:italic}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
 

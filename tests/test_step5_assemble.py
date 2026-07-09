@@ -992,19 +992,45 @@ def test_build_index_html_omits_trend_section_when_no_source_data(tmp_path):
     assert "실시간 트렌드" not in html_out
 
 
-def test_select_highlights_excludes_articles_without_summary():
+def test_select_highlights_prioritizes_articles_with_summary_over_without():
+    no_summary = _sample_article(id="a1", summary=None, summary_fallback=True)
+    has_summary = _sample_article(id="a2", summary="요약 있음", summary_fallback=False)
+
+    result = step5_assemble.select_highlights([no_summary, has_summary], max_count=1)
+
+    assert [a["id"] for a in result] == ["a2"]
+
+
+def test_select_highlights_backfills_with_no_summary_article_to_avoid_empty_section():
     no_summary = _sample_article(id="a1", summary=None, summary_fallback=True)
     has_summary = _sample_article(id="a2", summary="요약 있음", summary_fallback=False)
 
     result = step5_assemble.select_highlights([no_summary, has_summary])
 
-    assert [a["id"] for a in result] == ["a2"]
+    # "핵심" tier 기사가 있는데도 요약 품질 필터 때문에 하이라이트가 부족해지는 것을 막기 위해
+    # 요약 없는 기사도 후순위로 채워 넣는다.
+    assert [a["id"] for a in result] == ["a2", "a1"]
 
 
-def test_select_highlights_excludes_articles_with_empty_summary_string():
+def test_select_highlights_backfills_with_empty_summary_when_only_candidate():
     empty_summary = _sample_article(id="a1", summary="", summary_fallback=False)
     result = step5_assemble.select_highlights([empty_summary])
-    assert result == []
+    assert [a["id"] for a in result] == ["a1"]
+
+
+def test_select_highlights_backfill_reaches_max_count_when_enough_articles_exist():
+    with_summary = [
+        _sample_article(id=f"s{i}", category=[f"cat{i}"], published_at="2026-07-09T09:00:00+09:00")
+        for i in range(2)
+    ]
+    without_summary = [
+        _sample_article(id=f"n{i}", summary=None, summary_fallback=True, category=[f"cat{10 + i}"])
+        for i in range(5)
+    ]
+
+    result = step5_assemble.select_highlights(with_summary + without_summary, max_count=5)
+
+    assert len(result) == 5
 
 
 def test_select_highlights_prefers_confirmed_over_observed():
@@ -1101,10 +1127,16 @@ def test_build_dashboard_html_highlight_card_shows_category_chip():
     assert "메모리" in html_out
 
 
-def test_build_dashboard_html_omits_highlight_strip_when_no_eligible_articles():
+def test_build_dashboard_html_omits_highlight_strip_when_no_articles_at_all():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert 'class="highlight-strip"' not in html_out
+
+
+def test_build_dashboard_html_renders_highlight_strip_even_without_summary():
     no_summary = _sample_article(summary=None, summary_fallback=True)
     html_out = step5_assemble.build_dashboard_html([no_summary], [], {}, "2026-07-08")
-    assert 'class="highlight-strip"' not in html_out
+    assert 'class="highlight-strip"' in html_out
+    assert "요약 준비 중" in html_out
 
 
 def test_build_dashboard_html_highlight_strip_appears_before_full_feed():
