@@ -1,10 +1,15 @@
 """Phase 4. 경쟁 구도 레이더 — 주간 기업별 언급량·톤·핵심 이슈 집계."""
 
 import json
+import logging
 from datetime import date, timedelta
 from pathlib import Path
 
 import yaml
+
+from src import gemini_client
+
+logger = logging.getLogger(__name__)
 
 
 def load_tracked_companies(radar_companies_path) -> list[str]:
@@ -94,6 +99,80 @@ def group_articles_by_company(articles: list[dict], tracked_companies: list[str]
             if company in grouped:
                 grouped[company].append(article)
     return grouped
+
+
+_TONE_SNIPPET_LEN = 200
+
+_TONE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "tone": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "company": {"type": "string"},
+                    "pos": {"type": "number"},
+                    "neg": {"type": "number"},
+                    "neu": {"type": "number"},
+                },
+                "required": ["company", "pos", "neg", "neu"],
+            },
+        }
+    },
+    "required": ["tone"],
+}
+
+_NEUTRAL_TONE = {"pos": 0.0, "neg": 0.0, "neu": 1.0}
+
+
+def classify_tone(companies_articles: dict[str, list[dict]]) -> dict[str, dict]:
+    """Gemini API(Flash-Lite)로 기업별 이번 주 기사 논조(긍정/부정/중립) 비율을 판정한다.
+
+    언급이 없는 기업은 Gemini 호출 대상에서 제외하고 중립(neu=1.0)으로 채운다.
+    호출 실패 시 모든 기업을 중립으로 대체한다.
+
+    Args:
+        companies_articles: {회사id: 해당 기업이 언급된 이번 주 기사 리스트}
+
+    Returns:
+        {회사id: {"pos": float, "neg": float, "neu": float}} (모든 companies_articles 키 포함)
+    """
+    mentioned = {company: arts for company, arts in companies_articles.items() if arts}
+    tone = {company: dict(_NEUTRAL_TONE) for company in companies_articles if company not in mentioned}
+
+    if not mentioned:
+        return tone
+
+    payload = {
+        company: [
+            {"title": a.get("title", ""), "snippet": a.get("raw_text", "")[:_TONE_SNIPPET_LEN]}
+            for a in arts
+        ]
+        for company, arts in mentioned.items()
+    }
+    prompt = (
+        "다음은 반도체 기업별로 이번 주 언급된 뉴스 기사 목록이다. "
+        "각 기업에 대해 기사들의 전반적인 논조를 긍정(pos)/부정(neg)/중립(neu) 비율로 판정하라 "
+        "(세 값의 합은 1.0). company 필드에는 입력에 사용된 키를 그대로 반환하라.\n\n"
+        f"기업별 기사 목록: {json.dumps(payload, ensure_ascii=False)}"
+    )
+    try:
+        result = gemini_client.call_gemini(prompt, _TONE_SCHEMA, model=gemini_client.LITE_MODEL)
+        by_company = {t["company"]: t for t in result.get("tone", [])}
+    except RuntimeError as exc:
+        logger.error("톤 판정 실패, 전체 중립으로 대체: %s", exc)
+        by_company = {}
+
+    for company in mentioned:
+        matched = by_company.get(company)
+        tone[company] = (
+            {"pos": matched["pos"], "neg": matched["neg"], "neu": matched["neu"]}
+            if matched
+            else dict(_NEUTRAL_TONE)
+        )
+
+    return tone
 
 
 _TOP_ISSUES_LIMIT = 3

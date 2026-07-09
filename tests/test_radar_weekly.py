@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from src import radar_weekly
 
@@ -125,3 +126,33 @@ def test_pick_top_issues_excludes_issue_missing_last_updated():
     ]
     top = radar_weekly.pick_top_issues(issues, "2026-07-09", limit=3)
     assert top == []
+
+
+@patch("src.radar_weekly.gemini_client.call_gemini")
+def test_classify_tone_calls_gemini_for_mentioned_companies(mock_call):
+    mock_call.return_value = {
+        "tone": [{"company": "samsung_electronics", "pos": 0.5, "neg": 0.2, "neu": 0.3}]
+    }
+    grouped = {"samsung_electronics": [{"title": "삼성전자 실적 호조"}], "tsmc": []}
+
+    tone = radar_weekly.classify_tone(grouped)
+
+    assert tone["samsung_electronics"] == {"pos": 0.5, "neg": 0.2, "neu": 0.3}
+    assert tone["tsmc"] == {"pos": 0.0, "neg": 0.0, "neu": 1.0}
+    mock_call.assert_called_once()
+
+
+def test_classify_tone_skips_gemini_when_no_companies_mentioned():
+    grouped = {"samsung_electronics": [], "tsmc": []}
+    tone = radar_weekly.classify_tone(grouped)
+    assert tone == {
+        "samsung_electronics": {"pos": 0.0, "neg": 0.0, "neu": 1.0},
+        "tsmc": {"pos": 0.0, "neg": 0.0, "neu": 1.0},
+    }
+
+
+@patch("src.radar_weekly.gemini_client.call_gemini", side_effect=RuntimeError("API 오류"))
+def test_classify_tone_falls_back_to_neutral_on_failure(mock_call):
+    grouped = {"samsung_electronics": [{"title": "삼성전자 뉴스"}]}
+    tone = radar_weekly.classify_tone(grouped)
+    assert tone == {"samsung_electronics": {"pos": 0.0, "neg": 0.0, "neu": 1.0}}
