@@ -1,1 +1,255 @@
-[]
+[
+  {
+    "issue_id": "6ac75af6ea83",
+    "entity": "삼성전자",
+    "title": "삼성전자, AI 인프라에 최적화된 기업용 SSD PM1763 양산",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "f4bff33c9d1562216c19a8f11ca4c2a024a9468c"
+    ]
+  },
+  {
+    "issue_id": "2a6b9714238f",
+    "entity": "삼성전자",
+    "title": "[초대장] 갤럭시 언팩 2026 (Galaxy Unpacked July 2026: A New Shape Unfolds)",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "68e49ef1cf055a8b7890f23cbc74433d7a0bc65c"
+    ]
+  },
+  {
+    "issue_id": "d1a3ce5be8ea",
+    "entity": "SK하이닉스",
+    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "600bc74f9f0cce52520f5427c7ada9ddbb31b50b"
+    ]
+  },
+  {
+    "issue_id": "d1a3ce5be8ea",
+    "entity": "SK하이닉스",
+    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "f635fdfd9106e063d8c7f49a1a4546c745d20346"
+    ]
+  },
+  {
+    "issue_id": "d1a3ce5be8ea",
+    "entity": "SK하이닉스",
+    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "57b33a5c349d22f1eecd881ab2c612557e6c738f"
+    ]
+  },
+  {
+    "issue_id": "5f2445f89623",
+    "entity": "삼성전자",
+    "title": "네오셈, 삼성전자에 차세대 메모리 장비 첫 대규모 공급...86억",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "f86ff7dc1bd9254dcc871988575c2fac09e4c2c2"
+    ]
+  },
+  {
+    "issue_id": "3b3ded4c58c1",
+    "entity": "미상",
+    "title": "아이씨디, BOE와 296억원 규모 디스플레이 장비 공급 계약",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "0a5c47089756f1481305a581b758443bdcec5d00"
+    ]
+  },
+  {
+    "issue_id": "ff79b94ad260",
+    "entity": "미상",
+    "title": "스페이스X-커서, 새 AI 모델 발표 임박…\"GPT 5.5 동급 성능\"",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a132ff8a926efa676b1b29aa87ef1d007ee79f62"
+    ]
+  },
+  {
+    "issue_id": "a97015094b23",
+    "entity": "미상",
+    "title": "李 \"AI 확산 속 사전예방체계 갖추자\" 정보보호의 날 기념식",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "831f84c053d051f8818166ce6158b158dde72767"
+    ]
+  },
+  {
+    "issue_id": "160bc2009b75",
+    "entity": "미상",
+    "title": "네이버·카카오·구글·틱톡 등 8개사, '가짜뉴스' 대응 의무화",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "124cfe225829151d8b7597a489a4161cbc90351c"
+    ]
+  },
+  {
+    "issue_id": "d6dbe05c60bb",
+    "entity": "미상",
+    "title": "비아트론, 5종 반도체 장비 고도화…에피택시 CVD 매출 눈앞",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "9d0e9aa86bbcdd4c678a09b5f6fefd8a0519b2d1"
+    ]
+  },
+  {
+    "issue_id": "8ffbbe88fe9b",
+    "entity": "미상",
+    "title": "나인테크, 바로에이아이와 AI 데이터센터 냉각 솔루션 개발",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "7652787c0826813dd22c0a16ff2f0e0cbe24a2a7"
+    ]
+  },
+  {
+    "issue_id": "52b903261a03",
+    "entity": "미상",
+    "title": "플래티어 엑스젠, GS인증 1등급 획득",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "7f7a231c0765da60de4a4b7745dfb0008ce0acfb"
+    ]
+  },
+  {
+    "issue_id": "82af7b8cf286",
+    "entity": "미상",
+    "title": "아나로그디바이스, 엠파워 세미컨덕터 인수 완료…AI 전력 공급 역량 확대",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "0c7d401157e4d407b735cc70641dcbad9f860406"
+    ]
+  },
+  {
+    "issue_id": "9aa95b9242a3",
+    "entity": "삼성전자",
+    "title": "삼성전자, 22일 갤럭시 언팩 개최…차세대 폴더블 공개",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "8a169188a7ef1784009c771736c1776b971c3ef0"
+    ]
+  },
+  {
+    "issue_id": "a7dcd6bb4811",
+    "entity": "미상",
+    "title": "AI탭 만든 네이버, AI 안전성 체계 2.0 발표...이용자 보호 확장",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "1669cb0cd1c50cf50a5ceaf4fdc1aa6fd2439333"
+    ]
+  },
+  {
+    "issue_id": "8a09ea6bcf77",
+    "entity": "미상",
+    "title": "네이버클라우드,  佛 미스트랄AI와 제조AI 파트너십",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "c906fd97528d931f1ed64d16ac4d214d3fc14b3e"
+    ]
+  },
+  {
+    "issue_id": "06205a579cde",
+    "entity": "삼성전자",
+    "title": "삼성전자, 첫 PCIe 6.0 eSSD 양산...대역폭 2배로 향상",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "a4797258e86235c299b403167714f8cdb870c6dc"
+    ]
+  },
+  {
+    "issue_id": "91dde2192316",
+    "entity": "미상",
+    "title": "크라우드웍스, 'AI 학습용 데이터 사업' 수주",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "62751e5aeae73435e2e4a9d91de802aa05dad1bc"
+    ]
+  },
+  {
+    "issue_id": "9d91c55d69bf",
+    "entity": "미상",
+    "title": "바이브컴퍼니, 온톨로지 자동화 솔루션 공개",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "2a08003ee957d26e447e33d0c5884fcd5d953060"
+    ]
+  },
+  {
+    "issue_id": "28d8d35d0fec",
+    "entity": "삼성전자",
+    "title": "[특징주] 삼성전자·SK하이닉스, 프리마켓 널뛰기 딛고 오전장 쾌속 상...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "79d34c2dd935b352a6aa98c6c93c6e49fbbea555"
+    ]
+  },
+  {
+    "issue_id": "d6df9d5216d9",
+    "entity": "미상",
+    "title": "삼성전기, 5%대↑… 美 필라델피아 지수 상승 여파",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "079c17a9dc5759adc02838385618ccea77c9f9ac"
+    ]
+  },
+  {
+    "issue_id": "b681cf4d1678",
+    "entity": "미상",
+    "title": "KAIST, AI기술 활용해 차세대 반도체 실용화 앞당긴다",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-09",
+    "status": "진행중",
+    "related_article_ids": [
+      "ff54ab9d47e52ab0d4c0b7429f80f645ce0dfb51"
+    ]
+  }
+]
