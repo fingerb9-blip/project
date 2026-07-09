@@ -17,6 +17,7 @@ def _sample_issue(**overrides):
 
 def _sample_article(**overrides):
     article = {
+        "id": "art0",
         "title": "삼성전자, 테스트 기사",
         "url": "https://example.com/news/1",
         "source": "디일렉",
@@ -479,3 +480,123 @@ def test_build_index_html_omits_radar_section_when_none(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
 
     assert "경쟁 구도 레이더" not in html_out
+
+
+def test_build_dashboard_html_shows_source_type_badge():
+    article = _sample_article(source_type="특허")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-source-type="특허"' in html_out
+    assert ">특허<" in html_out
+
+
+def test_build_dashboard_html_defaults_source_type_to_news_when_missing():
+    article = _sample_article()
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-source-type="언론"' in html_out
+
+
+def test_build_dashboard_html_includes_deep_tech_filter_toggle():
+    html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
+    assert 'id="deep-tech-filter"' in html_out
+    assert "학회·특허만 보기" in html_out
+
+
+def test_build_dashboard_html_omits_noise_button_when_no_repo_url():
+    html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
+    assert "노이즈로 표시" not in html_out
+
+
+def test_build_dashboard_html_renders_noise_button_with_repo_url():
+    article = _sample_article(id="art1", url="https://example.com/a", title="테스트 기사")
+    html_out = step5_assemble.build_dashboard_html(
+        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
+    )
+    assert "노이즈로 표시" in html_out
+    assert "https://github.com/owner/repo/issues/new?" in html_out
+    assert "labels=noise-report" in html_out
+
+
+def test_build_dashboard_html_noise_button_escapes_title_in_url():
+    article = _sample_article(id="art1", url="https://example.com/a", title="<script>x</script>")
+    html_out = step5_assemble.build_dashboard_html(
+        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
+    )
+    assert "<script>x</script>" not in html_out
+
+
+def test_load_pending_keywords_returns_empty_when_missing(tmp_path):
+    assert step5_assemble.load_pending_keywords(tmp_path / "missing.yaml") == []
+
+
+def test_load_pending_keywords_returns_candidates_when_present(tmp_path):
+    pending_path = tmp_path / "keywords_pending.yaml"
+    pending_path.write_text(
+        "candidates:\n"
+        "  - keyword: 테마주\n"
+        "    report_count: 2\n"
+        "    last_flagged_at: '2026-07-09T00:00:00+00:00'\n"
+        "    priority: false\n",
+        encoding="utf-8",
+    )
+
+    result = step5_assemble.load_pending_keywords(pending_path)
+
+    assert result == [
+        {
+            "keyword": "테마주",
+            "report_count": 2,
+            "last_flagged_at": "2026-07-09T00:00:00+00:00",
+            "priority": False,
+        }
+    ]
+
+
+def test_build_pending_keywords_section_html_renders_candidates():
+    candidates = [
+        {"keyword": "테마주", "report_count": 2, "last_flagged_at": "2026-07-09T00:00:00+00:00", "priority": False}
+    ]
+    html_out = step5_assemble.build_pending_keywords_section_html(candidates)
+    assert "테마주" in html_out
+    assert ">2<" in html_out
+
+
+def test_build_pending_keywords_section_html_empty_when_no_candidates():
+    assert step5_assemble.build_pending_keywords_section_html([]) == ""
+
+
+def test_build_pending_keywords_section_html_flags_priority_candidate():
+    candidates = [
+        {"keyword": "테마주", "report_count": 3, "last_flagged_at": "x", "priority": True}
+    ]
+    html_out = step5_assemble.build_pending_keywords_section_html(candidates)
+    assert 'class="warn"' in html_out
+
+
+def test_build_dashboard_html_deep_tech_filter_scoped_to_today_core_section():
+    """학회·특허만 보기 필터는 '오늘의 핵심' 섹션 카드만 대상으로 해야 한다.
+
+    '진행 중 이슈' 섹션의 카드는 data-source-type이 없어 전역 .card 셀렉터를
+    쓰면 필터 체크 시 같이 숨겨진다 (Finding 1). #feed로 스코핑해야 한다 ("오늘의 핵심"
+    카드만 #feed 안에 렌더링되고, 진행 중 이슈 카드는 그 밖에 렌더링된다).
+    """
+    issue = _sample_issue()
+    html_out = step5_assemble.build_dashboard_html(
+        [_sample_article()], [], {}, "2026-07-08", active_issues=[issue]
+    )
+    assert '<div id="feed">' in html_out
+    assert "#feed .card" in html_out
+    assert "document.querySelectorAll('.card')" not in html_out
+
+
+def test_build_index_html_includes_pending_keywords_section(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    candidates = [
+        {"keyword": "테마주", "report_count": 2, "last_flagged_at": "x", "priority": False}
+    ]
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path, pending_keywords=candidates)
+
+    assert "테마주" in html_out

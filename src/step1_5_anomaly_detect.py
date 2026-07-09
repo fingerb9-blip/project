@@ -267,12 +267,14 @@ def run(
             detail_html = step5_assemble.build_alert_detail_html(issue)
             (alerts_dir / f"{issue['issue_id']}.html").write_text(detail_html, encoding="utf-8")
 
+        pending_path = Path(issues_path).parent.parent.parent / "config" / "keywords_pending.yaml"
         index_html = step5_assemble.build_index_html(
             dashboard_dir,
             Path(state_path),
             issues_path=Path(issues_path),
             now=now_iso,
             radar_data=step5_assemble.load_latest_radar(dashboard_dir.parent / "radar"),
+            pending_keywords=step5_assemble.load_pending_keywords(pending_path),
         )
         (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

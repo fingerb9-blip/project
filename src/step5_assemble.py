@@ -11,7 +11,9 @@ from datetime import date as _date
 from datetime import datetime, timedelta, timezone
 from datetime import datetime as _datetime
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
+
+import yaml
 
 from src import issue_tracking, run_status
 
@@ -240,10 +242,13 @@ function applyFilters(){
   q=q.trim().toLowerCase();
   var active=document.querySelector('.filter button[aria-pressed="true"]');
   var cat=active?active.dataset.cat:'all';
+  var deepOnly=(document.getElementById('deep-tech-filter')||{}).checked||false;
   document.querySelectorAll('#feed .card').forEach(function(c){
     var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
     var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
-    c.style.display=(okCat&&okQ)?'':'none';
+    var t=c.dataset.sourceType;
+    var okDeep=!deepOnly||(t==='학회'||t==='특허');
+    c.style.display=(okCat&&okQ&&okDeep)?'':'none';
   });
 }
 document.querySelectorAll('.filter button').forEach(function(b){
@@ -253,19 +258,42 @@ document.querySelectorAll('.filter button').forEach(function(b){
   });
 });
 var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
+var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
 </script>
 """
 
 
-def _build_article_card(article: dict) -> str:
+def _noise_report_issue_url(article: dict, repo_url: str | None) -> str | None:
+    """'노이즈로 표시' 버튼이 열 GitHub 새 이슈 URL을 만든다. repo_url이 없으면 None."""
+    if not repo_url:
+        return None
+    body = (
+        f"article_id: {article['id']}\n"
+        f"url: {article['url']}\n"
+        f"title: {article['title']}\n"
+        "reason: noise\n"
+    )
+    query = urlencode(
+        {"title": f"[노이즈 신고] {article['title']}", "body": body, "labels": "noise-report"}
+    )
+    return f"{repo_url}/issues/new?{query}"
+
+
+def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     """기사 하나를 §4-5 뉴스 카드(소스 배지+태그 칩+카테고리 칩+시각 -> 제목 -> 요약 -> 원문 링크)로
     렌더링한다. _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
+
+    Args:
+        article: 요약 결과 기사 dict. source_type이 있으면(학회/특허 등) 배지로 표시하고
+            데일리 페이지의 "학회·특허만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
+        repo_url: GitHub 리포지토리 URL. 주어지면 카드 하단에 "노이즈로 표시" 버튼을 추가한다.
     """
     article_categories = article.get("category") or ["미분류"]
     cats_attr = _esc(" ".join(article_categories))
     safe_url = _safe_url(article["url"])
     title = _esc(article["title"])
     source = _esc(article["source"])
+    source_type = article.get("source_type", "언론")
     link_open = f'<a href="{safe_url}">' if safe_url else ""
     link_close = "</a>" if safe_url else ""
 
@@ -285,9 +313,14 @@ def _build_article_card(article: dict) -> str:
         [article["source"], article["title"], article.get("summary") or ""]
     ).lower()
 
-    parts = [f'<article class="card" data-categories="{cats_attr}" data-text="{_esc(search_text)}">']
+    parts = [
+        f'<article class="card" data-categories="{cats_attr}" data-text="{_esc(search_text)}" '
+        f'data-source-type="{_esc(source_type)}">'
+    ]
     parts.append('<div class="row">')
     parts.append(f'<span class="badge {_badge_class(article["source"])}">{source}</span>')
+    if source_type and source_type != "언론":
+        parts.append(f'<span class="chip badge-type">{_esc(source_type)}</span>')
     if tag_label:
         parts.append(f'<span class="tag {tag_class}">{_esc(tag_label)}</span>')
     for category in article_categories:
@@ -303,6 +336,14 @@ def _build_article_card(article: dict) -> str:
     parts.append('<div class="cardfoot">')
     if safe_url:
         parts.append(f'<a href="{safe_url}">원문 보기 ↗</a>')
+    issue_url = _noise_report_issue_url(article, repo_url)
+    if issue_url:
+        safe_issue_url = html.escape(issue_url, quote=True)
+        parts.append(
+            f'<a class="noise-btn" href="{safe_issue_url}" target="_blank" rel="noopener" '
+            "onclick=\"this.nextElementSibling.hidden=false\">노이즈로 표시</a> "
+            '<span class="toast" hidden>제외 대상으로 표시했습니다</span>'
+        )
     parts.append("</div>")
     parts.append("</article>")
     return "".join(parts)
@@ -316,6 +357,7 @@ def build_dashboard_html(
     all_dates: list[str] | None = None,
     active_issues: list[dict] | None = None,
     updated_at: str | None = None,
+    repo_url: str | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> pill 필터 -> 오늘의 핵심(뉴스 카드) -> 확인 필요 -> 수집 상태 ->
     진행 중 이슈 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
@@ -331,6 +373,7 @@ def build_dashboard_html(
             받기 위한 자리로 시그니처를 유지한다. v2 레이아웃(§5-2)은 데일리 페이지에
             페이지 단위 "갱신" 타임스탬프를 두지 않으므로(카드별 시각·리포트 카드 쪽에서
             표시) 현재는 렌더링에 쓰이지 않는다.
+        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
 
     Returns:
         단일 HTML 문서 문자열
@@ -357,11 +400,15 @@ def build_dashboard_html(
     parts.append(_build_filter_bar(categories))
 
     parts.append('<h2 class="sec">오늘의 핵심</h2>')
+    parts.append(
+        '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
+        "학회·특허만 보기</label>"
+    )
     if not summarized_articles:
         parts.append('<p class="summary">오늘 핵심 기사가 없습니다.</p>')
     parts.append('<div id="feed">')
     for article in summarized_articles:
-        parts.append(_build_article_card(article))
+        parts.append(_build_article_card(article, repo_url))
     parts.append("</div>")
 
     parts.append('<details class="card">')
@@ -565,6 +612,52 @@ def build_radar_section_html(radar_data: dict | None) -> str:
     return "".join(parts)
 
 
+def load_pending_keywords(pending_path: Path) -> list[dict]:
+    """config/keywords_pending.yaml의 candidates를 로드한다 (없으면 빈 리스트).
+
+    daily_briefing(main.py)과 hourly_anomaly_check(step1_5_anomaly_detect.py) 양쪽에서
+    index.html을 재생성할 때 공통으로 써야 관리자 후보 섹션이 사라지지 않는다.
+
+    Args:
+        pending_path: config/keywords_pending.yaml 경로
+
+    Returns:
+        candidates 리스트 (파일이 없으면 빈 리스트)
+    """
+    pending_path = Path(pending_path)
+    if not pending_path.exists():
+        return []
+    with pending_path.open(encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    return data.get("candidates", [])
+
+
+def build_pending_keywords_section_html(candidates: list[dict]) -> str:
+    """config/keywords_pending.yaml 후보 목록을 index.html 관리자 섹션으로 렌더링한다.
+
+    Args:
+        candidates: keywords_pending.yaml의 candidates 리스트
+
+    Returns:
+        섹션 HTML 조각 (candidates가 비어 있으면 빈 문자열)
+    """
+    if not candidates:
+        return ""
+    parts = [
+        "<section><h2>피드백 키워드 후보 (승인 대기)</h2><table>",
+        "<tr><th>키워드</th><th>신고 횟수</th><th>최근 신고</th></tr>",
+    ]
+    for candidate in sorted(candidates, key=lambda c: c.get("report_count", 0), reverse=True):
+        warn = ' class="warn"' if candidate.get("priority") else ""
+        parts.append(
+            f"<tr{warn}><td>{_esc(candidate.get('keyword', ''))}</td>"
+            f"<td>{_esc(candidate.get('report_count', 0))}</td>"
+            f"<td>{_esc(candidate.get('last_flagged_at', ''))}</td></tr>"
+        )
+    parts.append("</table></section>")
+    return "".join(parts)
+
+
 def build_index_html(
     dashboard_dir: Path,
     state_path: Path,
@@ -573,12 +666,14 @@ def build_index_html(
     latest_core_count: int | None = None,
     latest_headlines: list[str] | None = None,
     radar_data: dict | None = None,
+    pending_keywords: list[dict] | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> 히어로 배너(최신 브리핑) -> 리포트 카드 목록 순으로 인덱스 페이지를
     만든다 (§5-1 레이아웃, SAVE 스타일). 조회수·알림 등은 §0 스코프 밖이라 표시하지 않는다.
 
     run_status.json의 마지막 실행 상태를 히어로 배너 하단 상태 문구로 보여준다
     ("침묵 실패 방지"). issues_path가 주어지면 24시간 이내 확정된 속보를 상단 배너로도 보여준다.
+    pending_keywords가 주어지면 관리자용 키워드 후보 섹션을 함께 보여준다.
 
     Args:
         dashboard_dir: data/dashboard 디렉토리 경로 (날짜별 html이 이미 생성돼 있어야 함)
@@ -588,6 +683,7 @@ def build_index_html(
         latest_core_count: 최신 날짜의 "오늘의 핵심" 기사 수 (현재 v2 히어로에는 표시하지
             않지만 v1과의 호출 호환을 위해 인자는 유지한다)
         latest_headlines: 최신 날짜의 헤드라인 미리보기 목록 (위와 동일한 이유로 유지, 미사용)
+        pending_keywords: config/keywords_pending.yaml의 candidates 리스트 (관리자 섹션용, 선택)
 
     Returns:
         단일 HTML 문서 문자열
@@ -637,6 +733,9 @@ def build_index_html(
         banner = build_alert_banner_html(recent_alerts)
         if banner:
             parts.append(banner)
+
+    if pending_keywords:
+        parts.append(build_pending_keywords_section_html(pending_keywords))
 
     # 상태 문구는 히어로 배너(있을 때만 존재) 안이 아니라 항상 렌더링한다 — 아직 브리핑이
     # 하나도 없어도(예: 첫 실행이 실패해 대시보드 파일 자체가 안 생긴 경우) "침묵 실패"
@@ -761,6 +860,13 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .radar-label{width:100px;font-size:.82rem;color:var(--ink-soft)}
 .radar-bar{display:block;height:.85rem;background:var(--brand);border-radius:3px}
 .radar-count{font-size:.8rem;color:var(--ink-soft)}
+
+/* R&D·특허 소스 배지, 노이즈 신고 */
+.badge-type{background:#EEF0F3;color:var(--ink-soft)}
+.filter-toggle{display:inline-block;margin:0 0 10px;font-size:.85rem;color:var(--ink-soft)}
+.noise-btn{font-size:.76rem;color:#A94442;text-decoration:none;border:1px solid #A94442;
+  border-radius:6px;padding:2px 8px}
+.toast{font-size:.76rem;color:var(--confirmed);margin-left:6px}
 """
 
 
@@ -774,6 +880,7 @@ def run(
     state_path: str,
     issues_path: str | None = None,
     radar_data: dict | None = None,
+    repo_url: str | None = None,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -787,6 +894,7 @@ def run(
         state_path: data/state/run_status.json 경로 (index.html 상태 표시용)
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
         radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
+        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
@@ -818,6 +926,7 @@ def run(
         today,
         all_dates=all_dates,
         active_issues=active_issues,
+        repo_url=repo_url,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 

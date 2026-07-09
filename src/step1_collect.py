@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import time
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -49,6 +50,7 @@ def fetch_rss_articles(feed_urls: list[dict], since: datetime) -> list[dict]:
     for feed in feed_urls:
         name = feed["name"]
         url = feed["url"]
+        source_type = feed.get("source_type", "언론")
 
         parsed = None
         for attempt in range(_MAX_RETRIES):
@@ -77,6 +79,7 @@ def fetch_rss_articles(feed_urls: list[dict], since: datetime) -> list[dict]:
                     "source": name,
                     "published_at": published_at or since.isoformat(),
                     "raw_text": entry.get("summary", ""),
+                    "source_type": source_type,
                 }
             )
 
@@ -130,6 +133,7 @@ def fetch_naver_news(keywords: list[str]) -> list[dict]:
                     "source": "네이버뉴스 재배포",
                     "published_at": item.get("pubDate", ""),
                     "raw_text": _clean_naver_text(item.get("description", "")),
+                    "source_type": "언론",
                 }
             )
 
@@ -204,10 +208,100 @@ def fetch_semantic_scholar_papers(keywords: list[str], since: datetime) -> list[
                     "source": _PAPER_SOURCE,
                     "published_at": f"{published_at}T00:00:00+00:00" if published_at else since.isoformat(),
                     "raw_text": paper.get("abstract") or "",
+                    "source_type": "학회",
                 }
             )
 
     return papers
+
+
+_PATENT_SOURCE = "KIPRIS"
+_KIPRIS_MAX_RETRIES = 3
+_KIPRIS_ENDPOINT = "https://plus.kipris.or.kr/kipo-api/kipi/patUtiModInfoSearchSevice/getWordSearch"
+
+
+def _parse_kipris_date(value: str | None) -> str | None:
+    """KIPRIS의 YYYYMMDD 날짜 문자열을 ISO8601로 변환한다."""
+    if not value or len(value) != 8:
+        return None
+    return f"{value[:4]}-{value[4:6]}-{value[6:8]}T00:00:00+00:00"
+
+
+def fetch_kipris_patents(keywords: list[str], since: datetime) -> list[dict]:
+    """KIPRIS Open API(getWordSearch)로 키워드 관련 신규 공개 특허를 보강 수집한다.
+
+    KIPRIS_API_KEY가 설정돼 있지 않으면 특허 수집을 건너뛴다(Naver/Semantic Scholar와 동일한 패턴).
+    호출 실패(비-200 응답)는 재시도 후에도 실패하면 해당 키워드만 건너뛰고 계속 진행한다.
+
+    Args:
+        keywords: 특허 검색 키워드 목록 (예: "HBM", "EUV 노광")
+        since: 수집 기준 시각 (이 시각 이후 공개된 특허만 포함)
+
+    Returns:
+        fetch_rss_articles와 동일한 스키마 + source_type="특허" 기사(특허) dict 리스트
+    """
+    api_key = os.environ.get("KIPRIS_API_KEY")
+    if not api_key:
+        logger.warning("KIPRIS_API_KEY 미설정, 특허 보강 수집을 건너뜁니다")
+        return []
+
+    patents: list[dict] = []
+
+    for keyword in keywords:
+        response = None
+        for attempt in range(_KIPRIS_MAX_RETRIES):
+            try:
+                response = requests.get(
+                    _KIPRIS_ENDPOINT,
+                    params={"word": keyword, "patent": "true", "utility": "true", "ServiceKey": api_key},
+                    timeout=10,
+                )
+                if response.status_code == 200:
+                    break
+            except requests.exceptions.RequestException as exc:
+                logger.warning(
+                    "KIPRIS 요청 실패, 재시도 %d/%d: %s (%s)", attempt + 1, _KIPRIS_MAX_RETRIES, keyword, exc
+                )
+                time.sleep(2**attempt)
+                continue
+            logger.warning(
+                "KIPRIS 요청 실패, 재시도 %d/%d: %s", attempt + 1, _KIPRIS_MAX_RETRIES, keyword
+            )
+            time.sleep(2**attempt)
+
+        if response is None or response.status_code != 200:
+            logger.error("KIPRIS 요청 %d회 연속 실패, 키워드 건너뜀: %s", _KIPRIS_MAX_RETRIES, keyword)
+            continue
+
+        try:
+            root = ET.fromstring(response.text)
+        except ET.ParseError as exc:
+            logger.error("KIPRIS 응답 파싱 실패, 키워드 건너뜀: %s (%s)", keyword, exc)
+            continue
+
+        for item in root.findall(".//item"):
+            application_number = (item.findtext("application_number") or "").strip()
+            if not application_number:
+                continue
+            published_at = _parse_kipris_date(
+                item.findtext("open_date") or item.findtext("application_date")
+            )
+            if published_at and datetime.fromisoformat(published_at) < since:
+                continue
+            url = f"https://doi.kipris.or.kr/doi/patentInfo.do?applno={application_number}"
+            patents.append(
+                {
+                    "id": _make_id(url),
+                    "title": item.findtext("invention_title") or "",
+                    "url": url,
+                    "source": _PATENT_SOURCE,
+                    "published_at": published_at or since.isoformat(),
+                    "raw_text": item.findtext("abstract_text") or "",
+                    "source_type": "특허",
+                }
+            )
+
+    return patents
 
 
 def _check_consecutive_zero(raw_dir: Path, source: str, today_count: int) -> bool:
@@ -245,11 +339,13 @@ def run(feeds_config: dict, output_path: str) -> list[dict]:
     feeds = feeds_config.get("feeds") or []
     keywords = feeds_config.get("naver_search_keywords") or []
     paper_keywords = feeds_config.get("paper_search_keywords") or []
+    patent_keywords = feeds_config.get("patent_search_keywords") or []
 
     rss_articles = fetch_rss_articles(feeds, since)
     naver_articles = fetch_naver_news(keywords)
     paper_articles = fetch_semantic_scholar_papers(paper_keywords, since)
-    articles = rss_articles + naver_articles + paper_articles
+    patent_articles = fetch_kipris_patents(patent_keywords, since)
+    articles = rss_articles + naver_articles + paper_articles + patent_articles
 
     for feed in feeds:
         name = feed["name"]
