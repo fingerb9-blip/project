@@ -70,14 +70,20 @@ a:hover{text-decoration:underline}
 .badge.s-eetimes{background:#FDE9DD;color:#C2652A}
 .badge.s-etnews{background:#FDF1D6;color:#A9790B}
 .badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
-.tag{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px}
-.tag.ok{background:rgba(46,158,91,.12);color:var(--confirmed)}
-.tag.obs{background:rgba(201,130,26,.14);color:var(--observed)}
-.tag.mut{background:#EEF0F3;color:var(--muted)}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 .chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
 .chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
 .chip.warn-chip{background:var(--warn-bg);border:1px solid var(--warn-line);color:#A9790B}
+
+/* 확정/관측/요약없음 상태 배지 — 아이콘 + 색상 (카테고리 태그와 시각적으로 구분) */
+.badge-confirm{display:inline-flex;align-items:center;gap:3px;font-size:.74rem;font-weight:600;
+  padding:3px 9px;border-radius:999px}
+.badge-confirm.ok{background:#E3F6EA;color:#1B7A45}
+.badge-confirm.obs{background:#FBEFDD;color:#8A5A10}
+.badge-confirm.mut{background:#EEF0F3;color:#4B5563}
+
+/* 카테고리 배지 — 알약 모양 윤곽선 (확정/관측 배지와 구분) */
+.badge-category{font-size:.74rem;color:#5D6470;padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 
 /* 리포트 카드(인덱스) */
 .report .datetitle{font-size:1.05rem;font-weight:700;margin:.5rem 0 .6rem}

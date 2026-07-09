@@ -206,7 +206,8 @@ def rebuild_style_and_index(base_dir: Path) -> None:
     (dashboard_dir / "style.css").write_text(step5_assemble._DASHBOARD_CSS, encoding="utf-8")
 
     dates = sorted(
-        (p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"), reverse=True
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in ("index", "archive")),
+        reverse=True,
     )
     latest_core_count = None
     latest_headlines = None

@@ -187,7 +187,7 @@ def _list_dashboard_dates(dashboard_dir: Path, include: str | None = None) -> li
         dashboard_dir: data/dashboard 디렉토리 경로
         include: 아직 파일로 쓰이지 않았더라도 목록에 포함할 날짜 (오늘 페이지 생성 시 사용)
     """
-    dates = {p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"}
+    dates = {p.stem for p in dashboard_dir.glob("*.html") if p.stem not in ("index", "archive")}
     if include:
         dates.add(include)
     return sorted(dates, reverse=True)
@@ -1111,7 +1111,7 @@ def build_index_html(
     del latest_core_count, latest_headlines  # v2 히어로는 상태 문구만 표시 (§4-7)
 
     dates = sorted(
-        (p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"),
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in ("index", "archive")),
         reverse=True,
     )
 

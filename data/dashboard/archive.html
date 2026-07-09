@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>지난 리포트 전체보기 - 반도체 뉴스 브리핑</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div class="appbar"><span class="brand">반도체브리핑</span></div>
+<div class="search"><input id="q" type="search" placeholder="뉴스 태그·제목·내용을 검색해 주세요" aria-label="뉴스 검색"><span class="i">🔍</span></div>
+<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>
+<div id="feed">
+<h2 class="sec">2026년 7월</h2>
+<div class="card report" data-text="2026-07-09"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">17:43 갱신</span></div><p class="datetitle">2026년 7월 9일 (목)</p><div class="actions"><a href="2026-07-09.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-08"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">17:40 갱신</span></div><p class="datetitle">2026년 7월 8일 (수)</p><div class="actions"><a href="2026-07-08.html">📄 리포트 읽기</a></div></div>
+</div>
+<p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · EE Times · 전자신문 · ZDNet Korea</p>
+<script>
+function applyFilters(){
+  var q=(document.getElementById('q')||{}).value||'';
+  q=q.trim().toLowerCase();
+  var active=document.querySelector('.filter button[aria-pressed="true"]');
+  var cat=active?active.dataset.cat:'all';
+  var deepOnly=(document.getElementById('deep-tech-filter')||{}).checked||false;
+  document.querySelectorAll('#feed .card').forEach(function(c){
+    var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
+    var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
+    var t=c.dataset.sourceType;
+    var okDeep=!deepOnly||(t==='학회'||t==='특허');
+    c.style.display=(okCat&&okQ&&okDeep)?'':'none';
+  });
+}
+document.querySelectorAll('.filter button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    applyFilters();
+  });
+});
+var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
+var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
+document.querySelectorAll('.noise-btn').forEach(function(b){
+  var id=b.dataset.articleId;
+  if(id&&localStorage.getItem('noise:'+id)){b.hidden=true;return;}
+  b.addEventListener('click',function(){
+    if(id) localStorage.setItem('noise:'+id,'1');
+    b.hidden=true;
+    if(b.nextElementSibling) b.nextElementSibling.hidden=false;
+  });
+});
+</script>
+
+</body></html>

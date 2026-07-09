@@ -230,6 +230,21 @@ def test_build_index_html_lists_dates_newest_first(tmp_path):
     assert first < second < third
 
 
+def test_build_index_html_ignores_archive_html_as_a_date(tmp_path):
+    """archive.html은 날짜 페이지가 아니다 — 문자열 정렬상 'archive'가 날짜보다 앞에 와서
+    두 번째 실행부터(archive.html이 이미 존재하는 상태) 최신 날짜로 잘못 인식되거나
+    날짜 파싱이 깨지면 안 된다."""
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "archive.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "2026-07-09.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert 'href="2026-07-09.html"' in html_out
+    assert 'href="archive.html"' not in html_out or "지난 리포트" in html_out
+
+
 def test_build_index_html_includes_latest_date_as_report_card_too(tmp_path):
     """v2는 v1과 달리 최신 날짜도 히어로 아래 리포트 카드 목록에 그대로 포함된다 (§5-1)."""
     dashboard_dir = tmp_path / "dashboard"
