@@ -114,3 +114,14 @@ def test_pick_top_issues_limits_to_n():
     top = radar_weekly.pick_top_issues(issues, "2026-07-09", limit=3)
     assert len(top) == 3
     assert top[0] == "[E] 이슈5"
+
+
+def test_pick_top_issues_excludes_issue_missing_last_updated():
+    issues = [
+        {
+            "issue_id": "i1", "entity": "SK하이닉스", "title": "필드 누락 이슈",
+            "related_article_ids": ["a", "b", "c"],
+        },
+    ]
+    top = radar_weekly.pick_top_issues(issues, "2026-07-09", limit=3)
+    assert top == []

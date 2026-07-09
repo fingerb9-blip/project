@@ -103,7 +103,8 @@ def pick_top_issues(issues: list[dict], today: str, limit: int = _TOP_ISSUES_LIM
     """최근 WINDOW_DAYS일 내 갱신된 이슈 중 관련 기사 수가 많은 상위 N건을 고른다.
 
     Phase 3(이슈 지식그래프)가 이미 유지하는 data/state/issues.json을 그대로 재사용해,
-    별도 Gemini 클러스터링 없이 "이번 주 최다 언급 이슈"를 뽑는다.
+    별도 Gemini 클러스터링 없이 "이번 주 최다 언급 이슈"를 뽑는다. last_updated가 없거나
+    비어 있는 이슈는 (오래된 것으로 오판되지 않도록 fail-open이 아니라) 안전하게 제외한다.
 
     Args:
         issues: data/state/issues.json 로드 결과 (진행중/종료 모두 포함)
@@ -114,11 +115,13 @@ def pick_top_issues(issues: list[dict], today: str, limit: int = _TOP_ISSUES_LIM
         "[기업] 제목" 형식의 이슈 헤드라인 문자열 리스트 (관련 기사 수 내림차순)
     """
     cutoff = date.fromisoformat(today) - timedelta(days=_WINDOW_DAYS - 1)
-    recent = [
-        issue
-        for issue in issues
-        if date.fromisoformat(issue.get("last_updated", today)) >= cutoff
-    ]
+    recent = []
+    for issue in issues:
+        last_updated = issue.get("last_updated")
+        if not last_updated:
+            continue
+        if date.fromisoformat(last_updated) >= cutoff:
+            recent.append(issue)
     ranked = sorted(recent, key=lambda i: len(i.get("related_article_ids") or []), reverse=True)
     top = ranked[:limit]
     return [f"[{issue.get('entity', '')}] {issue.get('title', '')}" for issue in top]
