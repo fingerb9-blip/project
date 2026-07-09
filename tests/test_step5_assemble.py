@@ -306,6 +306,33 @@ def test_build_dashboard_html_noise_button_escapes_title_in_url():
     assert "<script>x</script>" not in html_out
 
 
+def test_load_pending_keywords_returns_empty_when_missing(tmp_path):
+    assert step5_assemble.load_pending_keywords(tmp_path / "missing.yaml") == []
+
+
+def test_load_pending_keywords_returns_candidates_when_present(tmp_path):
+    pending_path = tmp_path / "keywords_pending.yaml"
+    pending_path.write_text(
+        "candidates:\n"
+        "  - keyword: 테마주\n"
+        "    report_count: 2\n"
+        "    last_flagged_at: '2026-07-09T00:00:00+00:00'\n"
+        "    priority: false\n",
+        encoding="utf-8",
+    )
+
+    result = step5_assemble.load_pending_keywords(pending_path)
+
+    assert result == [
+        {
+            "keyword": "테마주",
+            "report_count": 2,
+            "last_flagged_at": "2026-07-09T00:00:00+00:00",
+            "priority": False,
+        }
+    ]
+
+
 def test_build_pending_keywords_section_html_renders_candidates():
     candidates = [
         {"keyword": "테마주", "report_count": 2, "last_flagged_at": "2026-07-09T00:00:00+00:00", "priority": False}

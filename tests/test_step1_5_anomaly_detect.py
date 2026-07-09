@@ -182,6 +182,46 @@ def test_run_confirms_alert_and_updates_dashboard(mock_fetch, mock_normalize, mo
 @patch("src.step1_5_anomaly_detect.confirm_breaking_news")
 @patch("src.step1_5_anomaly_detect.step2_dedup.normalize_company_names")
 @patch("src.step1_5_anomaly_detect.step1_collect.fetch_rss_articles")
+def test_run_keeps_pending_keywords_section_when_alert_fires(mock_fetch, mock_normalize, mock_confirm, tmp_path):
+    """Finding 2: 매시 이상 신호 감지가 index.html을 재생성할 때도 피드백 키워드
+    후보 섹션(config/keywords_pending.yaml)이 사라지면 안 된다.
+    """
+    articles = _hourly_articles()
+    mock_fetch.return_value = articles
+    for a in articles:
+        a["companies"] = ["sk_hynix"]
+    mock_normalize.return_value = articles
+    mock_confirm.return_value = {"is_breaking": True, "tag": "[확정]", "headline": "SK하이닉스 청주공장 화재 속보"}
+
+    # base_dir/data/state/issues.json 구조를 그대로 재현해 pending_path 역산이 맞는지 검증한다.
+    base_dir = tmp_path
+    state_dir = base_dir / "data" / "state"
+    state_dir.mkdir(parents=True)
+    config_dir = base_dir / "config"
+    config_dir.mkdir(parents=True)
+    (config_dir / "keywords_pending.yaml").write_text(
+        "candidates:\n  - keyword: 테마주\n    report_count: 2\n"
+        "    last_flagged_at: '2026-07-09T00:00:00+00:00'\n    priority: false\n",
+        encoding="utf-8",
+    )
+
+    kwargs = _run_kwargs(
+        tmp_path,
+        issues_path=state_dir / "issues.json",
+        frequency_baseline_path=state_dir / "frequency_baseline.json",
+        state_path=state_dir / "run_status.json",
+        dashboard_dir=base_dir / "data" / "dashboard",
+    )
+    kwargs["dashboard_dir"].mkdir(parents=True)
+    anomaly.run(**kwargs)
+
+    index_html = (kwargs["dashboard_dir"] / "index.html").read_text(encoding="utf-8")
+    assert "테마주" in index_html
+
+
+@patch("src.step1_5_anomaly_detect.confirm_breaking_news")
+@patch("src.step1_5_anomaly_detect.step2_dedup.normalize_company_names")
+@patch("src.step1_5_anomaly_detect.step1_collect.fetch_rss_articles")
 def test_run_skips_gemini_call_when_suppressed(mock_fetch, mock_normalize, mock_confirm, tmp_path):
     articles = _hourly_articles()
     mock_fetch.return_value = articles

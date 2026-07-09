@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode, urlparse
 
+import yaml
+
 from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
@@ -309,6 +311,26 @@ def build_alert_detail_html(issue: dict) -> str:
         parts.append(f"<p>{_esc(issue['progress_summary'])}</p>")
     parts.append("</body></html>")
     return "\n".join(parts)
+
+
+def load_pending_keywords(pending_path: Path) -> list[dict]:
+    """config/keywords_pending.yaml의 candidates를 로드한다 (없으면 빈 리스트).
+
+    daily_briefing(main.py)과 hourly_anomaly_check(step1_5_anomaly_detect.py) 양쪽에서
+    index.html을 재생성할 때 공통으로 써야 관리자 후보 섹션이 사라지지 않는다.
+
+    Args:
+        pending_path: config/keywords_pending.yaml 경로
+
+    Returns:
+        candidates 리스트 (파일이 없으면 빈 리스트)
+    """
+    pending_path = Path(pending_path)
+    if not pending_path.exists():
+        return []
+    with pending_path.open(encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    return data.get("candidates", [])
 
 
 def build_pending_keywords_section_html(candidates: list[dict]) -> str:

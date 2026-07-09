@@ -5,7 +5,6 @@ import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-import yaml
 from dotenv import load_dotenv
 
 from src import (
@@ -56,15 +55,7 @@ def main() -> None:
     load_dotenv()
     base_dir = Path(__file__).resolve().parent
     today = date.today().isoformat()
-
-    def _load_pending_keywords(base_dir: Path) -> list[dict]:
-        """config/keywords_pending.yaml의 candidates를 로드한다 (없으면 빈 리스트)."""
-        path = base_dir / "config" / "keywords_pending.yaml"
-        if not path.exists():
-            return []
-        with path.open(encoding="utf-8") as f:
-            data = yaml.safe_load(f) or {}
-        return data.get("candidates", [])
+    pending_path = base_dir / "config" / "keywords_pending.yaml"
 
     try:
         config = step0_init.run(today)
@@ -132,7 +123,7 @@ def main() -> None:
             },
         )
         index_html = step5_assemble.build_index_html(
-            paths["dashboard_dir"], paths["state"], issues_path=paths["issues"], pending_keywords=_load_pending_keywords(base_dir)
+            paths["dashboard_dir"], paths["state"], issues_path=paths["issues"], pending_keywords=step5_assemble.load_pending_keywords(pending_path)
         )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
@@ -153,7 +144,7 @@ def main() -> None:
         },
     )
     index_html = step5_assemble.build_index_html(
-        paths["dashboard_dir"], paths["state"], issues_path=paths["issues"], pending_keywords=_load_pending_keywords(base_dir)
+        paths["dashboard_dir"], paths["state"], issues_path=paths["issues"], pending_keywords=step5_assemble.load_pending_keywords(pending_path)
     )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 
