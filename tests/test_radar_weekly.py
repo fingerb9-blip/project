@@ -21,6 +21,15 @@ def test_week_label_pads_single_digit_week():
     assert radar_weekly.week_label("2026-01-01") == "2026-W01"
 
 
+def test_is_radar_day_true_for_monday():
+    assert radar_weekly.is_radar_day(0) is True
+
+
+def test_is_radar_day_false_for_other_days():
+    assert radar_weekly.is_radar_day(1) is False
+    assert radar_weekly.is_radar_day(6) is False
+
+
 def test_load_week_dedup_articles_reads_available_days(tmp_path):
     dedup_dir = tmp_path / "dedup"
     dedup_dir.mkdir()

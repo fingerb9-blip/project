@@ -50,9 +50,15 @@ def _compute_collection_stats(
     return stats
 
 
-def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str) -> None:
-    """매주 월요일(KST)에만 경쟁 구도 레이더를 갱신한다. 실패해도 파이프라인은 계속 진행한다."""
-    if date.fromisoformat(today).weekday() != 0:
+def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str, weekday: int) -> None:
+    """매주 월요일(KST)에만 경쟁 구도 레이더를 갱신한다. 실패해도 파이프라인은 계속 진행한다.
+
+    Args:
+        weekday: KST 기준 요일(datetime.weekday(), 월요일=0). today는 파이프라인 전체에서
+            공유하는 UTC 라벨 날짜이므로 여기서 요일을 다시 계산하면 안 된다 — 호출부가
+            KST 기준으로 계산한 값을 그대로 넘겨야 한다.
+    """
+    if not radar_weekly.is_radar_day(weekday):
         return
     try:
         tracked_companies = radar_weekly.load_tracked_companies(
@@ -108,7 +114,7 @@ def main() -> None:
         step4_5_issue_match.run(core_articles, config["company_aliases"], paths["issues"], today)
         steps_completed.append("issue_match")
 
-        _maybe_run_weekly_radar(base_dir, config, today)
+        _maybe_run_weekly_radar(base_dir, config, today, datetime.now(KST).weekday())
 
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)

@@ -39,6 +39,21 @@ def week_label(today: str) -> str:
     return f"{iso_year}-W{iso_week:02d}"
 
 
+def is_radar_day(weekday: int) -> bool:
+    """주간 레이더를 갱신할 요일인지 판정한다 (월요일=0).
+
+    호출부에서 KST 기준 요일을 넘겨야 한다 — 파이프라인의 today(UTC 라벨)와
+    다른 값일 수 있으므로, 이 함수 자체는 순수하게 정수 요일만 받아 테스트하기 쉽게 한다.
+
+    Args:
+        weekday: datetime.weekday() 값 (월요일=0 ~ 일요일=6)
+
+    Returns:
+        월요일이면 True
+    """
+    return weekday == 0
+
+
 _WINDOW_DAYS = 7
 
 
