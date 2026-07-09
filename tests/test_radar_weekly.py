@@ -1,3 +1,5 @@
+import json
+
 from src import radar_weekly
 
 
@@ -16,3 +18,60 @@ def test_week_label_formats_iso_week():
 
 def test_week_label_pads_single_digit_week():
     assert radar_weekly.week_label("2026-01-01") == "2026-W01"
+
+
+def test_load_week_dedup_articles_reads_available_days(tmp_path):
+    dedup_dir = tmp_path / "dedup"
+    dedup_dir.mkdir()
+    (dedup_dir / "2026-07-09.json").write_text(
+        json.dumps([{"id": "a1", "title": "t1", "companies": ["samsung_electronics"]}]),
+        encoding="utf-8",
+    )
+    (dedup_dir / "2026-07-08.json").write_text(
+        json.dumps([{"id": "a2", "title": "t2", "companies": ["sk_hynix"]}]),
+        encoding="utf-8",
+    )
+
+    articles = radar_weekly.load_week_dedup_articles(dedup_dir, "2026-07-09", days=7)
+
+    assert {a["id"] for a in articles} == {"a1", "a2"}
+
+
+def test_load_week_dedup_articles_skips_missing_days(tmp_path):
+    dedup_dir = tmp_path / "dedup"
+    dedup_dir.mkdir()
+    (dedup_dir / "2026-07-09.json").write_text(
+        json.dumps([{"id": "a1", "title": "t1", "companies": []}]), encoding="utf-8"
+    )
+
+    articles = radar_weekly.load_week_dedup_articles(dedup_dir, "2026-07-09", days=7)
+
+    assert len(articles) == 1
+
+
+def test_aggregate_mentions_counts_per_company():
+    articles = [
+        {"companies": ["samsung_electronics", "tsmc"]},
+        {"companies": ["samsung_electronics"]},
+        {"companies": ["sk_hynix"]},
+    ]
+    counts = radar_weekly.aggregate_mentions(
+        articles, ["samsung_electronics", "sk_hynix", "tsmc", "intel"]
+    )
+    assert counts == {"samsung_electronics": 2, "sk_hynix": 1, "tsmc": 1, "intel": 0}
+
+
+def test_aggregate_mentions_ignores_untracked_companies():
+    articles = [{"companies": ["some_other_company"]}]
+    counts = radar_weekly.aggregate_mentions(articles, ["samsung_electronics"])
+    assert counts == {"samsung_electronics": 0}
+
+
+def test_group_articles_by_company_buckets_articles():
+    articles = [
+        {"id": "a1", "companies": ["samsung_electronics"]},
+        {"id": "a2", "companies": ["samsung_electronics", "tsmc"]},
+    ]
+    grouped = radar_weekly.group_articles_by_company(articles, ["samsung_electronics", "tsmc"])
+    assert [a["id"] for a in grouped["samsung_electronics"]] == ["a1", "a2"]
+    assert [a["id"] for a in grouped["tsmc"]] == ["a2"]
