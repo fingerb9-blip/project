@@ -327,6 +327,21 @@ def test_build_pending_keywords_section_html_flags_priority_candidate():
     assert 'class="warn"' in html_out
 
 
+def test_build_dashboard_html_deep_tech_filter_scoped_to_today_core_section():
+    """학회·특허만 보기 필터는 '오늘의 핵심' 섹션 카드만 대상으로 해야 한다.
+
+    '진행 중 이슈' 섹션의 카드는 data-source-type이 없어 전역 .card 셀렉터를
+    쓰면 필터 체크 시 같이 숨겨진다 (Finding 1). #today-core로 스코핑해야 한다.
+    """
+    issue = _sample_issue()
+    html_out = step5_assemble.build_dashboard_html(
+        [_sample_article()], [], {}, "2026-07-08", active_issues=[issue]
+    )
+    assert '<section id="today-core">' in html_out
+    assert "#today-core .card" in html_out
+    assert "document.querySelectorAll('.card')" not in html_out
+
+
 def test_build_index_html_includes_pending_keywords_section(tmp_path):
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()

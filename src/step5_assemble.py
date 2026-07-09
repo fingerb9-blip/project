@@ -145,7 +145,7 @@ def build_dashboard_html(
         f"<h1>반도체 뉴스 데일리 브리핑 — {_esc(target_date)}</h1>",
     ]
 
-    parts.append("<section><h2>오늘의 핵심</h2>")
+    parts.append('<section id="today-core"><h2>오늘의 핵심</h2>')
     parts.append(
         '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
         "학회·특허만 보기</label>"
@@ -244,7 +244,7 @@ def build_dashboard_html(
         "if(!cb)return;"
         "cb.addEventListener('change',function(){"
         "var only=cb.checked;"
-        "document.querySelectorAll('.card').forEach(function(card){"
+        "document.querySelectorAll('#today-core .card').forEach(function(card){"
         "var t=card.dataset.sourceType;"
         "var deep=(t==='학회'||t==='특허');"
         "card.style.display=(only&&!deep)?'none':'';"
