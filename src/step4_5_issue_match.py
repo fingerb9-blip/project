@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 _PROGRESS_SUMMARY_MIN_DAYS = 3
 _CLOSE_AFTER_DAYS = 7
 _SNIPPET_LEN = 300
+# 실제 응답 품질 비교 전까지는 DEFAULT_MODEL(Flash) 유지. 검증 후 LITE_MODEL로 바꿀 때 이 한 줄만 수정하면 된다.
+_PROGRESS_SUMMARY_MODEL = gemini_client.DEFAULT_MODEL
 
 _MATCH_SCHEMA = {
     "type": "object",
@@ -162,7 +164,7 @@ def generate_progress_summary(issue: dict, new_articles: list[dict]) -> str:
         "지금까지의 경과를 한 문단으로 갱신 요약하라."
     )
     try:
-        result = gemini_client.call_gemini(prompt, _PROGRESS_SCHEMA, model=gemini_client.DEFAULT_MODEL)
+        result = gemini_client.call_gemini(prompt, _PROGRESS_SCHEMA, model=_PROGRESS_SUMMARY_MODEL)
         return result["progress_summary"]
     except RuntimeError as exc:
         logger.error("경과 요약 생성 실패, 기존 요약 유지: %s", exc)

@@ -10,31 +10,56 @@ logger = logging.getLogger(__name__)
 
 _SUMMARY_SCHEMA = {
     "type": "object",
-    "properties": {"summary": {"type": "string"}},
-    "required": ["summary"],
+    "properties": {
+        "summaries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string"},
+                    "summary": {"type": "string"},
+                },
+                "required": ["id", "summary"],
+            },
+        }
+    },
+    "required": ["summaries"],
 }
 
 _CONFIRMED_EXPRESSIONS = ["발표했다", "발표"]
 _OBSERVED_EXPRESSIONS = ["알려졌다", "알려"]
+_RAW_TEXT_LEN = 1500
+# 실제 응답 품질 비교 전까지는 DEFAULT_MODEL(Flash) 유지. 검증 후 LITE_MODEL로 바꿀 때 이 한 줄만 수정하면 된다.
+_SUMMARY_MODEL = gemini_client.DEFAULT_MODEL
 
 
-def summarize_article(article: dict) -> str:
-    """Gemini API(Flash)로 기사당 3~5문장 요약을 생성한다.
+def generate_summaries(articles: list[dict]) -> dict[str, str]:
+    """Gemini API(Flash)로 "핵심" 기사 전체를 단일 프롬프트로 배치 요약한다.
 
     Args:
-        article: "핵심" tier로 분류된 기사 dict
+        articles: "핵심" tier로 분류된 기사 리스트
 
     Returns:
-        3~5문장 요약 텍스트
+        {article_id: 3~5문장 요약} dict. 응답에 없는 id는 호출부에서 폴백 처리한다.
+
+    Raises:
+        RuntimeError: Gemini 호출 자체가 실패한 경우
     """
+    if not articles:
+        return {}
+
+    payload = [
+        {"id": a["id"], "title": a["title"], "raw_text": a.get("raw_text", "")[:_RAW_TEXT_LEN]}
+        for a in articles
+    ]
     prompt = (
-        "다음 반도체 업계 뉴스 기사를 3~5문장으로 요약하라. "
-        "사실관계 위주로 간결하게 작성하고, 근거 없는 추측은 포함하지 않는다.\n\n"
-        f"제목: {article['title']}\n"
-        f"본문: {article.get('raw_text', '')}"
+        "다음은 반도체 업계 뉴스 기사 목록이다. 각 기사를 3~5문장으로 요약하라. "
+        "사실관계 위주로 간결하게 작성하고, 근거 없는 추측은 포함하지 않는다. "
+        "결과를 summaries 배열로 반환하라.\n\n"
+        f"기사 목록: {json.dumps(payload, ensure_ascii=False)}"
     )
-    result = gemini_client.call_gemini(prompt, _SUMMARY_SCHEMA, model=gemini_client.DEFAULT_MODEL)
-    return result["summary"]
+    result = gemini_client.call_gemini(prompt, _SUMMARY_SCHEMA, model=_SUMMARY_MODEL)
+    return {item["id"]: item["summary"] for item in result.get("summaries", [])}
 
 
 def tag_confirmation_level(summary: str, source: str, source_tiers_config: dict) -> str:
@@ -80,20 +105,26 @@ def run(
         요약 + 확정/관측 태그가 부여된 기사 리스트 ("핵심" tier만)
     """
     core_articles = [a for a in classified_articles if a.get("tier") == "핵심"]
-    summarized = []
 
+    try:
+        summaries = generate_summaries(core_articles)
+    except RuntimeError as exc:
+        logger.error("배치 요약 실패, 전체 헤드라인+링크로 폴백: %s", exc)
+        summaries = {}
+
+    summarized = []
     for article in core_articles:
-        try:
-            summary = summarize_article(article)
-            tag = tag_confirmation_level(summary, article["source"], source_tiers_config)
-            article["summary"] = summary
-            article["confirmation_tag"] = tag
-            article["summary_fallback"] = False
-        except RuntimeError as exc:
-            logger.error("%s 요약 실패, 헤드라인+링크로 폴백: %s", article["id"], exc)
+        summary = summaries.get(article["id"])
+        if summary is None:
+            if summaries:
+                logger.error("%s 요약 응답 누락, 헤드라인+링크로 폴백", article["id"])
             article["summary"] = None
             article["confirmation_tag"] = None
             article["summary_fallback"] = True
+        else:
+            article["summary"] = summary
+            article["confirmation_tag"] = tag_confirmation_level(summary, article["source"], source_tiers_config)
+            article["summary_fallback"] = False
         summarized.append(article)
 
     output_path = Path(output_path)

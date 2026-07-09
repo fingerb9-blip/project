@@ -1,5 +1,6 @@
 """Step 2. 중복 제거 — 기업명 정규화 + Gemini 클러스터링."""
 
+import difflib
 import hashlib
 import json
 import logging
@@ -24,6 +25,7 @@ _CLUSTER_SCHEMA = {
 }
 
 _SNIPPET_LEN = 300
+_TITLE_SIMILARITY_THRESHOLD = 0.9
 
 
 def normalize_company_names(articles: list[dict], aliases_config: dict) -> list[dict]:
@@ -46,8 +48,41 @@ def normalize_company_names(articles: list[dict], aliases_config: dict) -> list[
     return articles
 
 
+def _normalize_title(title: str) -> str:
+    return "".join(title.split())
+
+
+def group_by_title_similarity(articles: list[dict]) -> list[list[dict]]:
+    """제목이 거의 동일한 기사를 사전에 그룹핑한다 (동일 사건의 재배포 기사 등).
+
+    Gemini 클러스터링 호출 전에 적용하는 보조 필터다. 그룹당 대표 1건만 Gemini에 전달해
+    호출 기사 수를 줄이고, Gemini 호출이 실패해도 제목이 같은 기사끼리는 폴백에서
+    흩어지지 않게 한다.
+
+    Args:
+        articles: 기업명 정규화된 기사 리스트
+
+    Returns:
+        제목 유사도로 묶인 기사 그룹 리스트 (그룹 내 기사는 이미 같은 사건으로 간주)
+    """
+    groups: list[list[dict]] = []
+    for article in articles:
+        normalized = _normalize_title(article["title"])
+        for group in groups:
+            similarity = difflib.SequenceMatcher(
+                None, normalized, _normalize_title(group[0]["title"])
+            ).ratio()
+            if similarity >= _TITLE_SIMILARITY_THRESHOLD:
+                group.append(article)
+                break
+        else:
+            groups.append([article])
+    return groups
+
+
 def cluster_same_event(articles: list[dict]) -> list[dict]:
-    """Gemini API(Flash-Lite)에 제목+본문 앞부분을 배치로 전달해 동일 사건을 클러스터링한다.
+    """제목 유사도로 사전 그룹핑한 뒤, 그룹 대표만 Gemini API(Flash-Lite)에 배치로 전달해
+    동일 사건을 클러스터링한다.
 
     Args:
         articles: 기업명 정규화된 기사 리스트
@@ -58,9 +93,12 @@ def cluster_same_event(articles: list[dict]) -> list[dict]:
     if not articles:
         return articles
 
+    groups = group_by_title_similarity(articles)
+    representatives = [group[0] for group in groups]
+
     payload = [
         {"id": a["id"], "title": a["title"], "snippet": a.get("raw_text", "")[:_SNIPPET_LEN]}
-        for a in articles
+        for a in representatives
     ]
     prompt = (
         "다음은 오늘 수집된 반도체 업계 뉴스 기사 목록이다. "
@@ -73,21 +111,24 @@ def cluster_same_event(articles: list[dict]) -> list[dict]:
         result = gemini_client.call_gemini(prompt, _CLUSTER_SCHEMA, model=gemini_client.LITE_MODEL)
         clusters = result.get("clusters", [])
     except RuntimeError as exc:
-        logger.error("클러스터링 실패, 기사별 단일 클러스터로 대체: %s", exc)
+        logger.error("클러스터링 실패, 제목 유사도 그룹 단위로 대체: %s", exc)
         clusters = []
 
-    id_to_cluster: dict[str, str] = {}
+    rep_id_to_cluster: dict[str, str] = {}
     for member_ids in clusters:
         if not member_ids:
             continue
         cluster_id = hashlib.sha1("|".join(sorted(member_ids)).encode("utf-8")).hexdigest()[:12]
         for member_id in member_ids:
-            id_to_cluster[member_id] = cluster_id
+            rep_id_to_cluster[member_id] = cluster_id
 
-    for article in articles:
-        if article["id"] not in id_to_cluster:
-            id_to_cluster[article["id"]] = hashlib.sha1(article["id"].encode("utf-8")).hexdigest()[:12]
-        article["cluster_id"] = id_to_cluster[article["id"]]
+    for group in groups:
+        rep_id = group[0]["id"]
+        if rep_id not in rep_id_to_cluster:
+            rep_id_to_cluster[rep_id] = hashlib.sha1(rep_id.encode("utf-8")).hexdigest()[:12]
+        cluster_id = rep_id_to_cluster[rep_id]
+        for article in group:
+            article["cluster_id"] = cluster_id
 
     return articles
 
