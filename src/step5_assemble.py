@@ -1,4 +1,9 @@
-"""Step 5. 조립 — 브리핑 마크다운 문서 및 대시보드 HTML 생성."""
+"""Step 5. 조립 — 브리핑 마크다운 문서 및 대시보드 HTML 생성.
+
+HTML/CSS 디자인은 대시보드_디자인_개편_명세_v2_SAVE스타일.md(§3 토큰, §9 CSS)를 따른다.
+디자인은 오직 세 곳에서만 산다: build_dashboard_html(), build_index_html(), _DASHBOARD_CSS.
+조회수·알림·커뮤니티·PDF·북마크는 §0 스코프 밖이라 구현하지 않는다.
+"""
 
 import html
 from datetime import date as _date
@@ -12,6 +17,24 @@ from src import issue_tracking, run_status
 _ALLOWED_URL_SCHEMES = {"http", "https"}
 _CATEGORY_ORDER = ["메모리", "파운드리", "장비·소재", "팹리스·설계", "규제·정책"]
 _ALERT_SUPPRESS_WINDOW_HOURS = 24
+_KOREAN_WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
+_KST = timezone(timedelta(hours=9))
+_BRAND_NAME = "반도체브리핑"
+
+# §3-2 소스 -> 배지 색 매핑. 미지정 소스는 기본 .badge(그레이)로 폴백된다.
+_SOURCE_BADGE_CLASS = {
+    "삼성전자 뉴스룸": "s-samsung",
+    "SK하이닉스 뉴스룸": "s-hynix",
+    "디일렉": "s-thelec",
+    "EE Times": "s-eetimes",
+    "전자신문": "s-etnews",
+    "ZDNet Korea": "s-zdnet",
+}
+
+_SITE_FOOTER = (
+    '<p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · '
+    "EE Times · 전자신문 · ZDNet Korea</p>"
+)
 
 
 def build_briefing(
@@ -101,16 +124,39 @@ def _safe_url(url: str) -> str | None:
     return html.escape(url, quote=True)
 
 
-def _format_updated_label(target_date: str) -> str:
-    """대시보드 헤더 부제목용 'YYYY년 M월 D일 · HH:MM 갱신' 문자열을 만든다.
+def _badge_class(source: str) -> str:
+    """소스명을 §3-2 배지 색 클래스로 매핑한다. 미지정 소스는 빈 문자열(기본 그레이 .badge)."""
+    return _SOURCE_BADGE_CLASS.get(source, "")
 
-    날짜는 target_date(파이프라인이 기준으로 삼은 날짜)를, 시각은 이 함수가 호출된
-    실제 조립 시각(now)을 사용한다 — 두 값은 정상 실행에서는 같은 날이지만,
-    권위 있는 값을 각각의 소스(파일명 vs 실행 시각)에서 가져오기 위해 분리했다.
-    """
-    d = _date.fromisoformat(target_date)
-    now = _datetime.now()
-    return f"{d.year}년 {d.month}월 {d.day}일 · {now.strftime('%H:%M')} 갱신"
+
+def _korean_weekday(iso_date: str) -> str:
+    """YYYY-MM-DD 날짜의 한글 요일(월~일)을 반환한다."""
+    return _KOREAN_WEEKDAYS[_date.fromisoformat(iso_date).weekday()]
+
+
+def _korean_date_title(iso_date: str) -> str:
+    """리포트 카드 제목용 'YYYY년 M월 D일 (요일)' 문자열을 만든다."""
+    d = _date.fromisoformat(iso_date)
+    return f"{d.year}년 {d.month}월 {d.day}일 ({_korean_weekday(iso_date)})"
+
+
+def _format_card_time(published_at: str | None) -> str:
+    """기사 카드 배지 행 우측에 쓸 KST 'HH:MM' 시각. 파싱 불가하면 빈 문자열."""
+    if not published_at:
+        return ""
+    try:
+        dt = datetime.fromisoformat(published_at)
+    except ValueError:
+        return ""
+    if dt.tzinfo is None:
+        return ""
+    return dt.astimezone(_KST).strftime("%H:%M")
+
+
+def _format_mtime_label(path: Path) -> str:
+    """파일 mtime 기준 KST 'HH:MM 갱신' 문자열 (리포트 카드 타임스탬프용)."""
+    dt = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).astimezone(_KST)
+    return f"{dt.strftime('%H:%M')} 갱신"
 
 
 def _list_dashboard_dates(dashboard_dir: Path, include: str | None = None) -> list[str]:
@@ -127,11 +173,7 @@ def _list_dashboard_dates(dashboard_dir: Path, include: str | None = None) -> li
 
 
 def _build_date_select(all_dates: list[str], target_date: str) -> str:
-    """다른 날짜 브리핑으로 바로 이동할 수 있는 드롭다운을 만든다.
-
-    "(오늘)" 라벨은 정적 HTML에 고정하면 나중에 열람할 때 날짜가 틀어지므로
-    붙이지 않고, 클라이언트 스크립트(_DASHBOARD_SCRIPT)가 실제 접속 시각 기준으로 표시한다.
-    """
+    """다른 날짜 브리핑으로 바로 이동할 수 있는 드롭다운을 만든다 (§5-2, 선택 요소)."""
     options = []
     for d in all_dates:
         selected = " selected" if d == target_date else ""
@@ -145,7 +187,7 @@ def _build_date_select(all_dates: list[str], target_date: str) -> str:
 
 
 def _ordered_categories(articles: list[dict]) -> list[str]:
-    """카테고리 필터 탭에 쓸 카테고리 목록을 config/categories.yaml 순서대로 정렬한다."""
+    """카테고리 pill 필터에 쓸 카테고리 목록을 config/categories.yaml 순서대로 정렬한다."""
     present: list[str] = []
     for article in articles:
         for category in article.get("category") or []:
@@ -156,36 +198,113 @@ def _ordered_categories(articles: list[dict]) -> list[str]:
     return ordered
 
 
+def _build_appbar() -> str:
+    """전 페이지 공통 헤더: 브랜드 스티커 태그 (§4-1). 알림 벨은 스코프 밖이라 생략."""
+    return f'<div class="appbar"><span class="brand">{_esc(_BRAND_NAME)}</span></div>'
+
+
+def _build_search_bar() -> str:
+    """전 페이지 공통 검색바 (§4-1·§4-3). #feed .card를 대상으로 클라이언트 필터링한다."""
+    return (
+        '<div class="search">'
+        '<input id="q" type="search" placeholder="뉴스 태그·제목·내용을 검색해 주세요" '
+        'aria-label="뉴스 검색">'
+        '<span class="i">🔍</span>'
+        "</div>"
+    )
+
+
+def _build_filter_bar(categories: list[str]) -> str:
+    """'오늘의 핵심' 카드를 카테고리로 거를 수 있는 pill 필터 바 (§4-4).
+
+    JS가 꺼져 있어도 버튼은 무해하고 카드는 전부 보인다 (점진적 향상).
+    """
+    if not categories:
+        return ""
+    parts = ['<div class="filter" role="group" aria-label="카테고리 필터">']
+    parts.append('<button type="button" data-cat="all" aria-pressed="true">전체</button>')
+    for category in categories:
+        parts.append(
+            f'<button type="button" data-cat="{_esc(category)}" aria-pressed="false">'
+            f"{_esc(category)}</button>"
+        )
+    parts.append("</div>")
+    return "".join(parts)
+
+
 _DASHBOARD_SCRIPT = """\
 <script>
-(function () {
-  var todayStr = new Date().toISOString().slice(0, 10);
-  var dateSelect = document.querySelector('.date-select');
-  if (dateSelect) {
-    Array.prototype.forEach.call(dateSelect.options, function (opt) {
-      if (opt.value === todayStr) { opt.textContent = opt.value + ' (오늘)'; }
-    });
-  }
-  var tabs = document.querySelectorAll('.cat-tab');
-  var cards = document.querySelectorAll('.card[data-categories]');
-  tabs.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var category = btn.dataset.category;
-      var wasActive = btn.classList.contains('active');
-      tabs.forEach(function (b) { b.classList.remove('active'); });
-      cards.forEach(function (card) { card.hidden = false; });
-      if (!wasActive) {
-        btn.classList.add('active');
-        cards.forEach(function (card) {
-          var cats = card.dataset.categories.split('|');
-          card.hidden = cats.indexOf(category) === -1;
-        });
-      }
-    });
+function applyFilters(){
+  var q=(document.getElementById('q')||{}).value||'';
+  q=q.trim().toLowerCase();
+  var active=document.querySelector('.filter button[aria-pressed="true"]');
+  var cat=active?active.dataset.cat:'all';
+  document.querySelectorAll('#feed .card').forEach(function(c){
+    var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
+    var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
+    c.style.display=(okCat&&okQ)?'':'none';
   });
-})();
+}
+document.querySelectorAll('.filter button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    applyFilters();
+  });
+});
+var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
 </script>
 """
+
+
+def _build_article_card(article: dict) -> str:
+    """기사 하나를 §4-5 뉴스 카드(소스 배지+태그 칩+카테고리 칩+시각 -> 제목 -> 요약 -> 원문 링크)로
+    렌더링한다. _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
+    """
+    article_categories = article.get("category") or ["미분류"]
+    cats_attr = _esc(" ".join(article_categories))
+    safe_url = _safe_url(article["url"])
+    title = _esc(article["title"])
+    source = _esc(article["source"])
+    link_open = f'<a href="{safe_url}">' if safe_url else ""
+    link_close = "</a>" if safe_url else ""
+
+    if article.get("summary_fallback"):
+        tag_class, tag_label = "mut", "요약 없음"
+    else:
+        tag = article.get("confirmation_tag") or ""
+        if "확정" in tag:
+            tag_class = "ok"
+        elif "관측" in tag:
+            tag_class = "obs"
+        else:
+            tag_class = "mut"
+        tag_label = tag
+
+    search_text = " ".join(
+        [article["source"], article["title"], article.get("summary") or ""]
+    ).lower()
+
+    parts = [f'<article class="card" data-categories="{cats_attr}" data-text="{_esc(search_text)}">']
+    parts.append('<div class="row">')
+    parts.append(f'<span class="badge {_badge_class(article["source"])}">{source}</span>')
+    if tag_label:
+        parts.append(f'<span class="tag {tag_class}">{_esc(tag_label)}</span>')
+    for category in article_categories:
+        parts.append(f'<span class="chip">{_esc(category)}</span>')
+    time_label = _format_card_time(article.get("published_at"))
+    parts.append('<span class="spacer"></span>')
+    if time_label:
+        parts.append(f'<span class="time">{_esc(time_label)}</span>')
+    parts.append("</div>")
+    parts.append(f'<p class="title">{link_open}{title}{link_close}</p>')
+    if not article.get("summary_fallback"):
+        parts.append(f'<p class="summary">{_esc(article["summary"])}</p>')
+    parts.append('<div class="cardfoot">')
+    if safe_url:
+        parts.append(f'<a href="{safe_url}">원문 보기 ↗</a>')
+    parts.append("</div>")
+    parts.append("</article>")
+    return "".join(parts)
 
 
 def build_dashboard_html(
@@ -195,21 +314,28 @@ def build_dashboard_html(
     target_date: str,
     all_dates: list[str] | None = None,
     active_issues: list[dict] | None = None,
+    updated_at: str | None = None,
 ) -> str:
-    """오늘의 핵심(카테고리 필터) -> 확인 필요(접이식) -> 수집 상태 -> 진행 중 이슈 순으로 카드형 대시보드 페이지를 만든다.
+    """헤더(브랜드+검색) -> pill 필터 -> 오늘의 핵심(뉴스 카드) -> 확인 필요 -> 수집 상태 ->
+    진행 중 이슈 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
 
     Args:
         summarized_articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
         pending_review_articles: Step 3 결과 중 "확인 필요" tier 기사 리스트
         collection_stats: {source: {"today": int, "avg7d": float}} 형태의 소스별 수집 통계
         target_date: YYYY-MM-DD 형식 날짜 문자열
-        all_dates: 날짜 선택 드롭다운에 표시할 전체 날짜 목록 (없으면 target_date만 표시)
+        all_dates: 날짜 드롭다운에 표시할 전체 날짜 목록 (없으면 target_date만 표시)
         active_issues: data/state/issues.json 중 status="진행중"인 이슈 리스트 (Phase 3)
+        updated_at: rebuild_dashboard.py가 과거 페이지를 재생성할 때 원본 파일 mtime을 넘겨
+            받기 위한 자리로 시그니처를 유지한다. v2 레이아웃(§5-2)은 데일리 페이지에
+            페이지 단위 "갱신" 타임스탬프를 두지 않으므로(카드별 시각·리포트 카드 쪽에서
+            표시) 현재는 렌더링에 쓰이지 않는다.
 
     Returns:
         단일 HTML 문서 문자열
     """
     all_dates = all_dates or [target_date]
+    del updated_at  # 시그니처 호환용 — v2 데일리 레이아웃엔 표시할 슬롯이 없다.
 
     parts = [
         "<!doctype html>",
@@ -218,122 +344,68 @@ def build_dashboard_html(
         f"<title>반도체 뉴스 브리핑 {_esc(target_date)}</title>",
         '<link rel="stylesheet" href="style.css">',
         "</head><body>",
-        '<div class="topbar">',
-        '<div class="titleblock">',
-        "<h1>반도체 뉴스 브리핑</h1>",
-        f'<p class="subtitle">{_esc(_format_updated_label(target_date))}</p>',
-        "</div>",
-        _build_date_select(all_dates, target_date),
-        "</div>",
-        '<p class="backlink"><a href="index.html">&larr; 전체 목록</a></p>',
+        _build_appbar(),
+        _build_search_bar(),
+        '<p class="row"><a href="index.html">&larr; 전체 목록</a>'
+        '<span class="spacer"></span>'
+        + _build_date_select(all_dates, target_date)
+        + "</p>",
     ]
 
-    parts.append('<section class="section-today">')
-    parts.append('<h2 class="section-label">오늘의 핵심</h2>')
-
     categories = _ordered_categories(summarized_articles)
-    if categories:
-        parts.append('<div class="cat-tabs">')
-        for category in categories:
-            parts.append(
-                f'<button type="button" class="cat-tab" data-category="{_esc(category)}">'
-                f"{_esc(category)}</button>"
-            )
-        parts.append("</div>")
+    parts.append(_build_filter_bar(categories))
 
+    parts.append('<h2 class="sec">오늘의 핵심</h2>')
     if not summarized_articles:
-        parts.append('<p class="empty">오늘 핵심 기사가 없습니다.</p>')
-
-    parts.append('<div class="card-list">')
+        parts.append('<p class="summary">오늘 핵심 기사가 없습니다.</p>')
+    parts.append('<div id="feed">')
     for article in summarized_articles:
-        article_categories = article.get("category") or ["미분류"]
-        cats_attr = _esc("|".join(article_categories))
-        safe_url = _safe_url(article["url"])
-        title = _esc(article["title"])
-        source = _esc(article["source"])
-        link_open = f'<a href="{safe_url}">' if safe_url else ""
-        link_close = "</a>" if safe_url else ""
-
-        parts.append(f'<article class="card" data-categories="{cats_attr}">')
-        parts.append('<div class="card-tags">')
-        if article.get("summary_fallback"):
-            parts.append('<span class="chip-muted">요약 없음</span>')
-        else:
-            tag = article.get("confirmation_tag") or ""
-            if tag:
-                tag_class = (
-                    "tag-confirmed"
-                    if "확정" in tag
-                    else "tag-observed" if "관측" in tag else "tag-neutral"
-                )
-                parts.append(f'<span class="pill {tag_class}">{_esc(tag)}</span>')
-        for category in article_categories:
-            parts.append(f'<span class="pill pill-category">{_esc(category)}</span>')
-        parts.append("</div>")
-        parts.append(f'<h3 class="card-title">{link_open}{title}{link_close}</h3>')
-        if article.get("summary_fallback"):
-            meta = f"{source} · {link_open}원문 보기 ↗{link_close}" if safe_url else source
-            parts.append(f'<p class="card-link-only">{meta}</p>')
-        else:
-            parts.append(f'<p class="card-summary">{_esc(article["summary"])}</p>')
-            meta = f"{source} · {link_open}원문 보기 ↗{link_close}" if safe_url else source
-            parts.append(f'<p class="card-meta">{meta}</p>')
-        parts.append("</article>")
+        parts.append(_build_article_card(article))
     parts.append("</div>")
-    parts.append("</section>")
 
-    parts.append('<section class="section-pending">')
-    parts.append("<details class=\"pending-details\">")
-    parts.append(
-        f'<summary>확인 필요 <span class="count-badge">{len(pending_review_articles)}건</span></summary>'
-    )
+    parts.append('<details class="card">')
+    parts.append(f"<summary>확인 필요 <span class=\"chip\">{len(pending_review_articles)}건</span></summary>")
     if not pending_review_articles:
-        parts.append('<p class="empty">없음</p>')
+        parts.append('<p class="summary">없음</p>')
     else:
         parts.append('<ul class="pending-list">')
         for article in pending_review_articles:
             safe_url = _safe_url(article["url"])
             title = _esc(article["title"])
             link = f'<a href="{safe_url}">{title}</a>' if safe_url else title
-            parts.append(f'<li>{link} <span class="meta">({_esc(article["source"])})</span></li>')
+            parts.append(f'<li>{link} <span class="time">({_esc(article["source"])})</span></li>')
         parts.append("</ul>")
     parts.append("</details>")
-    parts.append("</section>")
 
-    parts.append('<section class="section-stats">')
-    parts.append('<h2 class="section-label">수집 상태</h2>')
-    parts.append('<div class="stat-chips">')
+    parts.append('<h2 class="sec">수집 상태</h2>')
+    parts.append('<div class="table-wrap"><table>')
+    parts.append('<tr><th>소스</th><th class="num">오늘</th><th class="num">7일 평균</th></tr>')
     for source, stats in collection_stats.items():
         today_count = stats.get("today", 0)
         avg7d = stats.get("avg7d", 0)
-        css_class = "warn" if avg7d > 0 and today_count < avg7d * 0.3 else "chip"
+        row_class = ' class="warn"' if avg7d > 0 and today_count < avg7d * 0.3 else ""
         parts.append(
-            f'<span class="{css_class}">{_esc(source)} <strong>{today_count}</strong> '
-            f'<span class="chip-avg">(평균 {avg7d:.1f})</span></span>'
+            f"<tr{row_class}><td>{_esc(source)}</td>"
+            f'<td class="num">{today_count}</td><td class="num">{avg7d:.1f}</td></tr>'
         )
-    parts.append("</div>")
-    parts.append("</section>")
+    parts.append("</table></div>")
 
     if active_issues:
-        parts.append('<section class="section-issues">')
-        parts.append('<h2 class="section-label">진행 중 이슈</h2>')
-        parts.append('<div class="card-list">')
+        parts.append('<h2 class="sec">진행 중 이슈</h2>')
         for issue in active_issues:
             article_count = len(issue.get("related_article_ids") or [])
             parts.append('<article class="card">')
+            parts.append(f'<div class="row"><span class="chip">{_esc(issue.get("entity", ""))}</span></div>')
+            parts.append(f'<p class="title">{_esc(issue.get("title", ""))}</p>')
             parts.append(
-                f"<p>[{_esc(issue.get('entity', ''))}] <strong>{_esc(issue.get('title', ''))}</strong></p>"
-            )
-            parts.append(
-                f'<p class="card-meta">{_esc(issue.get("first_seen", ""))} ~ '
+                f'<p class="time">{_esc(issue.get("first_seen", ""))} ~ '
                 f'{_esc(issue.get("last_updated", ""))} · 관련 기사 {article_count}건</p>'
             )
             if issue.get("progress_summary"):
-                parts.append(f'<p class="card-summary">경과 요약: {_esc(issue["progress_summary"])}</p>')
+                parts.append(f'<p class="summary">경과 요약: {_esc(issue["progress_summary"])}</p>')
             parts.append("</article>")
-        parts.append("</div>")
-        parts.append("</section>")
 
+    parts.append(_SITE_FOOTER)
     parts.append(_DASHBOARD_SCRIPT)
     parts.append("</body></html>")
     return "\n".join(parts)
@@ -383,15 +455,37 @@ def build_alert_detail_html(issue: dict) -> str:
         f"<title>속보 — {_esc(title)}</title>",
         '<link rel="stylesheet" href="../style.css">',
         "</head><body>",
+        _build_appbar(),
         '<p><a href="../index.html">&larr; 전체 목록</a></p>',
-        f"<h1>🚨 {_esc(issue.get('tag', ''))} [{_esc(issue.get('entity', ''))}] {_esc(title)}</h1>",
-        f'<p class="meta">최초 감지: {_esc(issue.get("first_seen", ""))} · '
+        '<article class="card">',
+        f'<div class="row"><span class="chip">{_esc(issue.get("entity", ""))}</span></div>',
+        f"<p class=\"title\">🚨 {_esc(issue.get('tag', ''))} {_esc(title)}</p>",
+        f'<p class="time">최초 감지: {_esc(issue.get("first_seen", ""))} · '
         f'최근 갱신: {_esc(issue.get("last_updated", ""))}</p>',
     ]
     if issue.get("progress_summary"):
-        parts.append(f"<p>{_esc(issue['progress_summary'])}</p>")
+        parts.append(f'<p class="summary">{_esc(issue["progress_summary"])}</p>')
+    parts.append("</article>")
+    parts.append(_SITE_FOOTER)
     parts.append("</body></html>")
     return "\n".join(parts)
+
+
+def _build_report_card(dashboard_dir: Path, iso_date: str) -> str:
+    """§4-6 리포트 카드 (인덱스 아카이브 리스트 항목). PDF 다운로드는 스코프 밖(§0)이라 넣지 않는다."""
+    html_path = dashboard_dir / f"{iso_date}.html"
+    time_label = _format_mtime_label(html_path) if html_path.exists() else ""
+    parts = ['<div class="card report" data-text="' + _esc(iso_date.lower()) + '">']
+    parts.append('<div class="row"><span class="chip">리포트</span><span class="spacer"></span>')
+    if time_label:
+        parts.append(f'<span class="time">{_esc(time_label)}</span>')
+    parts.append("</div>")
+    parts.append(f'<p class="datetitle">{_esc(_korean_date_title(iso_date))}</p>')
+    parts.append('<div class="actions">')
+    parts.append(f'<a href="{_esc(iso_date)}.html">📄 리포트 읽기</a>')
+    parts.append("</div>")
+    parts.append("</div>")
+    return "".join(parts)
 
 
 def build_index_html(
@@ -399,21 +493,29 @@ def build_index_html(
     state_path: Path,
     issues_path: Path | None = None,
     now: str | None = None,
+    latest_core_count: int | None = None,
+    latest_headlines: list[str] | None = None,
 ) -> str:
-    """data/dashboard/*.html 파일 목록으로 날짜별 인덱스 페이지를 만든다.
+    """헤더(브랜드+검색) -> 히어로 배너(최신 브리핑) -> 리포트 카드 목록 순으로 인덱스 페이지를
+    만든다 (§5-1 레이아웃, SAVE 스타일). 조회수·알림 등은 §0 스코프 밖이라 표시하지 않는다.
 
-    run_status.json의 마지막 실행 상태를 상단 배지로 보여준다 ("침묵 실패 방지").
-    issues_path가 주어지면 24시간 이내 확정된 속보를 상단 배너로 함께 보여준다 (Phase 3).
+    run_status.json의 마지막 실행 상태를 히어로 배너 하단 상태 문구로 보여준다
+    ("침묵 실패 방지"). issues_path가 주어지면 24시간 이내 확정된 속보를 상단 배너로도 보여준다.
 
     Args:
         dashboard_dir: data/dashboard 디렉토리 경로 (날짜별 html이 이미 생성돼 있어야 함)
         state_path: data/state/run_status.json 경로
         issues_path: data/state/issues.json 경로 (속보 배너용, 선택)
         now: 현재 시각 ISO8601 문자열 (테스트용, 기본값은 UTC 현재 시각)
+        latest_core_count: 최신 날짜의 "오늘의 핵심" 기사 수 (현재 v2 히어로에는 표시하지
+            않지만 v1과의 호출 호환을 위해 인자는 유지한다)
+        latest_headlines: 최신 날짜의 헤드라인 미리보기 목록 (위와 동일한 이유로 유지, 미사용)
 
     Returns:
         단일 HTML 문서 문자열
     """
+    del latest_core_count, latest_headlines  # v2 히어로는 상태 문구만 표시 (§4-7)
+
     dates = sorted(
         (p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"),
         reverse=True,
@@ -421,17 +523,14 @@ def build_index_html(
 
     status = run_status.load_status(state_path)
     if status is None:
-        badge = '<p class="badge unknown">실행 이력 없음</p>'
+        status_text = "실행 이력 없음"
+        status_class = ""
     elif status.get("last_run_status") == "success":
-        badge = (
-            f'<p class="badge ok">최근 실행 성공 '
-            f'(마지막 성공: {_esc(status.get("last_success_at", "-"))})</p>'
-        )
+        status_text = f'● 정상 · 마지막 성공 {_esc(status.get("last_success_at", "-"))}'
+        status_class = "ok"
     else:
-        badge = (
-            f'<p class="badge fail">최근 실행 실패 '
-            f'(마지막 성공: {_esc(status.get("last_success_at", "-"))})</p>'
-        )
+        status_text = f'● 실패 · 마지막 성공 {_esc(status.get("last_success_at", "-"))}'
+        status_class = "fail"
 
     parts = [
         "<!doctype html>",
@@ -440,10 +539,8 @@ def build_index_html(
         "<title>반도체 뉴스 브리핑</title>",
         '<link rel="stylesheet" href="style.css">',
         "</head><body>",
-        '<div class="titleblock">',
-        "<h1>반도체 뉴스 브리핑</h1>",
-        badge,
-        "</div>",
+        _build_appbar(),
+        _build_search_bar(),
     ]
 
     if issues_path is not None:
@@ -460,173 +557,122 @@ def build_index_html(
         if banner:
             parts.append(banner)
 
+    # 상태 문구는 히어로 배너(있을 때만 존재) 안이 아니라 항상 렌더링한다 — 아직 브리핑이
+    # 하나도 없어도(예: 첫 실행이 실패해 대시보드 파일 자체가 안 생긴 경우) "침묵 실패"
+    # 없이 실패 사실이 보여야 한다.
+    parts.append(f'<p class="status {status_class}">{status_text}</p>')
+
     if not dates:
-        parts.append('<p class="empty">아직 생성된 브리핑이 없습니다.</p>')
+        parts.append('<p class="summary">아직 생성된 브리핑이 없습니다.</p>')
     else:
         latest = dates[0]
-        parts.append(f'<p><a class="latest" href="{latest}.html">최신 브리핑 보기 ({latest})</a></p>')
-        parts.append('<h2 class="section-label">지난 브리핑</h2>')
-        parts.append('<ul class="date-list">')
-        for d in dates:
-            parts.append(f'<li><a href="{d}.html">{d}</a></li>')
-        parts.append("</ul>")
+        parts.append(f'<a class="hero" href="{_esc(latest)}.html"><h2>🔍 오늘의 데일리 리포트</h2></a>')
 
+        parts.append('<div id="feed">')
+        for d in dates:
+            parts.append(_build_report_card(dashboard_dir, d))
+        parts.append("</div>")
+
+    parts.append(_SITE_FOOTER)
+    parts.append(_DASHBOARD_SCRIPT)
     parts.append("</body></html>")
     return "\n".join(parts)
 
 
 _DASHBOARD_CSS = """\
-:root {
-  --bg: #fafafa;
-  --surface: #ffffff;
-  --border: #e4e4e4;
-  --text: #1a1a1a;
-  --text-muted: #6b6b6b;
-  --accent: #2563eb;
-  --accent-bg: #eff6ff;
-  --confirmed-bg: #d4edda;
-  --confirmed-text: #155724;
-  --observed-bg: #fff3cd;
-  --observed-text: #856404;
-  --warn-bg: #f8d7da;
-  --warn-text: #721c24;
-  --chip-bg: #f1f3f5;
-  --chip-text: #495057;
-  --radius: 10px;
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+:root{
+  --paper:#F5F6F8; --surface:#FFF; --ink:#1A1D24; --ink-soft:#8A909C; --line:#ECEEF2;
+  --brand:#6C5CE7; --brand-2:#8E7DF5; --action:#3D6FE6; --pill-active:#14161B;
+  --confirmed:#2E9E5B; --observed:#C9821A; --muted:#6B7280; --warn-bg:#FFF6E5; --warn-line:#F0C36D;
+  --font-sans:"Pretendard",-apple-system,"Segoe UI","Apple SD Gothic Neo",sans-serif;
 }
+*{box-sizing:border-box}
+body{font-family:var(--font-sans);max-width:560px;margin:0 auto;padding:16px 16px 56px;
+  color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--action);text-decoration:none}
+a:hover{text-decoration:underline}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16181c;
-    --surface: #202329;
-    --border: #33373f;
-    --text: #e8e9eb;
-    --text-muted: #9a9ea6;
-    --accent: #6ea8fe;
-    --accent-bg: #1c2b47;
-    --confirmed-bg: #15351f;
-    --confirmed-text: #7fdb98;
-    --observed-bg: #3a2f10;
-    --observed-text: #f0c869;
-    --warn-bg: #3d1c22;
-    --warn-text: #f0a3ac;
-    --chip-bg: #2a2d33;
-    --chip-text: #c3c6cc;
-  }
-}
+/* 헤더 */
+.appbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.brand{display:inline-block;background:#14161B;color:#fff;font-weight:700;font-size:.85rem;
+  padding:4px 10px;border-radius:6px;transform:skew(-6deg)}
+.search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:11px 14px;margin-bottom:16px}
+.search input{border:0;outline:0;flex:1;font-family:inherit;font-size:.9rem;background:transparent;color:var(--ink)}
+.search input::placeholder{color:var(--ink-soft)}
+.search .i{color:var(--action)}
 
-* { box-sizing: border-box; }
+/* 날짜 내비(선택) */
+.date-select{font-family:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:8px;padding:4px 8px}
 
-body {
-  font-family: -apple-system, "Segoe UI", sans-serif;
-  max-width: 860px; margin: 2rem auto; padding: 0 1rem 3rem;
-  color: var(--text); background: var(--bg);
-  font-variant-numeric: tabular-nums;
-}
+/* pill 필터 */
+.filter{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 0 14px}
+.filter button{flex:0 0 auto;font-family:inherit;font-size:.85rem;color:var(--ink-soft);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--pill-active);color:#fff;border-color:var(--pill-active)}
 
-a { color: var(--accent); }
+/* 상태 문구 (침묵 실패 방지 — 브리핑이 하나도 없을 때도 항상 표시) */
+.status{font-size:.8rem;color:var(--ink-soft);margin:0 0 14px}
+.status.ok{color:var(--confirmed)}
+.status.fail{color:#C23B3B;font-weight:600}
 
-.titleblock h1, .topbar h1 { font-size: 1.5rem; margin: 0; text-wrap: balance; }
+/* 히어로 배너 */
+.hero{display:block;background:linear-gradient(100deg,var(--brand-2),var(--brand));color:#fff;
+  border-radius:16px;padding:18px 20px;margin:0 0 18px}
+.hero h2{margin:0;font-size:1.05rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
 
-.topbar {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 1rem; flex-wrap: wrap;
-}
-.subtitle { margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.85rem; }
-.date-select {
-  border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.8rem;
-  background: var(--surface); color: var(--text); font-size: 0.9rem;
-}
+/* 카드 공통 */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:15px 16px;margin:0 0 11px;transition:box-shadow .15s}
+.card:hover{box-shadow:0 4px 14px rgba(26,29,36,.06)}
+.row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.spacer{flex:1}
+.time{color:var(--ink-soft);font-size:.78rem}
+.title{font-size:1rem;font-weight:700;line-height:1.4;margin:.55rem 0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.summary{font-size:.9rem;color:var(--ink);margin:.35rem 0}
+.cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.cardfoot a{font-size:.85rem}
 
-.backlink { margin: 0.6rem 0 1.6rem; font-size: 0.85rem; }
-.backlink a { color: var(--text-muted); text-decoration: none; }
-.backlink a:hover { text-decoration: underline; }
+/* 배지·칩 */
+.badge{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#EEF0F3;color:#5A6472}
+.badge.s-samsung{background:#ECEBFB;color:#5B4FC4}
+.badge.s-hynix{background:#E4F0FB;color:#2C6BB5}
+.badge.s-thelec{background:#E1F1EF;color:#1F7A6B}
+.badge.s-eetimes{background:#FDE9DD;color:#C2652A}
+.badge.s-etnews{background:#FDF1D6;color:#A9790B}
+.badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
+.tag{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px}
+.tag.ok{background:rgba(46,158,91,.12);color:var(--confirmed)}
+.tag.obs{background:rgba(201,130,26,.14);color:var(--observed)}
+.tag.mut{background:#EEF0F3;color:var(--muted)}
+.chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 
-.section-label {
-  font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--text-muted); font-weight: 600; margin: 2.2rem 0 0.9rem; border: none; padding: 0;
-}
-.section-today .section-label { margin-top: 0; }
+/* 리포트 카드(인덱스) */
+.report .datetitle{font-size:1.05rem;font-weight:700;margin:.5rem 0 .6rem}
+.report .actions{display:flex;gap:18px}
+.report .actions a{display:inline-flex;align-items:center;gap:6px;font-size:.9rem}
 
-.cat-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
-.cat-tab {
-  border: 1px solid var(--border); background: var(--surface); color: var(--text);
-  border-radius: 999px; padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;
-}
-.cat-tab:hover { border-color: var(--accent); }
-.cat-tab.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+/* 확인 필요(접이식 — .card 재사용) */
+.pending-list{margin:.6rem 0 0;padding-left:1.1rem}
+.pending-list li{margin-bottom:.4rem;font-size:.92rem}
 
-.card-list { display: flex; flex-direction: column; gap: 0.9rem; }
-.card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1rem 1.1rem;
-}
-.card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.55rem; }
-.pill, .chip-muted {
-  display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px;
-  font-size: 0.78rem; font-weight: 600;
-}
-.chip-muted { color: var(--text-muted); background: var(--chip-bg); font-weight: 500; }
-.tag-confirmed { background: var(--confirmed-bg); color: var(--confirmed-text); }
-.tag-observed { background: var(--observed-bg); color: var(--observed-text); }
-.tag-neutral { background: var(--chip-bg); color: var(--chip-text); }
-.pill-category { background: var(--chip-bg); color: var(--chip-text); font-weight: 500; }
+/* 표 */
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.85rem;background:var(--surface);border-radius:12px;overflow:hidden}
+th,td{border-bottom:1px solid var(--line);padding:9px 11px;text-align:left}
+th{background:#F1F3F6;font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.warn td{background:var(--warn-bg)}
 
-.card-title { font-size: 1.05rem; margin: 0 0 0.35rem; text-wrap: balance; }
-.card-title a { color: var(--text); text-decoration: none; }
-.card-title a:hover { text-decoration: underline; }
-.card-summary { margin: 0 0 0.4rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; }
-.card-meta, .card-link-only { margin: 0; color: var(--text-muted); font-size: 0.82rem; }
-
-.pending-details {
-  border: 1px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1rem; background: var(--surface);
-}
-.pending-details summary {
-  cursor: pointer; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 0.5rem;
-}
-.pending-details summary::-webkit-details-marker { display: none; }
-.pending-details summary::after { content: "\\25BE"; margin-left: auto; color: var(--text-muted); }
-.pending-details[open] summary::after { content: "\\25B4"; }
-.count-badge { background: var(--chip-bg); color: var(--chip-text); border-radius: 999px; padding: 0.1rem 0.55rem; font-size: 0.78rem; }
-.pending-list { margin: 0.8rem 0 0; padding-left: 1.1rem; }
-.pending-list li { margin-bottom: 0.4rem; font-size: 0.92rem; }
-
-.section-stats { overflow-x: auto; }
-.stat-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.chip, .warn {
-  display: inline-flex; align-items: center; gap: 0.35rem;
-  border-radius: 999px; padding: 0.35rem 0.8rem; font-size: 0.85rem; white-space: nowrap;
-}
-.chip { background: var(--chip-bg); color: var(--chip-text); }
-.warn { background: var(--warn-bg); color: var(--warn-text); font-weight: 600; }
-.chip-avg { opacity: 0.75; font-size: 0.9em; }
-
-.empty { color: var(--text-muted); font-size: 0.9rem; }
-
-.badge { display: inline-block; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.9rem; margin-top: 0.6rem; }
-.badge.ok { background: var(--confirmed-bg); color: var(--confirmed-text); }
-.badge.fail { background: var(--warn-bg); color: var(--warn-text); }
-.badge.unknown { background: var(--chip-bg); color: var(--chip-text); }
-a.latest { font-weight: bold; font-size: 1.1rem; }
-.date-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
-.date-list a { text-decoration: none; }
-.date-list a:hover { text-decoration: underline; }
-.alert-banner { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-text); border-radius: var(--radius); padding: 0.6rem 1rem; margin: 0.8rem 0; }
-.alert-banner p { margin: 0.2rem 0; font-weight: bold; }
-.alert-banner a { color: inherit; }
-
-@media (max-width: 480px) {
-  body { margin: 1rem auto; padding: 0 0.7rem 2rem; font-size: 0.95rem; }
-  .titleblock h1, .topbar h1 { font-size: 1.2rem; }
-  .topbar { flex-direction: column; align-items: stretch; }
-  .date-select { width: 100%; }
-  .section-label { margin: 1.6rem 0 0.7rem; }
-  .card { padding: 0.75rem 0.85rem; }
-  .card-title { font-size: 0.98rem; }
-  .pending-details { padding: 0.65rem 0.8rem; }
-  .stat-chips { gap: 0.4rem; }
-  .chip, .warn { padding: 0.3rem 0.65rem; font-size: 0.8rem; }
-}
+/* 섹션 제목·푸터 */
+h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
+.alert-banner{background:#FDECEC;border:1px solid #F3B4B4;border-radius:14px;padding:12px 16px;margin:0 0 14px}
+.site-footer{margin-top:2.4rem;padding-top:1rem;border-top:1px solid var(--line);font-size:.76rem;color:var(--ink-soft)}
+:focus-visible{outline:2px solid var(--action);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 """
 
 
@@ -649,7 +695,7 @@ def run(
         archive_path: data/archive/YYYY-MM-DD.md 저장 경로
         dashboard_dir: data/dashboard 디렉토리 경로
         today: YYYY-MM-DD 형식 날짜 문자열
-        state_path: data/state/run_status.json 경로 (index.html 상태 배지용)
+        state_path: data/state/run_status.json 경로 (index.html 상태 표시용)
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
 
     Returns:
@@ -680,15 +726,17 @@ def run(
         pending_review_articles,
         collection_stats,
         today,
-        all_dates,
-        active_issues,
+        all_dates=all_dates,
+        active_issues=active_issues,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 
     (dashboard_dir / "style.css").write_text(_DASHBOARD_CSS, encoding="utf-8")
 
     index_html = build_index_html(
-        dashboard_dir, Path(state_path), issues_path=Path(issues_path) if issues_path else None
+        dashboard_dir,
+        Path(state_path),
+        issues_path=Path(issues_path) if issues_path else None,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

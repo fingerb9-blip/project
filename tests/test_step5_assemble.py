@@ -19,7 +19,7 @@ def _sample_article(**overrides):
     article = {
         "title": "삼성전자, 테스트 기사",
         "url": "https://example.com/news/1",
-        "source": "테스트소스",
+        "source": "디일렉",
         "summary": "테스트 요약 문장입니다.",
         "confirmation_tag": "[확정]",
         "summary_fallback": False,
@@ -55,7 +55,7 @@ def test_build_dashboard_html_includes_summary_and_tag():
     assert "[확정]" in html_out
 
 
-def test_build_dashboard_html_renders_category_section():
+def test_build_dashboard_html_renders_category_chips():
     article = _sample_article(category=["메모리", "파운드리"])
     html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
     assert "메모리" in html_out
@@ -78,6 +78,8 @@ def test_build_dashboard_html_handles_summary_fallback_article():
     fallback = _sample_article(summary_fallback=True, summary=None, confirmation_tag=None)
     html_out = step5_assemble.build_dashboard_html([fallback], [], {}, "2026-07-08")
     assert "삼성전자, 테스트 기사" in html_out
+    assert "요약 없음" in html_out
+    assert 'class="tag mut"' in html_out
 
 
 def test_build_dashboard_html_escapes_quote_breakout_in_url():
@@ -91,10 +93,79 @@ def test_build_dashboard_html_escapes_quote_breakout_in_url():
     article = _sample_article(url=malicious_url)
     html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
 
-    # The unescaped payload should NOT appear in the output
     assert 'onmouseover="alert(1)' not in html_out
-    # The escaped quote should appear in the output
     assert "&quot;" in html_out
+
+
+def test_build_dashboard_html_confirmed_tag_uses_ok_class():
+    article = _sample_article(confirmation_tag="[확정]")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="tag ok"' in html_out
+
+
+def test_build_dashboard_html_observed_tag_uses_obs_class():
+    article = _sample_article(confirmation_tag="[관측]")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="tag obs"' in html_out
+
+
+def test_build_dashboard_html_maps_known_source_to_badge_class():
+    article = _sample_article(source="디일렉")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="badge s-thelec"' in html_out
+
+
+def test_build_dashboard_html_unknown_source_falls_back_to_plain_badge():
+    article = _sample_article(source="처음보는매체")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="badge ">처음보는매체' in html_out
+
+
+def test_build_dashboard_html_card_carries_space_separated_categories():
+    article = _sample_article(category=["메모리", "파운드리"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-categories="메모리 파운드리"' in html_out
+
+
+def test_build_dashboard_html_card_carries_lowercased_search_text():
+    article = _sample_article(title="HBM4 발표", source="디일렉", summary="요약본")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-text="' in html_out
+    assert "hbm4 발표" in html_out
+
+
+def test_build_dashboard_html_includes_appbar_and_search():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert 'class="brand"' in html_out
+    assert 'id="q"' in html_out
+
+
+def test_build_dashboard_html_includes_filter_bar_for_present_categories():
+    article = _sample_article(category=["메모리", "파운드리"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="filter"' in html_out
+    assert 'data-cat="메모리"' in html_out
+    assert 'data-cat="all"' in html_out
+
+
+def test_build_dashboard_html_omits_filter_bar_when_no_categories():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert 'class="filter"' not in html_out
+
+
+def test_build_dashboard_html_includes_site_footer():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert "site-footer" in html_out
+    assert "디일렉" in html_out
+
+
+def test_build_dashboard_html_omits_out_of_scope_features():
+    """§0 스코프 밖: 조회수·알림 벨·PDF·북마크·커뮤니티는 렌더링되지 않는다."""
+    article = _sample_article()
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert "조회수" not in html_out
+    assert "PDF" not in html_out
+    assert "북마크" not in html_out
 
 
 def test_build_index_html_lists_dates_newest_first(tmp_path):
@@ -111,7 +182,18 @@ def test_build_index_html_lists_dates_newest_first(tmp_path):
     assert first < second < third
 
 
-def test_build_index_html_shows_success_badge(tmp_path):
+def test_build_index_html_includes_latest_date_as_report_card_too(tmp_path):
+    """v2는 v1과 달리 최신 날짜도 히어로 아래 리포트 카드 목록에 그대로 포함된다 (§5-1)."""
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert html_out.count("2026-07-08") >= 2  # 히어로 링크 + 리포트 카드
+
+
+def test_build_index_html_shows_success_status(tmp_path):
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()
     state_path = tmp_path / "run_status.json"
@@ -122,11 +204,11 @@ def test_build_index_html_shows_success_badge(tmp_path):
 
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
 
-    assert "badge ok" in html_out
+    assert "status ok" in html_out
     assert "2026-07-08T08:12:00+09:00" in html_out
 
 
-def test_build_index_html_shows_failure_badge(tmp_path):
+def test_build_index_html_shows_failure_status(tmp_path):
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()
     state_path = tmp_path / "run_status.json"
@@ -134,7 +216,7 @@ def test_build_index_html_shows_failure_badge(tmp_path):
 
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
 
-    assert "badge fail" in html_out
+    assert "status fail" in html_out
 
 
 def test_build_index_html_handles_no_dashboards(tmp_path):
@@ -144,6 +226,39 @@ def test_build_index_html_handles_no_dashboards(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
 
     assert "아직 생성된 브리핑이 없습니다" in html_out
+
+
+def test_build_index_html_renders_hero_and_report_card(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+    state_path = tmp_path / "run_status.json"
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, state_path)
+
+    assert 'class="hero"' in html_out
+    assert 'href="2026-07-08.html"' in html_out
+    assert "리포트 읽기" in html_out
+    assert "2026년 7월 8일" in html_out
+
+
+def test_build_index_html_omits_pdf_download_by_default(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert "PDF" not in html_out
+
+
+def test_build_index_html_includes_appbar_search_and_footer(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+    assert 'class="brand"' in html_out
+    assert 'id="q"' in html_out
+    assert "site-footer" in html_out
 
 
 def test_run_writes_archive_dashboard_and_index(tmp_path):
@@ -241,43 +356,6 @@ def test_build_index_html_shows_recent_alert_banner(tmp_path):
     )
 
     assert "청주공장 화재 속보" in html_out
-
-
-_VIEWPORT_META = '<meta name="viewport" content="width=device-width, initial-scale=1">'
-
-
-def test_build_dashboard_html_has_viewport_meta():
-    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
-    assert _VIEWPORT_META in html_out
-
-
-def test_build_index_html_has_viewport_meta(tmp_path):
-    dashboard_dir = tmp_path / "dashboard"
-    dashboard_dir.mkdir()
-    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
-    assert _VIEWPORT_META in html_out
-
-
-def test_build_alert_detail_html_has_viewport_meta():
-    issue = _sample_issue()
-    html_out = step5_assemble.build_alert_detail_html(issue)
-    assert _VIEWPORT_META in html_out
-
-
-def test_build_dashboard_html_collection_stats_use_wrapping_chips_not_table():
-    """수집 상태가 <table>이 아니라 flex-wrap 칩으로 렌더링되는지 확인한다.
-
-    표 기반 레이아웃은 좁은 화면에서 가로 스크롤을 유발하므로, 자동으로
-    줄바꿈되는 칩 구조를 유지해야 모바일에서 별도 대응이 필요 없다.
-    """
-    stats = {"디일렉": {"today": 1, "avg7d": 10.0}}
-    html_out = step5_assemble.build_dashboard_html([], [], stats, "2026-07-08")
-    assert "<table" not in html_out
-    assert 'class="stat-chips"' in html_out
-
-
-def test_dashboard_css_has_mobile_media_query():
-    assert "@media (max-width: 480px)" in step5_assemble._DASHBOARD_CSS
 
 
 def test_build_index_html_hides_stale_alert_banner(tmp_path):

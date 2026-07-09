@@ -4,14 +4,34 @@
 <title>반도체 뉴스 브리핑</title>
 <link rel="stylesheet" href="style.css">
 </head><body>
-<div class="titleblock">
-<h1>반도체 뉴스 브리핑</h1>
-<p class="badge ok">최근 실행 성공 (마지막 성공: 2026-07-09T10:21:10.476892+09:00)</p>
+<div class="appbar"><span class="brand">반도체브리핑</span></div>
+<div class="search"><input id="q" type="search" placeholder="뉴스 태그·제목·내용을 검색해 주세요" aria-label="뉴스 검색"><span class="i">🔍</span></div>
+<p class="status ok">● 정상 · 마지막 성공 2026-07-09T10:21:10.476892+09:00</p>
+<a class="hero" href="2026-07-09.html"><h2>🔍 오늘의 데일리 리포트</h2></a>
+<div id="feed">
+<div class="card report" data-text="2026-07-09"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:13 갱신</span></div><p class="datetitle">2026년 7월 9일 (목)</p><div class="actions"><a href="2026-07-09.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-08"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:13 갱신</span></div><p class="datetitle">2026년 7월 8일 (수)</p><div class="actions"><a href="2026-07-08.html">📄 리포트 읽기</a></div></div>
 </div>
-<p><a class="latest" href="2026-07-09.html">최신 브리핑 보기 (2026-07-09)</a></p>
-<h2 class="section-label">지난 브리핑</h2>
-<ul class="date-list">
-<li><a href="2026-07-09.html">2026-07-09</a></li>
-<li><a href="2026-07-08.html">2026-07-08</a></li>
-</ul>
+<p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · EE Times · 전자신문 · ZDNet Korea</p>
+<script>
+function applyFilters(){
+  var q=(document.getElementById('q')||{}).value||'';
+  q=q.trim().toLowerCase();
+  var active=document.querySelector('.filter button[aria-pressed="true"]');
+  var cat=active?active.dataset.cat:'all';
+  document.querySelectorAll('#feed .card').forEach(function(c){
+    var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
+    var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
+    c.style.display=(okCat&&okQ)?'':'none';
+  });
+}
+document.querySelectorAll('.filter button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    applyFilters();
+  });
+});
+var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
+</script>
+
 </body></html>
