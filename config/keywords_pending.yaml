@@ -1,0 +1,4 @@
+# 인간 피드백(노이즈 신고) 배치가 쌓는 키워드 승인 대기열.
+# report_count >= 3이면 priority: true — 주 1회 표본 검토에서 우선 확인한다.
+# 이 파일의 항목은 사람이 검토 후 수동으로만 config/keywords.yaml의 blacklist로 옮긴다.
+candidates: []
