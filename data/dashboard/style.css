@@ -51,6 +51,7 @@ a:hover{text-decoration:underline}
 .title{font-size:1rem;font-weight:700;line-height:1.4;margin:.55rem 0;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .summary{font-size:.9rem;color:var(--ink);margin:.35rem 0}
+.summary.mut{color:#4B5563;font-style:italic}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
 
@@ -68,8 +69,8 @@ a:hover{text-decoration:underline}
 .badge.s-hynix{background:#E4F0FB;color:#2C6BB5}
 .badge.s-thelec{background:#E1F1EF;color:#1F7A6B}
 .badge.s-eetimes{background:#FDE9DD;color:#C2652A}
-.badge.s-etnews{background:#FDF1D6;color:#A9790B}
-.badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
+.badge.s-digitimes{background:#FDF1D6;color:#A9790B}
+.badge.s-semieng{background:#E7F2E6;color:#3B8B4E}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 .chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
 .chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
