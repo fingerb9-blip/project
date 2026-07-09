@@ -274,3 +274,9 @@ def test_build_dashboard_html_defaults_source_type_to_news_when_missing():
     article = _sample_article()
     html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
     assert 'data-source-type="언론"' in html_out
+
+
+def test_build_dashboard_html_includes_deep_tech_filter_toggle():
+    html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
+    assert 'id="deep-tech-filter"' in html_out
+    assert "학회·특허만 보기" in html_out

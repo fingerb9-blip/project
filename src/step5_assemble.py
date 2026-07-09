@@ -128,6 +128,10 @@ def build_dashboard_html(
     ]
 
     parts.append("<section><h2>오늘의 핵심</h2>")
+    parts.append(
+        '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
+        "학회·특허만 보기</label>"
+    )
     if not summarized_articles:
         parts.append("<p>오늘 핵심 기사가 없습니다.</p>")
     for article in summarized_articles:
@@ -206,6 +210,22 @@ def build_dashboard_html(
             parts.append("</article>")
         parts.append("</section>")
 
+    parts.append(
+        "<script>"
+        "(function(){"
+        "var cb=document.getElementById('deep-tech-filter');"
+        "if(!cb)return;"
+        "cb.addEventListener('change',function(){"
+        "var only=cb.checked;"
+        "document.querySelectorAll('.card').forEach(function(card){"
+        "var t=card.dataset.sourceType;"
+        "var deep=(t==='학회'||t==='특허');"
+        "card.style.display=(only&&!deep)?'none':'';"
+        "});"
+        "});"
+        "})();"
+        "</script>"
+    )
     parts.append("</body></html>")
     return "\n".join(parts)
 
@@ -348,6 +368,7 @@ h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid #ddd; padding
 .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
 .meta { color: #666; font-size: 0.85rem; }
 .badge-type { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px; background: #e2e3e5; font-size: 0.78rem; }
+.filter-toggle { display: inline-block; margin-bottom: 0.6rem; font-size: 0.9rem; }
 table { border-collapse: collapse; width: 100%; }
 th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
 tr.warn td { background: #fff3cd; }
