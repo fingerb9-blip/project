@@ -423,6 +423,21 @@ def test_load_latest_radar_returns_most_recent_week(tmp_path):
     assert data["week"] == "2026-W28"
 
 
+def test_load_latest_trend_returns_none_when_dir_missing(tmp_path):
+    assert step5_assemble.load_latest_trend(tmp_path / "trends") is None
+
+
+def test_load_latest_trend_reads_most_recent_file(tmp_path):
+    trends_dir = tmp_path / "trends"
+    trends_dir.mkdir()
+    (trends_dir / "2026-07-08.json").write_text('{"date": "2026-07-08"}', encoding="utf-8")
+    (trends_dir / "2026-07-09.json").write_text('{"date": "2026-07-09"}', encoding="utf-8")
+
+    data = step5_assemble.load_latest_trend(trends_dir)
+
+    assert data["date"] == "2026-07-09"
+
+
 def test_build_radar_section_html_renders_bars_and_commentary():
     radar_data = {
         "week": "2026-W28",
@@ -600,3 +615,105 @@ def test_build_index_html_includes_pending_keywords_section(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path, pending_keywords=candidates)
 
     assert "테마주" in html_out
+
+
+def test_build_article_card_renders_positive_stock_badge():
+    article = {
+        "id": "a1",
+        "title": "삼성전자, HBM4 수율 개선",
+        "url": "https://example.com/1",
+        "source": "삼성전자 뉴스룸",
+        "category": ["메모리"],
+        "summary": "요약",
+        "confirmation_tag": "[확정]",
+        "related_stock": [{"name": "삼성전자", "change_pct": 1.8}],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-up" in html
+    assert "삼성전자" in html
+    assert "1.8%" in html
+
+
+def test_build_article_card_renders_negative_stock_badge():
+    article = {
+        "id": "a1",
+        "title": "삼성전자, HBM4 수율 개선",
+        "url": "https://example.com/1",
+        "source": "삼성전자 뉴스룸",
+        "category": ["메모리"],
+        "summary": "요약",
+        "confirmation_tag": "[확정]",
+        "related_stock": [{"name": "삼성전자", "change_pct": -2.3}],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-down" in html
+    assert "2.3%" in html
+
+
+def test_build_article_card_omits_stock_badge_when_no_related_stock():
+    article = {
+        "id": "a1",
+        "title": "TSMC, 2나노 공정 발표",
+        "url": "https://example.com/1",
+        "source": "디일렉",
+        "category": ["파운드리"],
+        "summary": "요약",
+        "confirmation_tag": "[관측]",
+        "related_stock": [],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-up" not in html
+    assert "stock-down" not in html
+
+
+_TREND_DATA = {
+    "date": "2026-07-09",
+    "companies": [{"name": "삼성전자", "count": 5, "is_spike": True}],
+    "keywords": [{"name": "HBM", "count": 3, "is_spike": False}],
+}
+
+
+def test_build_mention_trend_section_html_renders_bars_and_spike_chip():
+    html = step5_assemble.build_mention_trend_section_html(_TREND_DATA, "active")
+
+    assert "삼성전자" in html
+    assert "HBM" in html
+    assert "급증" in html
+
+
+def test_build_mention_trend_section_html_adds_preview_label():
+    html = step5_assemble.build_mention_trend_section_html(_TREND_DATA, "preview")
+
+    assert "참고용" in html
+
+
+def test_build_mention_trend_section_html_empty_when_no_data():
+    assert step5_assemble.build_mention_trend_section_html(None, "active") == ""
+
+
+def test_build_index_html_includes_mention_trend_section(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "state" / "run_status.json"
+
+    html = step5_assemble.build_index_html(
+        dashboard_dir, state_path, mention_trend_data=_TREND_DATA, cold_start_stage="active"
+    )
+
+    assert "삼성전자" in html
+
+
+def test_build_index_html_omits_mention_trend_section_when_none(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "state" / "run_status.json"
+
+    html = step5_assemble.build_index_html(dashboard_dir, state_path)
+
+    assert "언급량 트렌드" not in html

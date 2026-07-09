@@ -13,7 +13,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src import gemini_client, issue_tracking, notify, step0_init, step1_collect, step2_dedup, step5_assemble
+from src import gemini_client, issue_tracking, notify, step0_init, step1_collect, step2_dedup, step5_assemble, step_mention_trend
 
 logger = logging.getLogger(__name__)
 
@@ -268,6 +268,12 @@ def run(
             (alerts_dir / f"{issue['issue_id']}.html").write_text(detail_html, encoding="utf-8")
 
         pending_path = Path(issues_path).parent.parent.parent / "config" / "keywords_pending.yaml"
+        trends_dir = dashboard_dir.parent / "trends"
+        trend_data = step5_assemble.load_latest_trend(trends_dir)
+        accumulated_days = step_mention_trend.count_accumulated_days(str(trends_dir), today)
+        stage = step_mention_trend.cold_start_stage(accumulated_days)
+        if stage == "hidden":
+            trend_data = None
         index_html = step5_assemble.build_index_html(
             dashboard_dir,
             Path(state_path),
@@ -275,6 +281,8 @@ def run(
             now=now_iso,
             radar_data=step5_assemble.load_latest_radar(dashboard_dir.parent / "radar"),
             pending_keywords=step5_assemble.load_pending_keywords(pending_path),
+            mention_trend_data=trend_data,
+            cold_start_stage=stage,
         )
         (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

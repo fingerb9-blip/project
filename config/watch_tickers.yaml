@@ -1,0 +1,9 @@
+tickers:
+  - name: "삼성전자"
+    ticker: "005930"
+  - name: "SK하이닉스"
+    ticker: "000660"
+  - name: "DB하이텍"
+    ticker: "000990"
+  - name: "한미반도체"
+    ticker: "042700"
