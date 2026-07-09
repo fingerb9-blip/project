@@ -179,3 +179,50 @@ def test_classify_does_not_exclude_low_relevance_article_with_detected_company(m
     result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
 
     assert result[0]["tier"] == "핵심"
+
+
+@patch("src.step3_classify.notify.notify_warning")
+@patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_notifies_and_falls_back_to_pending_on_total_failure(mock_call, mock_notify):
+    """실제 버그 재현: Gemini 분류 호출이 통째로 실패하면 전체 기사가 조용히
+    '확인 필요'로 대체돼 '오늘의 핵심'이 아무 알림 없이 텅 비어 보였다."""
+    mock_call.side_effect = RuntimeError("429 quota exceeded")
+    article = _article(title="삼성전자, HBM4 웨이퍼 수율 개선 발표", raw_text="")
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    assert result[0]["tier"] == "확인 필요"
+    mock_notify.assert_called_once()
+    assert "분류 실패" in mock_notify.call_args[0][0]
+
+
+@patch("src.step3_classify.notify.notify_warning")
+@patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_notifies_on_partial_missing_results(mock_call, mock_notify):
+    """Gemini 응답에 일부 기사의 분류 결과가 빠지면(예: 토큰 한도로 응답이 잘림)
+    해당 기사만 조용히 '확인 필요'로 대체되던 것을 감지해 경고를 보낸다."""
+    mock_call.return_value = {"results": [{"id": "a1", "tier": "핵심", "category": ["메모리"]}]}
+    present = _article(id="a1", title="삼성전자, HBM4 웨이퍼 수율 개선 발표", raw_text="")
+    missing = _article(id="a2", title="삼성전자, 파운드리 증설 계획 발표", raw_text="")
+    articles = step3_classify.filter_by_keywords([present, missing], _KEYWORDS)
+
+    result = step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    by_id = {a["id"]: a for a in result}
+    assert by_id["a1"]["tier"] == "핵심"
+    assert by_id["a2"]["tier"] == "확인 필요"
+    mock_notify.assert_called_once()
+    assert "일부 실패" in mock_notify.call_args[0][0]
+
+
+@patch("src.step3_classify.notify.notify_warning")
+@patch("src.step3_classify.gemini_client.call_gemini")
+def test_classify_does_not_notify_when_all_results_present(mock_call, mock_notify):
+    mock_call.return_value = {"results": [{"id": "a1", "tier": "핵심", "category": ["메모리"]}]}
+    article = _article(title="삼성전자, HBM4 웨이퍼 수율 개선 발표", raw_text="")
+    articles = step3_classify.filter_by_keywords([article], _KEYWORDS)
+
+    step3_classify.classify_tier_and_category(articles, _CATEGORIES)
+
+    mock_notify.assert_not_called()

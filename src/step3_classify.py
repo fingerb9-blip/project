@@ -4,7 +4,7 @@ import json
 import logging
 from pathlib import Path
 
-from src import gemini_client
+from src import gemini_client, notify
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +151,20 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         by_id = {r["id"]: r for r in result.get("results", [])}
     except RuntimeError as exc:
         logger.error("분류 실패, 전체 '확인 필요'로 대체: %s", exc)
+        notify.notify_warning(
+            "기사 분류 실패",
+            f"Gemini 분류 호출이 실패해 오늘 기사 {len(articles)}건이 전부 "
+            f"'확인 필요'로 대체됐습니다(오늘의 핵심이 비어 보일 수 있음): {type(exc).__name__}: {exc}",
+        )
         by_id = {}
+
+    missing_ids = [a["id"] for a in articles if a["id"] not in by_id]
+    if by_id and missing_ids:
+        notify.notify_warning(
+            "기사 분류 일부 실패",
+            f"Gemini 응답에 {len(missing_ids)}/{len(articles)}건의 분류 결과가 빠져 "
+            "해당 기사는 '확인 필요'로 대체됐습니다.",
+        )
 
     for article in articles:
         result = by_id.get(article["id"], {"tier": "확인 필요", "category": []})
