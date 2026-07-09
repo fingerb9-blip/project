@@ -1,0 +1,48 @@
+# .github/workflows/weekly_feedback_batch.yml
+name: weekly-feedback-batch
+
+on:
+  schedule:
+    - cron: "0 22 * * 0" # UTC 22:00 일요일 = KST 07:00 월요일
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  batch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Run feedback batch
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m src.feedback_batch
+
+      - name: Commit pending keywords & cleared queue
+        run: |
+          git config user.name "briefing-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add config/keywords_pending.yaml data/state/feedback_queue.json
+          git commit -m "chore: weekly feedback batch $(date -u +%F)" || echo "no changes"
+          git fetch origin main
+          git rebase origin/main
+          git push
+
+      - name: Notify on failure
+        if: failure()
+        env:
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "587"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: python src/notify.py --event pipeline_failed --run-id ${{ github.run_id }}
