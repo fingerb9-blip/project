@@ -423,6 +423,21 @@ def test_load_latest_radar_returns_most_recent_week(tmp_path):
     assert data["week"] == "2026-W28"
 
 
+def test_load_latest_trend_returns_none_when_dir_missing(tmp_path):
+    assert step5_assemble.load_latest_trend(tmp_path / "trends") is None
+
+
+def test_load_latest_trend_reads_most_recent_file(tmp_path):
+    trends_dir = tmp_path / "trends"
+    trends_dir.mkdir()
+    (trends_dir / "2026-07-08.json").write_text('{"date": "2026-07-08"}', encoding="utf-8")
+    (trends_dir / "2026-07-09.json").write_text('{"date": "2026-07-09"}', encoding="utf-8")
+
+    data = step5_assemble.load_latest_trend(trends_dir)
+
+    assert data["date"] == "2026-07-09"
+
+
 def test_build_radar_section_html_renders_bars_and_commentary():
     radar_data = {
         "week": "2026-W28",

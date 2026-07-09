@@ -563,6 +563,28 @@ def load_latest_radar(radar_dir: Path) -> dict | None:
         return json.load(f)
 
 
+def load_latest_trend(trends_dir: Path) -> dict | None:
+    """data/trends/*.json 중 가장 최근 파일을 읽는다. 없으면 None.
+
+    step1_5_anomaly_detect.py가 index.html을 재생성할 때도 언급량 트렌드 섹션이
+    사라지지 않도록 load_latest_radar()와 동일한 패턴으로 디스크에서 최신 데이터를 읽는다.
+
+    Args:
+        trends_dir: data/trends 디렉토리 경로
+
+    Returns:
+        가장 최근 언급량 트렌드 데이터 dict, 또는 파일이 없으면 None
+    """
+    trends_dir = Path(trends_dir)
+    if not trends_dir.exists():
+        return None
+    files = sorted(trends_dir.glob("*.json"), reverse=True)
+    if not files:
+        return None
+    with files[0].open(encoding="utf-8") as f:
+        return json.load(f)
+
+
 def build_radar_section_html(radar_data: dict | None) -> str:
     """경쟁 구도 레이더 주간 데이터를 index.html 섹션으로 렌더링한다.
 
