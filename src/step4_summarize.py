@@ -4,7 +4,7 @@ import json
 import logging
 from pathlib import Path
 
-from src import gemini_client
+from src import gemini_client, notify
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +29,9 @@ _SUMMARY_SCHEMA = {
 _CONFIRMED_EXPRESSIONS = ["발표했다", "발표"]
 _OBSERVED_EXPRESSIONS = ["알려졌다", "알려"]
 _RAW_TEXT_LEN = 1500
-# 실제 응답 품질 비교 전까지는 DEFAULT_MODEL(Flash) 유지. 검증 후 LITE_MODEL로 바꿀 때 이 한 줄만 수정하면 된다.
-_SUMMARY_MODEL = gemini_client.DEFAULT_MODEL
+# 무료 티어 할당량이 넉넉하지 않아 매일 도는 이 호출부터 LITE_MODEL로 전환했다.
+# 품질이 부족하면 이 한 줄만 DEFAULT_MODEL로 되돌리면 된다.
+_SUMMARY_MODEL = gemini_client.LITE_MODEL
 
 
 def generate_summaries(articles: list[dict]) -> dict[str, str]:
@@ -110,6 +111,11 @@ def run(
         summaries = generate_summaries(core_articles)
     except RuntimeError as exc:
         logger.error("배치 요약 실패, 전체 헤드라인+링크로 폴백: %s", exc)
+        notify.notify_warning(
+            "기사 요약 실패",
+            f"Gemini 요약 호출이 실패해 '핵심' 기사 {len(core_articles)}건이 전부 "
+            f"헤드라인+링크만 있는 폴백으로 대체됐습니다: {type(exc).__name__}: {exc}",
+        )
         summaries = {}
 
     summarized = []

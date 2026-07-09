@@ -23,6 +23,11 @@ def _core_article(**overrides):
     return article
 
 
+def test_summary_model_uses_lite_tier_for_quota():
+    # 무료 할당량이 넉넉하지 않은 매일 배치라 LITE_MODEL을 쓴다 (할당량이 더 큰 티어).
+    assert step4_summarize._SUMMARY_MODEL == step4_summarize.gemini_client.LITE_MODEL
+
+
 @patch("src.step4_summarize.gemini_client.call_gemini")
 def test_generate_summaries_returns_id_to_summary_map(mock_call):
     mock_call.return_value = {
@@ -114,8 +119,11 @@ def test_run_falls_back_only_article_missing_from_batch_response(mock_generate, 
     assert by_id["art2"]["summary"] is None
 
 
+@patch("src.step4_summarize.notify.notify_warning")
 @patch("src.step4_summarize.generate_summaries", side_effect=RuntimeError("boom"))
-def test_run_falls_back_all_articles_when_batch_call_fails(mock_generate, tmp_path):
+def test_run_falls_back_all_articles_when_batch_call_fails(mock_generate, mock_notify, tmp_path):
+    """실제 버그 재현: 요약 배치 호출이 통째로 실패하면 로그만 남기고 조용히 헤드라인
+    폴백으로 넘어갔다 - 알림 없이 '오늘의 핵심' 요약이 전부 비어 보일 수 있었다."""
     output_path = tmp_path / "summarized.json"
     articles = [_core_article(id="art1"), _core_article(id="art2")]
 
@@ -123,6 +131,7 @@ def test_run_falls_back_all_articles_when_batch_call_fails(mock_generate, tmp_pa
 
     assert all(a["summary_fallback"] is True for a in result)
     assert all(a["summary"] is None for a in result)
+    mock_notify.assert_called_once()
 
 
 @patch("src.step4_summarize.generate_summaries")

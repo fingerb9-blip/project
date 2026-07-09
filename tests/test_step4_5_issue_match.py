@@ -21,6 +21,11 @@ def _summarized_article(**overrides):
     return article
 
 
+def test_progress_summary_model_uses_lite_tier_for_quota():
+    # 무료 할당량이 넉넉하지 않아 LITE_MODEL을 쓴다 (할당량이 더 큰 티어).
+    assert issue_match._PROGRESS_SUMMARY_MODEL == issue_match.gemini_client.LITE_MODEL
+
+
 def test_create_issue_uses_first_company_as_entity():
     article = _summarized_article()
     issue = issue_match.create_issue(article, "2026-07-08", _ALIASES_CONFIG)

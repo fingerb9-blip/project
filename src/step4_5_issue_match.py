@@ -18,8 +18,9 @@ logger = logging.getLogger(__name__)
 _PROGRESS_SUMMARY_MIN_DAYS = 3
 _CLOSE_AFTER_DAYS = 7
 _SNIPPET_LEN = 300
-# 실제 응답 품질 비교 전까지는 DEFAULT_MODEL(Flash) 유지. 검증 후 LITE_MODEL로 바꿀 때 이 한 줄만 수정하면 된다.
-_PROGRESS_SUMMARY_MODEL = gemini_client.DEFAULT_MODEL
+# 무료 티어 할당량이 넉넉하지 않아 LITE_MODEL로 전환했다. 품질이 부족하면
+# 이 한 줄만 DEFAULT_MODEL로 되돌리면 된다.
+_PROGRESS_SUMMARY_MODEL = gemini_client.LITE_MODEL
 
 _MATCH_SCHEMA = {
     "type": "object",
