@@ -39,6 +39,10 @@ _TITLE_MATCH_WEIGHT = 3
 _BODY_STRONG_WEIGHT = 2
 _BODY_WEAK_WEIGHT = 1
 _RELEVANCE_EXCLUDE_THRESHOLD = 2
+# Gemini 분류 호출이 실패했을 때 AI 판단 없이 "핵심"으로 승격할 최소 관련도 점수.
+# _TITLE_MATCH_WEIGHT(제목에 반도체_핵심 키워드 등장)와 같은 기준으로, 본문 후반부
+# 1회 언급 정도의 약한 신호(_BODY_WEAK_WEIGHT)까지는 승격하지 않는다.
+_HEURISTIC_FALLBACK_MIN_SCORE = _TITLE_MATCH_WEIGHT
 
 
 def _matched_keywords(text: str, keyword_group: dict) -> list[str]:
@@ -118,6 +122,16 @@ def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict
     return filtered
 
 
+def _heuristic_tier(article: dict) -> str:
+    """Gemini 분류 응답이 없을 때(호출 실패 또는 응답에 id 누락) AI 판단 없이 임시로
+    매길 tier. 기업이 특정됐거나 제목에 반도체_핵심 키워드가 등장한 강한 신호가 있으면
+    "핵심"으로 승격해, Gemini 장애 중에도 "오늘의 핵심"이 비어 보이지 않게 한다.
+    """
+    if article.get("companies") or article.get("relevance_score", 0) >= _HEURISTIC_FALLBACK_MIN_SCORE:
+        return "핵심"
+    return "확인 필요"
+
+
 def classify_tier_and_category(articles: list[dict], categories_config: dict) -> list[dict]:
     """Gemini API(Flash-Lite)로 핵심/확인 필요/제외 3단 분류 및 카테고리 태깅을 수행한다.
 
@@ -154,11 +168,11 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         result = gemini_client.call_gemini(prompt, _CLASSIFY_SCHEMA, model=gemini_client.LITE_MODEL)
         by_id = {r["id"]: r for r in result.get("results", [])}
     except RuntimeError as exc:
-        logger.error("분류 실패, 전체 '확인 필요'로 대체: %s", exc)
+        logger.error("분류 실패, 관련도 휴리스틱으로 대체: %s", exc)
         notify.notify_warning(
             "기사 분류 실패",
-            f"Gemini 분류 호출이 실패해 오늘 기사 {len(articles)}건이 전부 "
-            f"'확인 필요'로 대체됐습니다(오늘의 핵심이 비어 보일 수 있음): {type(exc).__name__}: {exc}",
+            f"Gemini 분류 호출이 실패해 오늘 기사 {len(articles)}건을 관련도 휴리스틱으로 "
+            f"임시 분류했습니다(AI 판단 없이 분류됨, 검토 필요): {type(exc).__name__}: {exc}",
         )
         by_id = {}
 
@@ -167,13 +181,17 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         notify.notify_warning(
             "기사 분류 일부 실패",
             f"Gemini 응답에 {len(missing_ids)}/{len(articles)}건의 분류 결과가 빠져 "
-            "해당 기사는 '확인 필요'로 대체됐습니다.",
+            "관련도 휴리스틱으로 임시 분류했습니다.",
         )
 
     for article in articles:
-        result = by_id.get(article["id"], {"tier": "확인 필요", "category": []})
-        article["tier"] = result["tier"]
-        article["category"] = list(result["category"])
+        result = by_id.get(article["id"])
+        if result is None:
+            article["tier"] = _heuristic_tier(article)
+            article["category"] = []
+        else:
+            article["tier"] = result["tier"]
+            article["category"] = list(result["category"])
         no_company = not article.get("companies")
         has_regulation_hint = _REGULATION_KEYWORD_GROUP in article.get("keyword_hints", [])
         text = f"{article.get('title', '')} {article.get('raw_text', '')}"
