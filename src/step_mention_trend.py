@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 _ROLLING_WINDOW_DAYS = 7
 _SPIKE_RATIO = 2.0
 _COLD_START_MIN_COUNT = 3
+_HIDDEN_DAYS = 14
+_PREVIEW_DAYS = 21
 
 
 def load_tech_keywords(path) -> list[dict]:
@@ -147,3 +149,37 @@ def run(
         json.dump(data, f, ensure_ascii=False, indent=2)
 
     return data
+
+
+def count_accumulated_days(trends_dir: str, today: str) -> int:
+    """data/trends/*.json 파일 수(오늘 포함) 기준으로 누적 운영 일수를 계산한다.
+
+    Args:
+        trends_dir: data/trends 디렉토리 경로
+        today: YYYY-MM-DD 형식 날짜 문자열
+
+    Returns:
+        누적 운영 일수 (디렉토리가 없으면 1 — 오늘이 첫 실행)
+    """
+    trends_dir = Path(trends_dir)
+    if not trends_dir.exists():
+        return 1
+    days = {p.stem for p in trends_dir.glob("*.json")}
+    days.add(today)
+    return len(days)
+
+
+def cold_start_stage(accumulated_days: int) -> str:
+    """콜드 스타트 단계를 판정한다.
+
+    Args:
+        accumulated_days: count_accumulated_days() 결과
+
+    Returns:
+        "hidden"(14일 미만) | "preview"(14~20일) | "active"(21일 이후)
+    """
+    if accumulated_days < _HIDDEN_DAYS:
+        return "hidden"
+    if accumulated_days < _PREVIEW_DAYS:
+        return "preview"
+    return "active"

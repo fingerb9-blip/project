@@ -75,3 +75,27 @@ def test_run_does_not_flag_spike_on_cold_start_with_low_count(tmp_path):
     result = step_mention_trend.run(articles, _ALIASES, _TECH_KEYWORDS, str(trends_dir), "2026-07-09")
 
     assert result["companies"] == [{"name": "삼성전자", "count": 1, "is_spike": False}]
+
+
+def test_count_accumulated_days_counts_existing_files_plus_today(tmp_path):
+    trends_dir = tmp_path / "trends"
+    trends_dir.mkdir()
+    (trends_dir / "2026-07-01.json").write_text("{}", encoding="utf-8")
+    (trends_dir / "2026-07-02.json").write_text("{}", encoding="utf-8")
+
+    days = step_mention_trend.count_accumulated_days(str(trends_dir), "2026-07-03")
+
+    assert days == 3
+
+
+def test_count_accumulated_days_returns_one_when_dir_missing(tmp_path):
+    days = step_mention_trend.count_accumulated_days(str(tmp_path / "nope"), "2026-07-03")
+
+    assert days == 1
+
+
+def test_cold_start_stage_boundaries():
+    assert step_mention_trend.cold_start_stage(13) == "hidden"
+    assert step_mention_trend.cold_start_stage(14) == "preview"
+    assert step_mention_trend.cold_start_stage(20) == "preview"
+    assert step_mention_trend.cold_start_stage(21) == "active"
