@@ -65,3 +65,20 @@ def test_run_falls_back_to_previous_day_on_fetch_failure(tmp_path, monkeypatch):
     result = step_stock_price.run(watch_tickers, str(output_path), "2026-07-09")
 
     assert result["tickers"] == previous["tickers"]
+
+
+def test_run_omits_ticker_when_fetch_fails_and_no_previous_value_exists(tmp_path, monkeypatch):
+    stock_dir = tmp_path / "stock"
+    stock_dir.mkdir()
+    # NO previous day file created - ticker should be omitted
+
+    def _raise(*a, **k):
+        raise RuntimeError("network error")
+
+    monkeypatch.setattr(step_stock_price.stock, "get_market_ohlcv_by_date", _raise)
+    watch_tickers = [{"name": "삼성전자", "ticker": "005930"}]
+    output_path = stock_dir / "2026-07-09.json"
+
+    result = step_stock_price.run(watch_tickers, str(output_path), "2026-07-09")
+
+    assert result["tickers"] == []
