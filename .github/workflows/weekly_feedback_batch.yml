@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: repo-writer
+  cancel-in-progress: false
+
 jobs:
   batch:
     runs-on: ubuntu-latest

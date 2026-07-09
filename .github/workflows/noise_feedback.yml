@@ -9,6 +9,10 @@ permissions:
   contents: write
   issues: write
 
+concurrency:
+  group: repo-writer
+  cancel-in-progress: false
+
 jobs:
   intake:
     if: contains(github.event.issue.labels.*.name, 'noise-report')
