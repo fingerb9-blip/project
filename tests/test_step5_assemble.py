@@ -17,6 +17,7 @@ def _sample_issue(**overrides):
 
 def _sample_article(**overrides):
     article = {
+        "id": "art0",
         "title": "삼성전자, 테스트 기사",
         "url": "https://example.com/news/1",
         "source": "테스트소스",
@@ -280,3 +281,26 @@ def test_build_dashboard_html_includes_deep_tech_filter_toggle():
     html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
     assert 'id="deep-tech-filter"' in html_out
     assert "학회·특허만 보기" in html_out
+
+
+def test_build_dashboard_html_omits_noise_button_when_no_repo_url():
+    html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
+    assert "노이즈로 표시" not in html_out
+
+
+def test_build_dashboard_html_renders_noise_button_with_repo_url():
+    article = _sample_article(id="art1", url="https://example.com/a", title="테스트 기사")
+    html_out = step5_assemble.build_dashboard_html(
+        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
+    )
+    assert "노이즈로 표시" in html_out
+    assert "https://github.com/owner/repo/issues/new?" in html_out
+    assert "labels=noise-report" in html_out
+
+
+def test_build_dashboard_html_noise_button_escapes_title_in_url():
+    article = _sample_article(id="art1", url="https://example.com/a", title="<script>x</script>")
+    html_out = step5_assemble.build_dashboard_html(
+        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
+    )
+    assert "<script>x</script>" not in html_out

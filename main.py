@@ -1,6 +1,7 @@
 """Step 0~6 순차 실행 진입점."""
 
 import json
+import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -89,6 +90,8 @@ def main() -> None:
 
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
+        github_repo = os.environ.get("GITHUB_REPOSITORY")
+        repo_url = f"https://github.com/{github_repo}" if github_repo else None
         step5_assemble.run(
             summarized_articles,
             pending_review,
@@ -98,6 +101,7 @@ def main() -> None:
             today,
             paths["state"],
             paths["issues"],
+            repo_url=repo_url,
         )
         steps_completed.append("assemble")
 

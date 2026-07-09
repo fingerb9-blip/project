@@ -3,7 +3,7 @@
 import html
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 from src import issue_tracking, run_status
 
@@ -98,12 +98,29 @@ def _safe_url(url: str) -> str | None:
     return html.escape(url, quote=True)
 
 
+def _noise_report_issue_url(article: dict, repo_url: str | None) -> str | None:
+    """'노이즈로 표시' 버튼이 열 GitHub 새 이슈 URL을 만든다. repo_url이 없으면 None."""
+    if not repo_url:
+        return None
+    body = (
+        f"article_id: {article['id']}\n"
+        f"url: {article['url']}\n"
+        f"title: {article['title']}\n"
+        "reason: noise\n"
+    )
+    query = urlencode(
+        {"title": f"[노이즈 신고] {article['title']}", "body": body, "labels": "noise-report"}
+    )
+    return f"{repo_url}/issues/new?{query}"
+
+
 def build_dashboard_html(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
     collection_stats: dict,
     target_date: str,
     active_issues: list[dict] | None = None,
+    repo_url: str | None = None,
 ) -> str:
     """오늘의 핵심 -> 카테고리별 -> 확인 필요 -> 수집 상태 -> 진행 중 이슈 순으로 카드형 HTML 대시보드 페이지를 만든다.
 
@@ -113,6 +130,7 @@ def build_dashboard_html(
         collection_stats: {source: {"today": int, "avg7d": float}} 형태의 소스별 수집 통계
         target_date: YYYY-MM-DD 형식 날짜 문자열
         active_issues: data/state/issues.json 중 status="진행중"인 이슈 리스트 (Phase 3)
+        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
 
     Returns:
         단일 HTML 문서 문자열
@@ -149,6 +167,15 @@ def build_dashboard_html(
             parts.append(f"<p>{_esc(article['summary'])}</p>")
             parts.append(
                 f'<p class="meta">{source} · <span class="badge-type">{source_type}</span> · {link}</p>'
+            )
+        issue_url = _noise_report_issue_url(article, repo_url)
+        if issue_url:
+            safe_issue_url = html.escape(issue_url, quote=True)
+            parts.append(
+                f'<p class="meta"><a class="noise-btn" href="{safe_issue_url}" '
+                'target="_blank" rel="noopener" '
+                "onclick=\"this.nextElementSibling.hidden=false\">노이즈로 표시</a> "
+                '<span class="toast" hidden>이 기사를 제외 대상으로 표시했습니다</span></p>'
             )
         parts.append("</article>")
     parts.append("</section>")
@@ -379,6 +406,8 @@ tr.warn td { background: #fff3cd; }
 a.latest { font-weight: bold; font-size: 1.1rem; }
 .alert-banner { background: #f8d7da; border: 1px solid #f1aeb5; border-radius: 8px; padding: 0.6rem 1rem; margin: 0.8rem 0; }
 .alert-banner p { margin: 0.2rem 0; font-weight: bold; }
+.noise-btn { font-size: 0.8rem; color: #a94442; text-decoration: none; border: 1px solid #a94442; border-radius: 4px; padding: 0.1rem 0.4rem; }
+.toast { font-size: 0.8rem; color: #155724; margin-left: 0.4rem; }
 """
 
 
@@ -391,6 +420,7 @@ def run(
     today: str,
     state_path: str,
     issues_path: str | None = None,
+    repo_url: str | None = None,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -403,6 +433,7 @@ def run(
         today: YYYY-MM-DD 형식 날짜 문자열
         state_path: data/state/run_status.json 경로 (index.html 상태 배지용)
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
+        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
@@ -427,7 +458,7 @@ def run(
     dashboard_dir.mkdir(parents=True, exist_ok=True)
 
     dashboard_html = build_dashboard_html(
-        summarized_articles, pending_review_articles, collection_stats, today, active_issues
+        summarized_articles, pending_review_articles, collection_stats, today, active_issues, repo_url
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 
