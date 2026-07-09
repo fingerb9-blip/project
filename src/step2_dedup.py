@@ -133,6 +133,21 @@ def cluster_same_event(articles: list[dict]) -> list[dict]:
     return articles
 
 
+def _tier_rank(source: str, source_tiers_config: dict) -> int:
+    if source in source_tiers_config.get("tier1_원출처", []):
+        return 0
+    if source in source_tiers_config.get("tier2_전문지", []):
+        return 1
+    if source in source_tiers_config.get("tier3_재인용", []):
+        return 2
+    return 3
+
+
+def _tier_label(source: str, source_tiers_config: dict) -> str:
+    labels = {0: "원출처", 1: "전문지", 2: "재인용", 3: "미분류"}
+    return labels[_tier_rank(source, source_tiers_config)]
+
+
 def pick_representative(cluster_articles: list[dict], source_tiers_config: dict) -> dict:
     """클러스터 내에서 source_tiers.yaml 1차(원출처) 우선으로 대표 기사를 선정한다.
 
@@ -143,17 +158,10 @@ def pick_representative(cluster_articles: list[dict], source_tiers_config: dict)
     Returns:
         대표 기사 dict
     """
-
-    def tier_rank(source: str) -> int:
-        if source in source_tiers_config.get("tier1_원출처", []):
-            return 0
-        if source in source_tiers_config.get("tier2_전문지", []):
-            return 1
-        if source in source_tiers_config.get("tier3_재인용", []):
-            return 2
-        return 3
-
-    return min(cluster_articles, key=lambda a: tier_rank(a["source"]))
+    return min(
+        cluster_articles,
+        key=lambda a: _tier_rank(a["source"], source_tiers_config),
+    )
 
 
 def run(

@@ -122,3 +122,10 @@ def test_pick_representative_prefers_tier1_source():
     ]
     representative = step2_dedup.pick_representative(cluster_articles, _SOURCE_TIERS)
     assert representative["id"] == "a2"
+
+
+def test_tier_rank_orders_tier1_before_tier2_before_tier3_before_unknown():
+    assert step2_dedup._tier_rank("삼성전자 뉴스룸", _SOURCE_TIERS) == 0
+    assert step2_dedup._tier_rank("디일렉", _SOURCE_TIERS) == 1
+    assert step2_dedup._tier_rank("네이버뉴스 재배포", _SOURCE_TIERS) == 2
+    assert step2_dedup._tier_rank("알수없는소스", _SOURCE_TIERS) == 3
