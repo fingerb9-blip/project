@@ -1,7 +1,8 @@
 """Step 5. 조립 — 브리핑 마크다운 문서 및 대시보드 HTML 생성.
 
 HTML/CSS 디자인은 대시보드_디자인_개편_명세_v2_SAVE스타일.md(§3 토큰, §9 CSS)를 따른다.
-디자인은 오직 세 곳에서만 산다: build_dashboard_html(), build_index_html(), _DASHBOARD_CSS.
+디자인은 네 곳에서만 산다: build_dashboard_html(), build_index_html(), build_archive_html(),
+_DASHBOARD_CSS.
 조회수·알림·커뮤니티·PDF·북마크는 §0 스코프 밖이라 구현하지 않는다.
 """
 
@@ -20,6 +21,8 @@ from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
 _CATEGORY_ORDER = ["메모리", "파운드리", "장비·소재", "팹리스·설계", "규제·정책"]
+_HIGHLIGHT_MAX_COUNT = 5
+_BADGE_CONFIRM_ICONS = {"ok": "✓", "obs": "○", "mut": "–"}
 _ALERT_SUPPRESS_WINDOW_HOURS = 24
 _KOREAN_WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
 _KST = timezone(timedelta(hours=9))
@@ -152,6 +155,12 @@ def _korean_date_title(iso_date: str) -> str:
     return f"{d.year}년 {d.month}월 {d.day}일 ({_korean_weekday(iso_date)})"
 
 
+def _korean_month_title(yyyymm: str) -> str:
+    """'YYYY-MM' 문자열을 아카이브 월별 그룹 제목 'YYYY년 M월'로 변환한다."""
+    year, month = yyyymm.split("-")
+    return f"{year}년 {int(month)}월"
+
+
 def _format_card_time(published_at: str | None) -> str:
     """기사 카드 배지 행 우측에 쓸 KST 'HH:MM' 시각. 파싱 불가하면 빈 문자열."""
     if not published_at:
@@ -198,11 +207,18 @@ def _build_date_select(all_dates: list[str], target_date: str) -> str:
     )
 
 
+def _split_categories(raw_categories: list[str]) -> list[str]:
+    """카테고리 문자열 하나에 여러 카테고리가 공백으로 붙어 온 경우(예: "메모리 장비·소재")를
+    분리한다. config/categories.yaml의 카테고리명에는 공백이 없어 안전하게 분리할 수 있다.
+    """
+    return [name for raw in raw_categories for name in raw.split()]
+
+
 def _ordered_categories(articles: list[dict]) -> list[str]:
     """카테고리 pill 필터에 쓸 카테고리 목록을 config/categories.yaml 순서대로 정렬한다."""
     present: list[str] = []
     for article in articles:
-        for category in article.get("category") or []:
+        for category in _split_categories(article.get("category") or []):
             if category not in present:
                 present.append(category)
     ordered = [c for c in _CATEGORY_ORDER if c in present]
@@ -289,7 +305,7 @@ def _build_article_card(article: dict) -> str:
         article: 요약 결과 기사 dict. source_type이 있으면(학회/특허 등) 배지로 표시하고
             데일리 페이지의 "학회·특허만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
     """
-    article_categories = article.get("category") or ["미분류"]
+    article_categories = _split_categories(article.get("category") or ["미분류"])
     cats_attr = _esc(" ".join(article_categories))
     safe_url = _safe_url(article["url"])
     title = _esc(article["title"])
@@ -299,16 +315,16 @@ def _build_article_card(article: dict) -> str:
     link_close = "</a>" if safe_url else ""
 
     if article.get("summary_fallback"):
-        tag_class, tag_label = "mut", "요약 없음"
+        confirm_class, confirm_label = "mut", "요약 없음"
     else:
         tag = article.get("confirmation_tag") or ""
         if "확정" in tag:
-            tag_class = "ok"
+            confirm_class = "ok"
         elif "관측" in tag:
-            tag_class = "obs"
+            confirm_class = "obs"
         else:
-            tag_class = "mut"
-        tag_label = tag
+            confirm_class = "mut"
+        confirm_label = tag
 
     search_text = " ".join(
         [article["source"], article["title"], article.get("summary") or ""]
@@ -322,10 +338,11 @@ def _build_article_card(article: dict) -> str:
     parts.append(f'<span class="badge {_badge_class(article["source"])}">{source}</span>')
     if source_type and source_type != "언론":
         parts.append(f'<span class="chip badge-type">{_esc(source_type)}</span>')
-    if tag_label:
-        parts.append(f'<span class="tag {tag_class}">{_esc(tag_label)}</span>')
+    if confirm_label:
+        icon = _BADGE_CONFIRM_ICONS[confirm_class]
+        parts.append(f'<span class="badge-confirm {confirm_class}">{icon} {_esc(confirm_label)}</span>')
     for category in article_categories:
-        parts.append(f'<span class="chip">{_esc(category)}</span>')
+        parts.append(f'<span class="badge-category">{_esc(category)}</span>')
     for stock_entry in article.get("related_stock") or []:
         change_pct = stock_entry["change_pct"]
         direction_class = "stock-up" if change_pct >= 0 else "stock-down"
@@ -352,6 +369,110 @@ def _build_article_card(article: dict) -> str:
     )
     parts.append("</div>")
     parts.append("</article>")
+    return "".join(parts)
+
+
+def _highlight_sort_timestamp(article: dict) -> float:
+    """최신순 정렬용 published_at epoch 타임스탬프. 파싱 불가·누락 시 가장 오래된 값(0.0)으로 취급한다."""
+    published_at = article.get("published_at")
+    if not published_at:
+        return 0.0
+    try:
+        dt = datetime.fromisoformat(published_at)
+    except ValueError:
+        return 0.0
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.timestamp()
+
+
+def select_highlights(articles: list[dict], max_count: int = _HIGHLIGHT_MAX_COUNT) -> list[dict]:
+    """"오늘의 핵심" 상단에 노출할 하이라이트 기사를 선정한다.
+
+    선정 기준: (a) confirmation_tag에 "확정"이 포함된 기사 우선, (b) 이미 선정된 기사와
+    카테고리가 겹치지 않는 기사 우선(다양성 확보), (c) 최신순. 요약이 없는 기사
+    (summary_fallback 또는 summary 미기재)는 후보에서 제외한다.
+
+    Args:
+        articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
+        max_count: 최대 선정 개수 (기본 5)
+
+    Returns:
+        하이라이트로 선정된 기사 리스트. 후보가 부족하면 max_count보다 적게 반환한다.
+    """
+    candidates = [
+        article for article in articles
+        if not article.get("summary_fallback") and article.get("summary")
+    ]
+    candidates.sort(
+        key=lambda a: (
+            "확정" not in (a.get("confirmation_tag") or ""),
+            -_highlight_sort_timestamp(a),
+        )
+    )
+
+    selected: list[dict] = []
+    used_categories: set[str] = set()
+    leftover: list[dict] = []
+    for article in candidates:
+        article_categories = set(article.get("category") or [])
+        if article_categories & used_categories:
+            leftover.append(article)
+            continue
+        selected.append(article)
+        used_categories |= article_categories
+        if len(selected) >= max_count:
+            return selected
+
+    for article in leftover:
+        if len(selected) >= max_count:
+            break
+        selected.append(article)
+
+    return selected
+
+
+def _build_highlight_card(article: dict) -> str:
+    """하이라이트 카드 — 제목 + 1줄 요약 + 확정/관측 태그 + 카테고리 칩으로 축약 렌더링한다.
+    _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
+    """
+    safe_url = _safe_url(article["url"])
+    title = _esc(article["title"])
+    link_open = f'<a href="{safe_url}">' if safe_url else ""
+    link_close = "</a>" if safe_url else ""
+
+    tag = article.get("confirmation_tag") or ""
+    if "확정" in tag:
+        confirm_class = "ok"
+    elif "관측" in tag:
+        confirm_class = "obs"
+    else:
+        confirm_class = "mut"
+
+    parts = ['<article class="highlight-card">']
+    parts.append('<div class="row">')
+    if tag:
+        icon = _BADGE_CONFIRM_ICONS[confirm_class]
+        parts.append(f'<span class="badge-confirm {confirm_class}">{icon} {_esc(tag)}</span>')
+    for category in _split_categories(article.get("category") or []):
+        parts.append(f'<span class="badge-category">{_esc(category)}</span>')
+    parts.append("</div>")
+    parts.append(f'<p class="title">{link_open}{title}{link_close}</p>')
+    parts.append(f'<p class="summary">{_esc(article["summary"])}</p>')
+    parts.append("</article>")
+    return "".join(parts)
+
+
+def _build_highlight_strip(articles: list[dict]) -> str:
+    """select_highlights() 결과를 가로 스크롤 하이라이트 스트립으로 렌더링한다.
+    후보가 없으면 빈 문자열(빈 컨테이너를 남기지 않는다).
+    """
+    if not articles:
+        return ""
+    parts = ['<div class="highlight-strip">']
+    for article in articles:
+        parts.append(_build_highlight_card(article))
+    parts.append("</div>")
     return "".join(parts)
 
 
@@ -404,6 +525,7 @@ def build_dashboard_html(
     parts.append(_build_filter_bar(categories))
 
     parts.append('<h2 class="sec">오늘의 핵심</h2>')
+    parts.append(_build_highlight_strip(select_highlights(summarized_articles)))
     parts.append(
         '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
         "학회·특허만 보기</label>"
@@ -538,6 +660,62 @@ def _build_report_card(dashboard_dir: Path, iso_date: str) -> str:
     parts.append("</div>")
     parts.append("</div>")
     return "".join(parts)
+
+
+def build_archive_html(dashboard_dir: Path) -> str:
+    """data/dashboard/*.html 전체를 월별로 그룹핑해 보여주는 아카이브 페이지를 만든다.
+
+    build_index_html()의 리포트 목록과 달리 전체 기간을 대상으로 하며, index.html의
+    "지난 리포트 전체보기" 링크로 진입한다. 별도 데이터 소스 없이 dashboard_dir에 이미
+    존재하는 파일명을 스캔해 그룹핑한다 (build_index_html()과 동일한 방식).
+
+    검색창은 index.html이 이미 쓰는 _DASHBOARD_SCRIPT를 그대로 재사용한다 — 새 스크립트를
+    만들 필요 없이, 리포트 카드를 하나의 id="feed" 컨테이너에 담기만 하면 #feed .card
+    대상 텍스트 검색이 그대로 동작한다(_build_report_card()가 이미 data-text에 날짜를
+    채워둔다). 이 페이지에 없는 .filter/#deep-tech-filter 요소는 스크립트의 ||{} 폴백으로
+    안전하게 무시된다 — index.html에서 이미 검증된 패턴이다.
+
+    Args:
+        dashboard_dir: data/dashboard 디렉토리 경로 (날짜별 html이 이미 생성돼 있어야 함)
+
+    Returns:
+        단일 HTML 문서 문자열
+    """
+    dates = sorted(
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in ("index", "archive")),
+        reverse=True,
+    )
+
+    by_month: dict[str, list[str]] = {}
+    for iso_date in dates:
+        by_month.setdefault(iso_date[:7], []).append(iso_date)
+
+    parts = [
+        "<!doctype html>",
+        '<html lang="ko"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        "<title>지난 리포트 전체보기 - 반도체 뉴스 브리핑</title>",
+        '<link rel="stylesheet" href="style.css">',
+        "</head><body>",
+        _build_appbar(),
+        _build_search_bar(),
+        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>',
+    ]
+
+    if not by_month:
+        parts.append('<p class="summary">아직 생성된 브리핑이 없습니다.</p>')
+    else:
+        parts.append('<div id="feed">')
+        for yyyymm in sorted(by_month, reverse=True):
+            parts.append(f'<h2 class="sec">{_esc(_korean_month_title(yyyymm))}</h2>')
+            for iso_date in by_month[yyyymm]:
+                parts.append(_build_report_card(dashboard_dir, iso_date))
+        parts.append("</div>")
+
+    parts.append(_SITE_FOOTER)
+    parts.append(_DASHBOARD_SCRIPT)
+    parts.append("</body></html>")
+    return "\n".join(parts)
 
 
 def load_latest_radar(radar_dir: Path) -> dict | None:
@@ -999,6 +1177,8 @@ def build_index_html(
             parts.append(_build_report_card(dashboard_dir, d))
         parts.append("</div>")
 
+    parts.append('<p class="row"><a href="archive.html">지난 리포트 전체보기 &rarr;</a></p>')
+
     parts.append(_SITE_FOOTER)
     parts.append(_DASHBOARD_SCRIPT)
     parts.append("</body></html>")
@@ -1062,6 +1242,14 @@ a:hover{text-decoration:underline}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
 
+/* 오늘의 핵심 하이라이트 */
+.highlight-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 0 14px;scroll-snap-type:x proximity}
+.highlight-card{flex:0 0 220px;scroll-snap-align:start;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:14px;padding:13px 14px}
+.highlight-card .title{font-size:.92rem;margin:.5rem 0;-webkit-line-clamp:2}
+.highlight-card .summary{font-size:.82rem;margin:.3rem 0;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
 /* 배지·칩 */
 .badge{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;background:#EEF0F3;color:#5A6472}
 .badge.s-samsung{background:#ECEBFB;color:#5B4FC4}
@@ -1070,14 +1258,20 @@ a:hover{text-decoration:underline}
 .badge.s-eetimes{background:#FDE9DD;color:#C2652A}
 .badge.s-etnews{background:#FDF1D6;color:#A9790B}
 .badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
-.tag{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px}
-.tag.ok{background:rgba(46,158,91,.12);color:var(--confirmed)}
-.tag.obs{background:rgba(201,130,26,.14);color:var(--observed)}
-.tag.mut{background:#EEF0F3;color:var(--muted)}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 .chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
 .chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
 .chip.warn-chip{background:var(--warn-bg);border:1px solid var(--warn-line);color:#A9790B}
+
+/* 확정/관측/요약없음 상태 배지 — 아이콘 + 색상 (카테고리 태그와 시각적으로 구분) */
+.badge-confirm{display:inline-flex;align-items:center;gap:3px;font-size:.74rem;font-weight:600;
+  padding:3px 9px;border-radius:999px}
+.badge-confirm.ok{background:#E3F6EA;color:#1B7A45}
+.badge-confirm.obs{background:#FBEFDD;color:#8A5A10}
+.badge-confirm.mut{background:#EEF0F3;color:#4B5563}
+
+/* 카테고리 배지 — 알약 모양 윤곽선 (확정/관측 배지와 구분) */
+.badge-category{font-size:.74rem;color:#5D6470;padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 
 /* 리포트 카드(인덱스) */
 .report .datetitle{font-size:1.05rem;font-weight:700;margin:.5rem 0 .6rem}
@@ -1224,5 +1418,8 @@ def run(
         cold_start_stage=cold_start_stage,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
+
+    archive_html = build_archive_html(dashboard_dir)
+    (dashboard_dir / "archive.html").write_text(archive_html, encoding="utf-8")
 
     return briefing

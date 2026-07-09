@@ -42,6 +42,39 @@ def test_fetch_rss_articles_uses_feed_source_type_override():
     assert articles[0]["source_type"] == "학회"
 
 
+def test_fetch_rss_articles_keeps_entries_despite_encoding_declaration_mismatch():
+    """실제 버그 재현: 전자신문/ZDNet Korea는 XML에 us-ascii로 선언돼 있지만 실제로는
+    UTF-8이라 feedparser가 bozo=True(CharacterEncodingOverride)를 세운다. entries는
+    정상 파싱되므로 접속 실패로 취급해 건너뛰면 안 된다."""
+    since = datetime(2020, 1, 1, tzinfo=timezone.utc)
+    xml_with_mismatched_encoding = """<?xml version="1.0" encoding="us-ascii"?>
+<rss version="2.0"><channel>
+<item>
+  <title>테스트 기사</title>
+  <link>https://example.com/a</link>
+  <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+  <description>요약</description>
+</item>
+</channel></rss>
+"""
+    feed = [{"name": "전자신문", "url": xml_with_mismatched_encoding}]
+
+    articles = step1_collect.fetch_rss_articles(feed, since)
+
+    assert len(articles) == 1
+    assert articles[0]["title"] == "테스트 기사"
+
+
+def test_fetch_rss_articles_skips_feed_with_no_entries_after_retries():
+    since = datetime(2020, 1, 1, tzinfo=timezone.utc)
+    empty_feed = '<rss version="2.0"><channel></channel></rss>'
+    feed = [{"name": "빈피드", "url": empty_feed}]
+
+    articles = step1_collect.fetch_rss_articles(feed, since)
+
+    assert articles == []
+
+
 def test_fetch_naver_news_tags_source_type_news(monkeypatch):
     monkeypatch.setenv("NAVER_CLIENT_ID", "id")
     monkeypatch.setenv("NAVER_CLIENT_SECRET", "secret")

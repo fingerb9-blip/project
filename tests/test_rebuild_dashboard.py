@@ -109,3 +109,55 @@ def test_rebuild_style_and_index_renders_report_card_for_existing_page(tmp_path)
     index_html = (dashboard_dir / "index.html").read_text(encoding="utf-8")
     assert 'href="2026-07-08.html"' in index_html
     assert "리포트 읽기" in index_html
+
+
+def test_preview_diffs_shows_diff_against_stale_existing_file(tmp_path):
+    _seed_source_data(tmp_path, "2026-07-09")
+    dashboard_dir = tmp_path / "data" / "dashboard"
+    dashboard_dir.mkdir(parents=True)
+    (dashboard_dir / "2026-07-09.html").write_text("<html>old</html>", encoding="utf-8")
+
+    output = rebuild_dashboard.preview_diffs(tmp_path, sample_size=1)
+
+    assert "2026-07-09" in output
+    assert "-<html>old</html>" in output
+    assert "+<!doctype html>" in output
+
+
+def test_preview_diffs_does_not_write_any_files(tmp_path):
+    _seed_source_data(tmp_path, "2026-07-09")
+    dashboard_dir = tmp_path / "data" / "dashboard"
+    dashboard_dir.mkdir(parents=True)
+    (dashboard_dir / "2026-07-09.html").write_text("<html>old</html>", encoding="utf-8")
+
+    rebuild_dashboard.preview_diffs(tmp_path, sample_size=1)
+
+    assert (dashboard_dir / "2026-07-09.html").read_text(encoding="utf-8") == "<html>old</html>"
+
+
+def test_preview_diffs_reports_no_changes_when_content_already_matches(tmp_path):
+    _seed_source_data(tmp_path, "2026-07-09")
+    rebuild_dashboard.rebuild_all(tmp_path)  # 현재 템플릿으로 이미 최신 상태로 만들어 둠
+
+    output = rebuild_dashboard.preview_diffs(tmp_path, sample_size=1)
+
+    assert "변경 없음" in output
+
+
+def test_preview_diffs_limits_to_sample_size_most_recent_dates(tmp_path):
+    _seed_source_data(tmp_path, "2026-07-08")
+    _seed_source_data(tmp_path, "2026-07-09")
+    dashboard_dir = tmp_path / "data" / "dashboard"
+    dashboard_dir.mkdir(parents=True)
+    (dashboard_dir / "2026-07-08.html").write_text("<html>old</html>", encoding="utf-8")
+    (dashboard_dir / "2026-07-09.html").write_text("<html>old</html>", encoding="utf-8")
+
+    output = rebuild_dashboard.preview_diffs(tmp_path, sample_size=1)
+
+    assert "=== 2026-07-09 ===" in output
+    assert "=== 2026-07-08 ===" not in output
+
+
+def test_preview_diffs_warns_when_no_source_data(tmp_path):
+    output = rebuild_dashboard.preview_diffs(tmp_path, sample_size=3)
+    assert "[WARN]" in output

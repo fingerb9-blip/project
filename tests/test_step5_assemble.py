@@ -82,7 +82,7 @@ def test_build_dashboard_html_handles_summary_fallback_article():
     html_out = step5_assemble.build_dashboard_html([fallback], [], {}, "2026-07-08")
     assert "삼성전자, 테스트 기사" in html_out
     assert "요약 없음" in html_out
-    assert 'class="tag mut"' in html_out
+    assert 'class="badge-confirm mut"' in html_out
 
 
 def test_build_dashboard_html_escapes_quote_breakout_in_url():
@@ -103,13 +103,58 @@ def test_build_dashboard_html_escapes_quote_breakout_in_url():
 def test_build_dashboard_html_confirmed_tag_uses_ok_class():
     article = _sample_article(confirmation_tag="[확정]")
     html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
-    assert 'class="tag ok"' in html_out
+    assert 'class="badge-confirm ok"' in html_out
 
 
 def test_build_dashboard_html_observed_tag_uses_obs_class():
     article = _sample_article(confirmation_tag="[관측]")
     html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
-    assert 'class="tag obs"' in html_out
+    assert 'class="badge-confirm obs"' in html_out
+
+
+def test_build_dashboard_html_confirmed_badge_shows_icon():
+    article = _sample_article(confirmation_tag="[확정]")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert "✓" in html_out
+
+
+def test_build_dashboard_html_observed_badge_shows_icon():
+    article = _sample_article(confirmation_tag="[관측]")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert "○" in html_out
+
+
+def test_build_dashboard_html_uses_badge_category_class_for_categories():
+    article = _sample_article(category=["메모리"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="badge-category"' in html_out
+
+
+def test_build_dashboard_html_splits_combined_category_string_into_separate_badges():
+    """실제 버그 재현: category 리스트 항목 하나에 여러 카테고리가 공백으로 붙어 오는 경우
+    (예: Gemini가 "메모리 장비·소재"를 한 문자열로 반환)도 개별 배지로 분리해야 한다."""
+    article = _sample_article(category=["메모리 장비·소재"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    feed_section = html_out[html_out.index('id="feed"'):]
+    assert feed_section.count('class="badge-category"') == 2
+    assert 'data-categories="메모리 장비·소재"' in html_out
+
+
+def test_build_dashboard_html_filter_bar_splits_combined_category_string():
+    article = _sample_article(category=["메모리 파운드리"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-cat="메모리"' in html_out
+    assert 'data-cat="파운드리"' in html_out
+
+
+def test_build_dashboard_html_highlight_card_uses_new_badge_classes():
+    article = _sample_article(category=["메모리"], confirmation_tag="[확정]")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    highlight_start = html_out.index('class="highlight-strip"')
+    feed_start = html_out.index('id="feed"')
+    highlight_section = html_out[highlight_start:feed_start]
+    assert "badge-confirm" in highlight_section
+    assert "badge-category" in highlight_section
 
 
 def test_build_dashboard_html_maps_known_source_to_badge_class():
@@ -930,3 +975,230 @@ def test_build_index_html_omits_trend_section_when_no_source_data(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
 
     assert "실시간 트렌드" not in html_out
+
+
+def test_select_highlights_excludes_articles_without_summary():
+    no_summary = _sample_article(id="a1", summary=None, summary_fallback=True)
+    has_summary = _sample_article(id="a2", summary="요약 있음", summary_fallback=False)
+
+    result = step5_assemble.select_highlights([no_summary, has_summary])
+
+    assert [a["id"] for a in result] == ["a2"]
+
+
+def test_select_highlights_excludes_articles_with_empty_summary_string():
+    empty_summary = _sample_article(id="a1", summary="", summary_fallback=False)
+    result = step5_assemble.select_highlights([empty_summary])
+    assert result == []
+
+
+def test_select_highlights_prefers_confirmed_over_observed():
+    observed = _sample_article(
+        id="a1", confirmation_tag="[관측]", category=["메모리"],
+        published_at="2026-07-09T09:00:00+09:00",
+    )
+    confirmed = _sample_article(
+        id="a2", confirmation_tag="[확정]", category=["파운드리"],
+        published_at="2026-07-09T08:00:00+09:00",  # 더 오래됐지만 확정이라 우선
+    )
+
+    result = step5_assemble.select_highlights([observed, confirmed], max_count=1)
+
+    assert [a["id"] for a in result] == ["a2"]
+
+
+def test_select_highlights_maximizes_category_diversity():
+    memory1 = _sample_article(
+        id="a1", category=["메모리"], published_at="2026-07-09T10:00:00+09:00",
+    )
+    memory2 = _sample_article(
+        id="a2", category=["메모리"], published_at="2026-07-09T09:00:00+09:00",
+    )
+    foundry = _sample_article(
+        id="a3", category=["파운드리"], published_at="2026-07-09T08:00:00+09:00",
+    )
+
+    result = step5_assemble.select_highlights([memory1, memory2, foundry], max_count=2)
+
+    assert [a["id"] for a in result] == ["a1", "a3"]  # 메모리 중복(a2)보다 다른 카테고리(a3) 우선
+
+
+def test_select_highlights_backfills_with_duplicate_category_when_not_enough_diversity():
+    memory1 = _sample_article(
+        id="a1", category=["메모리"], published_at="2026-07-09T10:00:00+09:00",
+    )
+    memory2 = _sample_article(
+        id="a2", category=["메모리"], published_at="2026-07-09T09:00:00+09:00",
+    )
+
+    result = step5_assemble.select_highlights([memory1, memory2], max_count=2)
+
+    assert [a["id"] for a in result] == ["a1", "a2"]  # 카테고리가 겹쳐도 max_count까지 채움
+
+
+def test_select_highlights_sorts_by_recency_within_same_confirmation_level():
+    older = _sample_article(
+        id="a1", category=["메모리"], published_at="2026-07-08T09:00:00+09:00",
+    )
+    newer = _sample_article(
+        id="a2", category=["파운드리"], published_at="2026-07-09T09:00:00+09:00",
+    )
+
+    result = step5_assemble.select_highlights([older, newer])
+
+    assert [a["id"] for a in result] == ["a2", "a1"]
+
+
+def test_select_highlights_returns_fewer_than_max_count_when_not_enough_candidates():
+    only_one = _sample_article(id="a1")
+    result = step5_assemble.select_highlights([only_one], max_count=5)
+    assert len(result) == 1
+
+
+def test_select_highlights_respects_max_count_cap():
+    articles = [
+        _sample_article(id=f"a{i}", category=[f"cat{i}"], published_at="2026-07-09T09:00:00+09:00")
+        for i in range(8)
+    ]
+    result = step5_assemble.select_highlights(articles, max_count=5)
+    assert len(result) == 5
+
+
+def test_build_dashboard_html_renders_highlight_strip():
+    article = _sample_article(title="하이라이트 대상 기사")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="highlight-strip"' in html_out
+    assert 'class="highlight-card"' in html_out
+    assert "하이라이트 대상 기사" in html_out
+
+
+def test_build_dashboard_html_highlight_card_escapes_title():
+    malicious = _sample_article(title="<script>alert(1)</script>")
+    html_out = step5_assemble.build_dashboard_html([malicious], [], {}, "2026-07-08")
+    assert "<script>alert(1)</script>" not in html_out
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html_out
+
+
+def test_build_dashboard_html_highlight_card_shows_category_chip():
+    article = _sample_article(category=["메모리"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="highlight-strip"' in html_out
+    assert "메모리" in html_out
+
+
+def test_build_dashboard_html_omits_highlight_strip_when_no_eligible_articles():
+    no_summary = _sample_article(summary=None, summary_fallback=True)
+    html_out = step5_assemble.build_dashboard_html([no_summary], [], {}, "2026-07-08")
+    assert 'class="highlight-strip"' not in html_out
+
+
+def test_build_dashboard_html_highlight_strip_appears_before_full_feed():
+    article = _sample_article()
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    highlight_pos = html_out.index('class="highlight-strip"')
+    feed_pos = html_out.index('id="feed"')
+    assert highlight_pos < feed_pos
+
+
+def test_build_archive_html_groups_reports_by_month(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    for d in ["2026-06-30", "2026-07-01", "2026-07-08"]:
+        (dashboard_dir / f"{d}.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+
+    assert "2026년 7월" in html_out
+    assert "2026년 6월" in html_out
+    assert html_out.index("2026년 7월") < html_out.index("2026년 6월")  # 최신 월 먼저
+
+
+def test_build_archive_html_lists_dates_within_month_descending(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    for d in ["2026-07-01", "2026-07-08"]:
+        (dashboard_dir / f"{d}.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+
+    assert html_out.index('href="2026-07-08.html"') < html_out.index('href="2026-07-01.html"')
+
+
+def test_build_archive_html_excludes_index_and_itself(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "index.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "archive.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+
+    assert 'href="index.html.html"' not in html_out
+    assert 'href="archive.html.html"' not in html_out
+    assert 'href="2026-07-08.html"' in html_out
+
+
+def test_build_archive_html_handles_empty_dashboard_dir(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+
+    assert "아직 생성된 브리핑이 없습니다" in html_out
+
+
+def test_build_archive_html_includes_working_search(tmp_path):
+    """검색창은 index.html과 동일한 _DASHBOARD_SCRIPT를 재사용해 동작한다 — 이 스크립트는
+    #feed .card를 대상으로 검색하므로, 카드들이 반드시 하나의 id="feed" 컨테이너 안에
+    있어야 한다. .filter/#deep-tech-filter처럼 이 페이지에 없는 요소는 스크립트의
+    ||{} 폴백으로 안전하게 무시된다(index.html에서 이미 검증된 패턴)."""
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+
+    assert 'id="q"' in html_out
+    assert "#feed .card" in html_out
+
+
+def test_build_archive_html_wraps_report_cards_in_feed_container(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+
+    feed_start = html_out.index('id="feed"')
+    card_pos = html_out.index('href="2026-07-08.html"')
+    assert feed_start < card_pos
+
+
+def test_build_index_html_includes_archive_link(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert 'href="archive.html"' in html_out
+
+
+def test_run_writes_archive_html(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    step5_assemble.run(
+        [_sample_article()],
+        [],
+        {},
+        str(archive_path),
+        str(dashboard_dir),
+        "2026-07-08",
+        str(state_path),
+    )
+
+    archive_html_path = dashboard_dir / "archive.html"
+    assert archive_html_path.exists()
+    assert "2026년 7월" in archive_html_path.read_text(encoding="utf-8")
