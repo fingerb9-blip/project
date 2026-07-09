@@ -75,3 +75,42 @@ def test_group_articles_by_company_buckets_articles():
     grouped = radar_weekly.group_articles_by_company(articles, ["samsung_electronics", "tsmc"])
     assert [a["id"] for a in grouped["samsung_electronics"]] == ["a1", "a2"]
     assert [a["id"] for a in grouped["tsmc"]] == ["a2"]
+
+
+def test_pick_top_issues_ranks_by_related_article_count():
+    issues = [
+        {
+            "issue_id": "i1", "entity": "SK하이닉스", "title": "HBM4 이슈",
+            "last_updated": "2026-07-08", "related_article_ids": ["a", "b", "c"],
+        },
+        {
+            "issue_id": "i2", "entity": "삼성전자", "title": "파운드리 이슈",
+            "last_updated": "2026-07-07", "related_article_ids": ["a"],
+        },
+    ]
+    top = radar_weekly.pick_top_issues(issues, "2026-07-09", limit=3)
+    assert top == ["[SK하이닉스] HBM4 이슈", "[삼성전자] 파운드리 이슈"]
+
+
+def test_pick_top_issues_excludes_stale_issues():
+    issues = [
+        {
+            "issue_id": "i1", "entity": "SK하이닉스", "title": "오래된 이슈",
+            "last_updated": "2026-06-01", "related_article_ids": ["a", "b", "c"],
+        },
+    ]
+    top = radar_weekly.pick_top_issues(issues, "2026-07-09", limit=3)
+    assert top == []
+
+
+def test_pick_top_issues_limits_to_n():
+    issues = [
+        {
+            "issue_id": f"i{n}", "entity": "E", "title": f"이슈{n}",
+            "last_updated": "2026-07-09", "related_article_ids": ["a"] * n,
+        }
+        for n in range(1, 6)
+    ]
+    top = radar_weekly.pick_top_issues(issues, "2026-07-09", limit=3)
+    assert len(top) == 3
+    assert top[0] == "[E] 이슈5"
