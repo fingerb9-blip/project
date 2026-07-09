@@ -261,3 +261,16 @@ def test_build_index_html_hides_stale_alert_banner(tmp_path):
     )
 
     assert "청주공장 화재 속보" not in html_out
+
+
+def test_build_dashboard_html_shows_source_type_badge():
+    article = _sample_article(source_type="특허")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-source-type="특허"' in html_out
+    assert ">특허<" in html_out
+
+
+def test_build_dashboard_html_defaults_source_type_to_news_when_missing():
+    article = _sample_article()
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'data-source-type="언론"' in html_out

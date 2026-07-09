@@ -134,15 +134,18 @@ def build_dashboard_html(
         safe_url = _safe_url(article["url"])
         title = _esc(article["title"])
         source = _esc(article["source"])
+        source_type = _esc(article.get("source_type", "언론"))
         link = f'<a href="{safe_url}">{title}</a>' if safe_url else title
-        parts.append('<article class="card">')
+        parts.append(f'<article class="card" data-source-type="{source_type}">')
         if article.get("summary_fallback"):
-            parts.append(f"<p>{link} ({source})</p>")
+            parts.append(f'<p>{link} ({source} · <span class="badge-type">{source_type}</span>)</p>')
         else:
             tag = _esc(article.get("confirmation_tag", ""))
             parts.append(f"<p>{tag} <strong>{title}</strong></p>")
             parts.append(f"<p>{_esc(article['summary'])}</p>")
-            parts.append(f'<p class="meta">{source} · {link}</p>')
+            parts.append(
+                f'<p class="meta">{source} · <span class="badge-type">{source_type}</span> · {link}</p>'
+            )
         parts.append("</article>")
     parts.append("</section>")
 
@@ -344,6 +347,7 @@ h1 { font-size: 1.5rem; }
 h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 2px solid #ddd; padding-bottom: 0.3rem; }
 .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
 .meta { color: #666; font-size: 0.85rem; }
+.badge-type { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px; background: #e2e3e5; font-size: 0.78rem; }
 table { border-collapse: collapse; width: 100%; }
 th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
 tr.warn td { background: #fff3cd; }
