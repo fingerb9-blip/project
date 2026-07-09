@@ -273,6 +273,7 @@ def run(
     """
     articles = normalize_company_names(raw_articles, aliases_config)
     articles = cluster_same_event(articles, source_tiers_config)
+    articles = merge_cross_tier_duplicates(articles, source_tiers_config)
 
     clusters: dict[str, list[dict]] = {}
     for article in articles:
