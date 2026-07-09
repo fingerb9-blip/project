@@ -69,3 +69,31 @@ def test_fetch_naver_news_tags_source_type_news(monkeypatch):
     articles = step1_collect.fetch_naver_news(["반도체"])
 
     assert articles[0]["source_type"] == "언론"
+
+
+def test_fetch_semantic_scholar_papers_tags_source_type_academic(monkeypatch):
+    since = datetime(2024, 1, 1, tzinfo=timezone.utc)
+
+    class _Resp:
+        status_code = 200
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "data": [
+                    {
+                        "title": "HBM paper",
+                        "url": "https://example.com/paper1",
+                        "abstract": "abstract",
+                        "publicationDate": "2024-06-01",
+                    }
+                ]
+            }
+
+    monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
+
+    papers = step1_collect.fetch_semantic_scholar_papers(["HBM memory"], since)
+
+    assert papers[0]["source_type"] == "학회"

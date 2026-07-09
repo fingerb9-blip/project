@@ -207,6 +207,7 @@ def fetch_semantic_scholar_papers(keywords: list[str], since: datetime) -> list[
                     "source": _PAPER_SOURCE,
                     "published_at": f"{published_at}T00:00:00+00:00" if published_at else since.isoformat(),
                     "raw_text": paper.get("abstract") or "",
+                    "source_type": "학회",
                 }
             )
 
