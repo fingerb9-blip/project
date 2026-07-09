@@ -6,7 +6,7 @@ import json
 import logging
 from pathlib import Path
 
-from src import gemini_client
+from src import gemini_client, notify
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +124,11 @@ def cluster_same_event(articles: list[dict], source_tiers_config: dict) -> list[
         clusters = result.get("clusters", [])
     except RuntimeError as exc:
         logger.error("클러스터링 실패, 제목 유사도 그룹 단위로 대체: %s", exc)
+        notify.notify_warning(
+            "기사 중복 클러스터링 실패",
+            f"Gemini 클러스터링 호출이 실패해 제목 유사도 그룹 단위로만 중복을 제거합니다"
+            f"(중복 기사가 더 많이 남을 수 있음): {type(exc).__name__}: {exc}",
+        )
         clusters = []
 
     rep_id_to_cluster: dict[str, str] = {}
@@ -192,35 +197,29 @@ def _token_jaccard(title_a: str, title_b: str) -> float:
     return len(tokens_a & tokens_b) / len(tokens_a | tokens_b)
 
 
-def _is_cross_tier_duplicate(
-    article_a: dict, article_b: dict, source_tiers_config: dict
-) -> bool:
-    """Gemini 클러스터링이 놓친 원출처/재인용 중복을 잡는 보조 판정.
+def _is_near_duplicate(article_a: dict, article_b: dict) -> bool:
+    """Gemini 클러스터링이 놓친 동일 사건 중복을 잡는 보조 판정.
 
-    기업이 겹치고, tier가 서로 다르고(같은 발표를 다른 등급 소스가 다뤘다는 신호),
-    제목 토큰 유사도가 임계값 이상이면 동일 사건으로 간주한다.
+    기업이 겹치고 제목 토큰 유사도가 임계값 이상이면 동일 사건으로 간주한다. tier가
+    다른 경우(원출처 vs 재인용)뿐 아니라, "네이버뉴스 재배포"처럼 서로 다른 원매체의
+    기사가 하나의 source 이름으로 뭉뚱그려져 tier가 같아지는 경우도 잡아야 하므로
+    tier 일치 여부는 판단에 쓰지 않는다.
     """
     companies_a = set(article_a.get("companies", []))
     companies_b = set(article_b.get("companies", []))
-    shared_companies = companies_a & companies_b
-    if not shared_companies:
-        return False
-    rank_a = _tier_rank(article_a["source"], source_tiers_config)
-    rank_b = _tier_rank(article_b["source"], source_tiers_config)
-    if rank_a == rank_b:
+    if not (companies_a & companies_b):
         return False
     return _token_jaccard(article_a["title"], article_b["title"]) >= _TOKEN_JACCARD_THRESHOLD
 
 
-def merge_cross_tier_duplicates(articles: list[dict], source_tiers_config: dict) -> list[dict]:
-    """cluster_same_event 결과에 원출처/재인용 중복 병합 안전망을 적용한다.
+def merge_near_duplicates(articles: list[dict]) -> list[dict]:
+    """cluster_same_event 결과에 동일 사건 중복 병합 안전망을 적용한다.
 
-    Gemini 클러스터링이 표현 차이 때문에 놓친 동일 사건 쌍을, 기업 겹침 + tier 차이 +
-    제목 토큰 유사도 규칙으로 강제 병합한다 (Gemini 성공/실패 여부와 무관하게 동작).
+    Gemini 클러스터링이 표현 차이 때문에 놓친 동일 사건 쌍을, 기업 겹침 + 제목 토큰
+    유사도 규칙으로 강제 병합한다 (Gemini 성공/실패 여부와 무관하게 동작).
 
     Args:
         articles: cluster_id가 부여된 기사 리스트
-        source_tiers_config: config/source_tiers.yaml 로드 결과
 
     Returns:
         병합된 cluster_id가 적용된 기사 리스트
@@ -244,9 +243,7 @@ def merge_cross_tier_duplicates(articles: list[dict], source_tiers_config: dict)
     cluster_ids = list(clusters.keys())
     for i, cluster_id_a in enumerate(cluster_ids):
         for cluster_id_b in cluster_ids[i + 1 :]:
-            if _is_cross_tier_duplicate(
-                clusters[cluster_id_a][0], clusters[cluster_id_b][0], source_tiers_config
-            ):
+            if _is_near_duplicate(clusters[cluster_id_a][0], clusters[cluster_id_b][0]):
                 union(cluster_id_a, cluster_id_b)
 
     for article in articles:
@@ -274,7 +271,7 @@ def run(
     """
     articles = normalize_company_names(raw_articles, aliases_config)
     articles = cluster_same_event(articles, source_tiers_config)
-    articles = merge_cross_tier_duplicates(articles, source_tiers_config)
+    articles = merge_near_duplicates(articles)
 
     clusters: dict[str, list[dict]] = {}
     for article in articles:

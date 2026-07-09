@@ -104,8 +104,9 @@ def test_cluster_same_event_assigns_same_cluster_id_within_title_group(mock_call
     assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
 
 
+@patch("src.step2_dedup.notify.notify_warning")
 @patch("src.step2_dedup.gemini_client.call_gemini", side_effect=RuntimeError("boom"))
-def test_cluster_same_event_keeps_title_group_merged_when_gemini_fails(mock_call):
+def test_cluster_same_event_keeps_title_group_merged_when_gemini_fails(mock_call, mock_notify):
     articles = [
         _article(id="a1", url="https://a.com/1"),
         _article(id="a2", url="https://b.com/1"),
@@ -117,6 +118,7 @@ def test_cluster_same_event_keeps_title_group_merged_when_gemini_fails(mock_call
     by_id = {a["id"]: a for a in result}
     assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
     assert by_id["a1"]["cluster_id"] != by_id["a3"]["cluster_id"]
+    mock_notify.assert_called_once()
 
 
 def test_cluster_same_event_handles_empty_list():
@@ -169,7 +171,7 @@ def test_token_jaccard_low_for_unrelated_titles():
     assert similarity < 0.3
 
 
-def test_merge_cross_tier_duplicates_merges_newsroom_and_reprint_of_same_event():
+def test_merge_near_duplicates_merges_newsroom_and_reprint_of_same_event():
     # 실제 버그 재현: Gemini 클러스터링이 삼성전자 뉴스룸(원출처)과
     # 디일렉(재인용) 갤럭시 언팩 기사를 서로 다른 클러스터로 남긴 경우
     newsroom = _article(
@@ -186,13 +188,36 @@ def test_merge_cross_tier_duplicates_merges_newsroom_and_reprint_of_same_event()
     )
     articles = step2_dedup.normalize_company_names([newsroom, reprint], _ALIASES)
 
-    result = step2_dedup.merge_cross_tier_duplicates(articles, _SOURCE_TIERS)
+    result = step2_dedup.merge_near_duplicates(articles)
 
     by_id = {a["id"]: a for a in result}
     assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
 
 
-def test_merge_cross_tier_duplicates_keeps_different_companies_separate():
+def test_merge_near_duplicates_merges_same_tier_reprints_of_same_event():
+    # 실제 버그 재현: "네이버뉴스 재배포"는 원매체가 달라도 source 이름이 하나로
+    # 뭉뚱그려져 tier가 항상 같으므로, tier 차이를 요구하면 이 중복을 영원히 못 잡는다.
+    reprint_a = _article(
+        id="a1",
+        title="삼성전자 갤럭시 언팩 2026 개최, 엑시노스 2600 공식 발표",
+        source="네이버뉴스 재배포",
+        cluster_id="cluster-a",
+    )
+    reprint_b = _article(
+        id="a2",
+        title="갤럭시 언팩 2026 현장, 삼성전자 엑시노스 2600 탑재 공식화",
+        source="네이버뉴스 재배포",
+        cluster_id="cluster-b",
+    )
+    articles = step2_dedup.normalize_company_names([reprint_a, reprint_b], _ALIASES)
+
+    result = step2_dedup.merge_near_duplicates(articles)
+
+    by_id = {a["id"]: a for a in result}
+    assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
+
+
+def test_merge_near_duplicates_keeps_different_companies_separate():
     samsung_article = _article(
         id="a1",
         title="삼성전자, HBM4 수율 개선 발표",
@@ -209,14 +234,15 @@ def test_merge_cross_tier_duplicates_keeps_different_companies_separate():
     aliases = dict(_ALIASES, sk_hynix={"aliases": ["SK하이닉스"], "segment": ["메모리"]})
     articles = step2_dedup.normalize_company_names([samsung_article, hynix_article], aliases)
 
-    result = step2_dedup.merge_cross_tier_duplicates(articles, _SOURCE_TIERS)
+    result = step2_dedup.merge_near_duplicates(articles)
 
     by_id = {a["id"]: a for a in result}
     assert by_id["a1"]["cluster_id"] != by_id["a2"]["cluster_id"]
 
 
-def test_merge_cross_tier_duplicates_keeps_same_tier_separate_events():
-    # 같은 tier(둘 다 원출처)인 별개 발표는 기업이 겹쳐도 병합하지 않는다
+def test_merge_near_duplicates_keeps_distinct_events_from_same_source_separate():
+    # 같은 source(둘 다 삼성전자 뉴스룸)인 별개 발표는 기업이 겹쳐도 병합하지 않는다
+    # (제목 토큰 유사도가 임계값 미만이라 별개 사건으로 남는다)
     article_a = _article(
         id="a1",
         title="삼성전자, 갤럭시 언팩 2026에서 갤럭시 S26 공식 발표",
@@ -231,7 +257,7 @@ def test_merge_cross_tier_duplicates_keeps_same_tier_separate_events():
     )
     articles = step2_dedup.normalize_company_names([article_a, article_b], _ALIASES)
 
-    result = step2_dedup.merge_cross_tier_duplicates(articles, _SOURCE_TIERS)
+    result = step2_dedup.merge_near_duplicates(articles)
 
     by_id = {a["id"]: a for a in result}
     assert by_id["a1"]["cluster_id"] != by_id["a2"]["cluster_id"]
