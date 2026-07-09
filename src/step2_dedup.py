@@ -80,12 +80,13 @@ def group_by_title_similarity(articles: list[dict]) -> list[list[dict]]:
     return groups
 
 
-def cluster_same_event(articles: list[dict]) -> list[dict]:
+def cluster_same_event(articles: list[dict], source_tiers_config: dict) -> list[dict]:
     """제목 유사도로 사전 그룹핑한 뒤, 그룹 대표만 Gemini API(Flash-Lite)에 배치로 전달해
     동일 사건을 클러스터링한다.
 
     Args:
         articles: 기업명 정규화된 기사 리스트
+        source_tiers_config: config/source_tiers.yaml 로드 결과 (프롬프트 힌트에 사용)
 
     Returns:
         cluster_id가 부여된 기사 리스트
@@ -97,12 +98,20 @@ def cluster_same_event(articles: list[dict]) -> list[dict]:
     representatives = [group[0] for group in groups]
 
     payload = [
-        {"id": a["id"], "title": a["title"], "snippet": a.get("raw_text", "")[:_SNIPPET_LEN]}
+        {
+            "id": a["id"],
+            "title": a["title"],
+            "snippet": a.get("raw_text", "")[:_SNIPPET_LEN],
+            "companies": a.get("companies", []),
+            "source_tier": _tier_label(a["source"], source_tiers_config),
+        }
         for a in representatives
     ]
     prompt = (
         "다음은 오늘 수집된 반도체 업계 뉴스 기사 목록이다. "
         "같은 사건(동일 발표·계약·인사 등)을 다루는 기사끼리 id를 묶어 clusters 배열로 반환하라. "
+        "companies가 겹치고 source_tier가 다른 두 기사(예: 원출처의 공식 발표와 "
+        "전문지·재인용 매체의 후속 보도)는 표현이 달라도 같은 사건이면 반드시 같은 클러스터로 묶어라. "
         "서로 다른 사건이면 별도 클러스터로 둔다.\n\n"
         f"기사 목록: {json.dumps(payload, ensure_ascii=False)}"
     )
@@ -182,7 +191,7 @@ def run(
         중복 제거된 기사 + cluster_id 리스트
     """
     articles = normalize_company_names(raw_articles, aliases_config)
-    articles = cluster_same_event(articles)
+    articles = cluster_same_event(articles, source_tiers_config)
 
     clusters: dict[str, list[dict]] = {}
     for article in articles:

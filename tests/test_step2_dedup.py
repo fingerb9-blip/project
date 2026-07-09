@@ -68,12 +68,26 @@ def test_cluster_same_event_sends_one_representative_per_title_group(mock_call):
         _article(id="a3", title="SK하이닉스, 청주 공장 증설 착공", url="https://c.com/1"),
     ]
 
-    step2_dedup.cluster_same_event(articles)
+    step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
 
     prompt = mock_call.call_args[0][0]
     assert '"a1"' in prompt
     assert '"a3"' in prompt
     assert '"a2"' not in prompt  # a2는 a1과 같은 그룹이라 대표(a1)로만 전달됨
+
+
+@patch("src.step2_dedup.gemini_client.call_gemini")
+def test_cluster_same_event_includes_tier_and_company_hints_in_prompt(mock_call):
+    mock_call.return_value = {"clusters": [["a1"]]}
+    articles = step2_dedup.normalize_company_names(
+        [_article(id="a1", source="삼성전자 뉴스룸")], _ALIASES
+    )
+
+    step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
+
+    prompt = mock_call.call_args[0][0]
+    assert "원출처" in prompt
+    assert "samsung_electronics" in prompt
 
 
 @patch("src.step2_dedup.gemini_client.call_gemini")
@@ -84,7 +98,7 @@ def test_cluster_same_event_assigns_same_cluster_id_within_title_group(mock_call
         _article(id="a2", url="https://b.com/1"),
     ]
 
-    result = step2_dedup.cluster_same_event(articles)
+    result = step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
 
     by_id = {a["id"]: a for a in result}
     assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
@@ -98,7 +112,7 @@ def test_cluster_same_event_keeps_title_group_merged_when_gemini_fails(mock_call
         _article(id="a3", title="SK하이닉스, 청주 공장 증설 착공", url="https://c.com/1"),
     ]
 
-    result = step2_dedup.cluster_same_event(articles)
+    result = step2_dedup.cluster_same_event(articles, _SOURCE_TIERS)
 
     by_id = {a["id"]: a for a in result}
     assert by_id["a1"]["cluster_id"] == by_id["a2"]["cluster_id"]
@@ -106,7 +120,7 @@ def test_cluster_same_event_keeps_title_group_merged_when_gemini_fails(mock_call
 
 
 def test_cluster_same_event_handles_empty_list():
-    assert step2_dedup.cluster_same_event([]) == []
+    assert step2_dedup.cluster_same_event([], _SOURCE_TIERS) == []
 
 
 def test_normalize_company_names_matches_alias():
