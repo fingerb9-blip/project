@@ -84,10 +84,11 @@ def compute_relevance_score(article: dict, core_keywords: list[str]) -> int:
 
 
 def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict]:
-    """keywords.yaml 화이트리스트/블랙리스트로 1차 필터링한다.
+    """keywords.yaml 화이트리스트/블랙리스트로 1차 필터링하고 관련도 점수를 매긴다.
 
-    블랙리스트 키워드가 매칭된 기사는 제외하고, 화이트리스트 매칭 그룹은
-    keyword_hints 필드에 남겨 Gemini 분류의 참고 신호로 사용한다.
+    블랙리스트 키워드가 매칭된 기사는 제외하고, 화이트리스트 매칭 그룹(반도체_핵심 제외)은
+    keyword_hints 필드에 남겨 Gemini 분류의 참고 신호로 사용한다. 반도체_핵심 그룹은
+    keyword_hints와 별개로 relevance_score 계산에만 사용한다.
 
     Args:
         articles: Step 2 결과 기사 리스트
@@ -98,13 +99,16 @@ def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict
     """
     whitelist = keywords_config.get("whitelist", {})
     blacklist = keywords_config.get("blacklist", {})
+    core_keywords = whitelist.get(_CORE_KEYWORD_GROUP, [])
+    hint_whitelist = {k: v for k, v in whitelist.items() if k != _CORE_KEYWORD_GROUP}
 
     filtered = []
     for article in articles:
         text = f"{article['title']} {article.get('raw_text', '')}"
         if _matched_keywords(text, blacklist):
             continue
-        article["keyword_hints"] = _matched_keywords(text, whitelist)
+        article["keyword_hints"] = _matched_keywords(text, hint_whitelist)
+        article["relevance_score"] = compute_relevance_score(article, core_keywords)
         filtered.append(article)
 
     return filtered
