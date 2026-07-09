@@ -11,9 +11,13 @@ Usage:
     python scripts/rebuild_dashboard.py --style-only  # style.css/index.html만 갱신
                                                        # (원본 데이터 없어도 동작 — CSS 변경은
                                                        # 공유 스타일시트라 즉시 전 페이지에 반영됨)
+    python scripts/rebuild_dashboard.py --preview     # 파일을 쓰지 않고 최신 3개 날짜의
+                                                       # diff만 출력 (덮어쓰기 전 확인용)
+    python scripts/rebuild_dashboard.py --preview 5   # 최신 5개 날짜로 미리보기 범위 조절
 """
 
 import argparse
+import difflib
 import json
 import sys
 from datetime import datetime, timezone
@@ -95,13 +99,39 @@ def _dates_with_source_data(base_dir: Path) -> list[str]:
     return sorted(dates)
 
 
-def rebuild_all(base_dir: Path) -> list[str]:
-    """data/summarized/*.json(있으면) 또는 data/classified/*.json(폴백)으로
-    모든 날짜를 새 템플릿으로 재생성한다.
+def _rebuild_one(base_dir: Path, today: str, feeds: list[dict], all_dates: list[str]) -> str:
+    """한 날짜의 대시보드 HTML을 현재 템플릿으로 렌더링한다 (파일에 쓰지 않는다).
 
     과거 날짜의 "진행 중 이슈" 섹션은 채우지 않는다 — issues.json은 그날의 스냅숏이
     아니라 "현재" 이슈 상태만 가지고 있어, 과거 페이지에 지금의 이슈 목록을 붙이면
     시점이 맞지 않는 정보를 보여주게 된다.
+    """
+    summarized, timestamp_source = _load_or_reconstruct_summarized(base_dir, today)
+    classified = _load_json(base_dir / "data" / "classified" / f"{today}.json") or []
+    raw_articles = _load_json(base_dir / "data" / "raw" / f"{today}.json") or []
+    pending_review = [a for a in classified if a.get("tier") == "확인 필요"]
+    collection_stats = _compute_collection_stats(base_dir, {"feeds": feeds}, raw_articles, today)
+
+    updated_at = (
+        datetime.fromtimestamp(timestamp_source.stat().st_mtime, tz=timezone.utc).isoformat()
+        if timestamp_source
+        else None
+    )
+
+    return step5_assemble.build_dashboard_html(
+        summarized,
+        pending_review,
+        collection_stats,
+        today,
+        all_dates=all_dates,
+        active_issues=None,
+        updated_at=updated_at,
+    )
+
+
+def rebuild_all(base_dir: Path) -> list[str]:
+    """data/summarized/*.json(있으면) 또는 data/classified/*.json(폴백)으로
+    모든 날짜를 새 템플릿으로 재생성한다.
 
     Returns:
         재생성에 성공한 날짜 목록 (최신순)
@@ -117,31 +147,48 @@ def rebuild_all(base_dir: Path) -> list[str]:
 
     rebuilt = []
     for today in dates:
-        summarized, timestamp_source = _load_or_reconstruct_summarized(base_dir, today)
-        classified = _load_json(base_dir / "data" / "classified" / f"{today}.json") or []
-        raw_articles = _load_json(base_dir / "data" / "raw" / f"{today}.json") or []
-        pending_review = [a for a in classified if a.get("tier") == "확인 필요"]
-        collection_stats = _compute_collection_stats(base_dir, {"feeds": feeds}, raw_articles, today)
-
-        updated_at = (
-            datetime.fromtimestamp(timestamp_source.stat().st_mtime, tz=timezone.utc).isoformat()
-            if timestamp_source
-            else None
-        )
-
-        html_out = step5_assemble.build_dashboard_html(
-            summarized,
-            pending_review,
-            collection_stats,
-            today,
-            all_dates=all_dates,
-            active_issues=None,
-            updated_at=updated_at,
-        )
+        html_out = _rebuild_one(base_dir, today, feeds, all_dates)
         (dashboard_dir / f"{today}.html").write_text(html_out, encoding="utf-8")
         rebuilt.append(today)
 
     return rebuilt
+
+
+def preview_diffs(base_dir: Path, sample_size: int = 3) -> str:
+    """기존 커밋된 HTML을 덮어쓰기 전, 최신 sample_size개 날짜에 대해서만 새 템플릿으로
+    렌더링한 결과와 현재 저장된 파일의 unified diff를 반환한다. 파일에는 쓰지 않는다 —
+    rebuild_all() 실행 전 변경사항을 확인하기 위한 미리보기 전용이다.
+    """
+    dates = _dates_with_source_data(base_dir)
+    if not dates:
+        return "[WARN] data/summarized 또는 classified에 원본 데이터가 없어 미리볼 수 없습니다."
+
+    feeds = _load_feeds(base_dir)
+    all_dates = sorted(dates, reverse=True)
+    sample_dates = all_dates[:sample_size]
+    dashboard_dir = base_dir / "data" / "dashboard"
+
+    sections = []
+    for today in sample_dates:
+        new_html = _rebuild_one(base_dir, today, feeds, all_dates)
+        existing_path = dashboard_dir / f"{today}.html"
+        old_lines = (
+            existing_path.read_text(encoding="utf-8").splitlines(keepends=True)
+            if existing_path.exists()
+            else []
+        )
+        new_lines = new_html.splitlines(keepends=True)
+        diff_lines = list(
+            difflib.unified_diff(
+                old_lines, new_lines, fromfile=f"{today}.html (현재)", tofile=f"{today}.html (재생성)"
+            )
+        )
+        if diff_lines:
+            sections.append(f"=== {today} ===\n" + "".join(diff_lines))
+        else:
+            sections.append(f"=== {today} === 변경 없음")
+
+    return "\n".join(sections)
 
 
 def rebuild_style_and_index(base_dir: Path) -> None:
@@ -186,7 +233,19 @@ def main() -> None:
         action="store_true",
         help="원본 JSON 없이 style.css/index.html만 최신 디자인으로 갱신",
     )
+    parser.add_argument(
+        "--preview",
+        nargs="?",
+        const=3,
+        type=int,
+        metavar="N",
+        help="파일을 쓰지 않고 최신 N개 날짜(기본 3개)의 변경사항 diff만 출력",
+    )
     args = parser.parse_args()
+
+    if args.preview is not None:
+        print(preview_diffs(BASE_DIR, args.preview))
+        return
 
     if args.style_only:
         rebuild_style_and_index(BASE_DIR)
