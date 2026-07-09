@@ -1,0 +1,50 @@
+# .github/workflows/noise_feedback.yml
+name: noise-feedback-intake
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  intake:
+    if: contains(github.event.issue.labels.*.name, 'noise-report')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Record feedback
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_CREATED_AT: ${{ github.event.issue.created_at }}
+        run: |
+          python -m src.feedback_intake \
+            --body "$ISSUE_BODY" \
+            --flagged-at "$ISSUE_CREATED_AT" \
+            --queue-path data/state/feedback_queue.json
+
+      - name: Commit queue
+        run: |
+          git config user.name "briefing-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/state/feedback_queue.json
+          git commit -m "chore: record noise feedback (issue #${{ github.event.issue.number }})" || echo "no changes"
+          git fetch origin main
+          git rebase origin/main
+          git push
+
+      - name: Close issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue close ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --comment "신고가 접수되어 feedback_queue.json에 기록됐습니다. 주간 검토 후 keywords.yaml 반영 여부가 결정됩니다."
