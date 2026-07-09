@@ -2,23 +2,23 @@
   "date": "2026-07-09",
   "companies": [
     {
-      "name": "삼성전자",
+      "name": "SK하이닉스",
       "count": 29,
       "is_spike": true
     },
     {
-      "name": "SK하이닉스",
-      "count": 25,
+      "name": "삼성전자",
+      "count": 28,
       "is_spike": true
     },
     {
       "name": "엔비디아",
-      "count": 10,
+      "count": 12,
       "is_spike": true
     },
     {
       "name": "TSMC",
-      "count": 5,
+      "count": 7,
       "is_spike": true
     },
     {
@@ -30,12 +30,12 @@
   "keywords": [
     {
       "name": "HBM",
-      "count": 30,
+      "count": 29,
       "is_spike": true
     },
     {
       "name": "EUV",
-      "count": 15,
+      "count": 18,
       "is_spike": true
     },
     {
