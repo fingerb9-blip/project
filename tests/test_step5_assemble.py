@@ -264,12 +264,16 @@ def test_build_alert_detail_html_has_viewport_meta():
     assert _VIEWPORT_META in html_out
 
 
-def test_build_dashboard_html_collection_table_has_data_labels():
+def test_build_dashboard_html_collection_stats_use_wrapping_chips_not_table():
+    """수집 상태가 <table>이 아니라 flex-wrap 칩으로 렌더링되는지 확인한다.
+
+    표 기반 레이아웃은 좁은 화면에서 가로 스크롤을 유발하므로, 자동으로
+    줄바꿈되는 칩 구조를 유지해야 모바일에서 별도 대응이 필요 없다.
+    """
     stats = {"디일렉": {"today": 1, "avg7d": 10.0}}
     html_out = step5_assemble.build_dashboard_html([], [], stats, "2026-07-08")
-    assert 'data-label="소스"' in html_out
-    assert 'data-label="오늘 건수"' in html_out
-    assert 'data-label="최근 7일 평균"' in html_out
+    assert "<table" not in html_out
+    assert 'class="stat-chips"' in html_out
 
 
 def test_dashboard_css_has_mobile_media_query():
