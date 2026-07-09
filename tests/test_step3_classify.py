@@ -126,7 +126,7 @@ def test_classify_keeps_gemini_tier_when_relevance_high(mock_call):
 
 @patch("src.step3_classify.gemini_client.call_gemini")
 def test_classify_does_not_exclude_low_relevance_article_with_regulation_hint(mock_call):
-    # 반도체_핵심 키워드는 없지만 규제_무역 화이트리스트에 매�칭된 기사는 보호되어야 한다
+    # 반도체_핵심 키워드는 없지만 규제_무역 화이트리스트에 매칭된 기사는 보호되어야 한다
     mock_call.return_value = {
         "results": [{"id": "a5", "tier": "확인 필요", "category": []}]
     }
