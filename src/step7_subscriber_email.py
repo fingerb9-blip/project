@@ -67,11 +67,16 @@ def build_email_body(summarized_path: Path, today: str, dashboard_url: str) -> s
         for a in highlights:
             tag = html.escape(a.get("confirmation_tag") or "")
             title = html.escape(a.get("title", ""))
-            url = html.escape(a.get("url", ""))
+            # javascript: 등 위험한 스킴 차단 — step5_assemble._safe_url()이 http/https만
+            # 허용하고 이미 이스케이프된 URL(또는 None)을 반환한다. 여기서 다시 escape하지 않는다.
+            safe_url = step5_assemble._safe_url(a.get("url", ""))
             summary = html.escape((a.get("summary") or "")[:200])
-            parts.append(
-                f'<li><a href="{url}">{tag} {title}</a><br>{summary}</li>'
-            )
+            if safe_url:
+                parts.append(
+                    f'<li><a href="{safe_url}">{tag} {title}</a><br>{summary}</li>'
+                )
+            else:
+                parts.append(f"<li>{tag} {title}<br>{summary}</li>")
         parts.append("</ul>")
 
     parts.append(

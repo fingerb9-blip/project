@@ -73,3 +73,33 @@ def test_build_email_body_missing_file_is_safe(tmp_path):
     path = tmp_path / "summarized" / "2026-07-11.json"  # 존재하지 않음
     body = news.build_email_body(path, "2026-07-11", "https://site.example/")
     assert "핵심 기사가 없습니다" in body
+
+
+def test_build_email_body_rejects_javascript_url(tmp_path):
+    path = tmp_path / "summarized" / "2026-07-11.json"
+    arts = [
+        {"id": "a0", "title": "위험한 기사", "url": "javascript:alert(1)",
+         "source": "디일렉", "summary": "요약", "confirmation_tag": "[확정]",
+         "summary_fallback": False, "category": ["c0"], "tier": "핵심"},
+    ]
+    _write_summarized(path, arts)
+
+    body = news.build_email_body(path, "2026-07-11", "https://site.example/")
+
+    assert 'href="javascript:' not in body
+    assert "위험한 기사" in body  # 링크 없이도 제목 텍스트는 노출
+
+
+def test_build_email_body_escapes_title_html(tmp_path):
+    path = tmp_path / "summarized" / "2026-07-11.json"
+    arts = [
+        {"id": "a0", "title": "<script>alert(1)</script>", "url": "https://ex.com/0",
+         "source": "디일렉", "summary": "요약", "confirmation_tag": "[확정]",
+         "summary_fallback": False, "category": ["c0"], "tier": "핵심"},
+    ]
+    _write_summarized(path, arts)
+
+    body = news.build_email_body(path, "2026-07-11", "https://site.example/")
+
+    assert "&lt;script&gt;" in body
+    assert "<script>alert(1)</script>" not in body
