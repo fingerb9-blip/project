@@ -183,3 +183,20 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .sub-btn:hover{filter:brightness(1.05)}
 .sub-msg{margin:14px 0 0;font-size:.9rem;font-weight:600}
 .sub-msg.ok{color:var(--confirmed)}
+
+/* 통계 대시보드(dashboard.html) */
+.period-tabs{gap:8px;margin:0 0 14px}
+.period-btn{flex:0 0 auto;font-family:inherit;font-size:.85rem;color:var(--ink-soft);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;cursor:pointer}
+.period-btn[aria-pressed="true"]{background:var(--pill-active);color:#fff;border-color:var(--pill-active)}
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 1.6rem}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:12px 10px;text-align:center}
+.stat-card .stat-label{display:block;font-size:.74rem;color:var(--ink-soft);margin:0 0 4px}
+.stat-card .stat-value{display:block;font-size:1.15rem;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.chart-wrap{position:relative;height:240px;margin:0 0 1.8rem}
+@media(max-width:480px){
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .chart-wrap{height:200px}
+}
