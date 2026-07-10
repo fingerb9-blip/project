@@ -3,17 +3,17 @@
   "companies": [
     {
       "name": "SK하이닉스",
-      "count": 17,
+      "count": 19,
       "is_spike": true
     },
     {
       "name": "삼성전자",
-      "count": 13,
+      "count": 14,
       "is_spike": true
     },
     {
       "name": "TSMC",
-      "count": 6,
+      "count": 5,
       "is_spike": true
     },
     {
@@ -23,7 +23,7 @@
     },
     {
       "name": "엔비디아",
-      "count": 3,
+      "count": 2,
       "is_spike": true
     }
   ],
@@ -35,8 +35,13 @@
     },
     {
       "name": "EUV",
-      "count": 4,
+      "count": 6,
       "is_spike": true
+    },
+    {
+      "name": "첨단 패키징",
+      "count": 2,
+      "is_spike": false
     }
   ]
 }

@@ -3761,5 +3761,82 @@
     "related_article_ids": [
       "cf447b4f4ea5c63e242b374536fa4ad025fa5409"
     ]
+  },
+  {
+    "issue_id": "41f6e2c5dc86",
+    "entity": "TSMC",
+    "title": "TSMC CoWoS output reportedly to reach at least 200K wafers in 2027",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "08b411ac4dddc7f81725192b8b00a57b211109ac"
+    ]
+  },
+  {
+    "issue_id": "37c9655e5790",
+    "entity": "삼성전자",
+    "title": "삼성전자 초기업노조, '임금 상품권 지급' 근로기준법 개정안 철회 촉구",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "c83379356051ece21a7068c20be17542065681d8"
+    ]
+  },
+  {
+    "issue_id": "cac47de3f87a",
+    "entity": "삼성전자",
+    "title": "닛케이 “SK하이닉스 ADR, 레버리지 ETF 열풍 속 미 증시 변동성 키울수...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "d6c6d8fb1c9d513927cbd2f548693221d384353e"
+    ]
+  },
+  {
+    "issue_id": "ba2e780e6043",
+    "entity": "삼성전자",
+    "title": "“미국에 공장 지어라“…삼성전자·SK하이닉스 겨냥한 美상무장관",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "a4d3bd71f4e2f173f417c17929a19d6c4aa76cdb"
+    ]
+  },
+  {
+    "issue_id": "2b9873fb9a37",
+    "entity": "미상",
+    "title": "메모리 3강, HBM4 승부수 달라졌다…베이스다이 경쟁 본격화",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "54ff1a1f6fdcb390be450dc7506e2e355439bf51"
+    ]
+  },
+  {
+    "issue_id": "a7f6c688998f",
+    "entity": "SK하이닉스",
+    "title": "[특징주] 피에스케이, \"SK하이닉스 美 ADR 상장\" AI 투자 본격화에 반도...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "3a5c86830515bca7d0b4cde4545dd1c6e330342a"
+    ]
+  },
+  {
+    "issue_id": "3a59f6da4158",
+    "entity": "SK하이닉스",
+    "title": "삼성 이재용·SK 최태원, 잇단 미국행…AI 반도체 수주·투자 전면전",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "8d698d9fe8425c1997ff7cf5456701fb78d1cfdd"
+    ]
   }
 ]
