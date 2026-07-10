@@ -3147,5 +3147,104 @@
     "related_article_ids": [
       "0d21b07a814245caa51a7098f5c21b277c40cf5d"
     ]
+  },
+  {
+    "issue_id": "f2d74417abca",
+    "entity": "엔비디아",
+    "title": "HBM prices set to double in 2027 as AI demand and supply deals tighten the memory market",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "358e159a7292cf61703a3f702482a50b9144f270"
+    ]
+  },
+  {
+    "issue_id": "131422a6c203",
+    "entity": "삼성전자",
+    "title": "‘청와대 전담팀 끈다’…800조 반도체 속도전",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "0a4f8191395cd5e7a8eb3b9b2846bb6a05e102cc"
+    ]
+  },
+  {
+    "issue_id": "238d93c823dd",
+    "entity": "삼성전자",
+    "title": "러트닉 장관 \"삼성·하이닉스 미국으로 오라\"···메모리 패권 다툼 노...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "662d402625dc0b7b20760de0bff8f4a35a37d8fb"
+    ]
+  },
+  {
+    "issue_id": "7c6cc05a3ac7",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 상장 전날 “美 투자” 압박… 美우선 반도체정책 강조",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "e2a0fceaf9ac365ab6cab5a3b0a04dd0acf563db"
+    ]
+  },
+  {
+    "issue_id": "a213587892b0",
+    "entity": "SK하이닉스",
+    "title": "美 외국기업 IPO 사상 최고가… SK하이닉스 ‘40조 실탄’ 손에 쥔다",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "c9de832d46d7fce2ac4edc7972f01a916ac51150"
+    ]
+  },
+  {
+    "issue_id": "5ebb60ba1259",
+    "entity": "SK하이닉스",
+    "title": "\"피크아웃은 없다\"…SK하이닉스, '40조원 나스닥 실탄'으로 AI 초격차 승...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "a70961dcf3e95be0092f9241076c2e5d4104261c"
+    ]
+  },
+  {
+    "issue_id": "53f26e0e68c6",
+    "entity": "삼성전자",
+    "title": "삼성전자 46조 원 투자 본격화…아산 반도체 거점 도약 기대",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "da0c692ba8fd9baa1f3dba1daaecce75ed03ff91"
+    ]
+  },
+  {
+    "issue_id": "96d4196793d6",
+    "entity": "SK하이닉스",
+    "title": "국내보다 3% 높은 공모가…美증시서 프리미엄 인정 받았다",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "3c952dce9eba77763c099c2472bea05746ed6664"
+    ]
+  },
+  {
+    "issue_id": "293035f56de4",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 ADR 달러 '40조' 풀린다…환율 1490원대 하락 전망",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "d533163be431ee88da2a292e0588b0cab2624d2f"
+    ]
   }
 ]
