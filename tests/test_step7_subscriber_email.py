@@ -190,3 +190,46 @@ def test_run_never_raises_on_unexpected_error(tmp_path):
         result = news.run(tmp_path / "nope", tmp_path / "nope.json", state,
                           "2026-07-11", "https://site/", subscribers=["a@x.com"])
     assert "skipped" in result  # 예외 없이 dict 반환
+
+
+def test_redact_email_masks_local_part_keeps_domain():
+    assert news._redact_email("alice@x.com") == "a***@x.com"
+    assert news._redact_email("b@y.com") == "b***@y.com"
+
+
+def test_redact_email_no_at_sign_returns_placeholder():
+    assert news._redact_email("notanemail") == "***"
+
+
+def test_redact_email_empty_returns_placeholder():
+    assert news._redact_email("") == "***"
+
+
+def test_run_per_recipient_failure_log_redacts_email(tmp_path, caplog):
+    dash, summ, state = _seed(tmp_path)
+
+    def flaky(to_addr, *a, **k):
+        if to_addr == "bad@x.com":
+            raise OSError("smtp down")
+
+    from unittest.mock import patch
+    with caplog.at_level("ERROR"):
+        with patch("src.step7_subscriber_email._send_html_email", side_effect=flaky):
+            news.run(dash, summ, state, "2026-07-11", "https://site/",
+                      subscribers=["good@x.com", "bad@x.com"])
+
+    assert "bad@x.com" not in caplog.text
+    assert "b***@x.com" in caplog.text
+
+
+def test_build_standalone_html_missing_style_link_returns_unchanged(tmp_path, caplog):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    original = "<html><head></head><body>본문</body></html>"
+    (dashboard_dir / "2026-07-11.html").write_text(original, encoding="utf-8")
+
+    with caplog.at_level("WARNING"):
+        out = news.build_standalone_html(dashboard_dir, "2026-07-11")
+
+    assert out == original
+    assert "style" in caplog.text.lower()

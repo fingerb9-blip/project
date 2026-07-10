@@ -44,6 +44,12 @@ def build_standalone_html(dashboard_dir: Path, today: str) -> str:
     """
     html_text = (Path(dashboard_dir) / f"{today}.html").read_text(encoding="utf-8")
     inline_style = f"<style>{step5_assemble._DASHBOARD_CSS}</style>"
+    if _STYLE_LINK not in html_text:
+        logger.warning(
+            "대시보드 HTML에서 스타일 링크(%s)를 찾지 못해 CSS를 인라인하지 못했습니다. "
+            "이메일 첨부가 스타일 없이 발송될 수 있습니다",
+            _STYLE_LINK,
+        )
     return html_text.replace(_STYLE_LINK, inline_style)
 
 
@@ -121,6 +127,22 @@ def _send_html_email(
         server.send_message(msg)
 
 
+def _redact_email(addr: str) -> str:
+    """이메일 주소를 로그용으로 마스킹한다.
+
+    로컬 파트(@ 앞부분)의 첫 글자만 남기고 나머지는 '***'로 치환한다.
+    '@'가 없거나 빈 문자열이면 통째로 '***'를 반환한다.
+
+    예: "alice@x.com" -> "a***@x.com", "b@y.com" -> "b***@y.com".
+    """
+    if not addr or "@" not in addr:
+        return "***"
+    local, _, domain = addr.partition("@")
+    if not local:
+        return f"***@{domain}"
+    return f"{local[0]}***@{domain}"
+
+
 def load_send_state(state_path: Path) -> dict:
     """발송 상태를 로드한다."""
     path = Path(state_path)
@@ -179,7 +201,7 @@ def run(
                 _send_html_email(addr, subject, body, attachment_name, attachment_html)
                 result["sent"] += 1
             except Exception as exc:  # noqa: BLE001 - 건별 실패는 로그 후 계속
-                logger.error("구독자 %s 발송 실패: %s", addr, exc)
+                logger.error("구독자 %s 발송 실패: %s", _redact_email(addr), exc)
                 result["failed"] += 1
 
         if result["sent"] > 0:
