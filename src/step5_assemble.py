@@ -9,6 +9,7 @@ _DASHBOARD_CSS.
 import html
 import json
 import math
+import re
 from datetime import date as _date
 from datetime import datetime, timedelta, timezone
 from datetime import datetime as _datetime
@@ -207,6 +208,26 @@ def _build_date_select(all_dates: list[str], target_date: str) -> str:
     )
 
 
+_DATE_SELECT_RE = re.compile(r'<select class="date-select".*?</select>', re.S)
+
+
+def _refresh_date_selects(dashboard_dir: Path, all_dates: list[str]) -> None:
+    """기존 데일리 페이지들의 날짜 드롭다운을 최신 날짜 목록으로 교체한다.
+
+    각 페이지의 드롭다운은 생성 시점의 날짜 목록으로 굳어 있어, 새 날짜가 추가돼도
+    이전 페이지에서는 최신 날짜로 이동할 수 없었다(예: 7/9 리포트 드롭다운에 7/10이
+    없음). 페이지 본문은 그대로 두고 <select class="date-select"> 블록만 교체한다.
+    """
+    for path in dashboard_dir.glob("*.html"):
+        if path.stem in ("index", "archive"):
+            continue
+        html_text = path.read_text(encoding="utf-8")
+        new_select = _build_date_select(all_dates, path.stem)
+        new_html, count = _DATE_SELECT_RE.subn(new_select, html_text, count=1)
+        if count and new_html != html_text:
+            path.write_text(new_html, encoding="utf-8")
+
+
 def _split_categories(raw_categories: list[str]) -> list[str]:
     """카테고리 문자열 하나에 여러 카테고리가 공백으로 붙어 온 경우(예: "메모리 장비·소재")를
     분리한다. config/categories.yaml의 카테고리명에는 공백이 없어 안전하게 분리할 수 있다.
@@ -341,6 +362,8 @@ def _build_article_card(article: dict) -> str:
     if confirm_label:
         icon = _BADGE_CONFIRM_ICONS[confirm_class]
         parts.append(f'<span class="badge-confirm {confirm_class}">{icon} {_esc(confirm_label)}</span>')
+    if article.get("summary_extractive"):
+        parts.append('<span class="chip badge-type">발췌</span>')
     for category in article_categories:
         parts.append(f'<span class="badge-category">{_esc(category)}</span>')
     for stock_entry in article.get("related_stock") or []:
@@ -467,6 +490,8 @@ def _build_highlight_card(article: dict) -> str:
     if tag:
         icon = _BADGE_CONFIRM_ICONS[confirm_class]
         parts.append(f'<span class="badge-confirm {confirm_class}">{icon} {_esc(tag)}</span>')
+    if article.get("summary_extractive"):
+        parts.append('<span class="chip badge-type">발췌</span>')
     for category in _split_categories(article.get("category") or []):
         parts.append(f'<span class="badge-category">{_esc(category)}</span>')
     parts.append("</div>")
@@ -1424,6 +1449,9 @@ def run(
         active_issues=active_issues,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
+
+    # 새 날짜가 추가됐으므로 이전 페이지들의 날짜 드롭다운도 최신 목록으로 갱신한다.
+    _refresh_date_selects(dashboard_dir, all_dates)
 
     (dashboard_dir / "style.css").write_text(_DASHBOARD_CSS, encoding="utf-8")
 

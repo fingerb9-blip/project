@@ -2,11 +2,33 @@
 
 import json
 import logging
+import re
 from pathlib import Path
 
 from src import gemini_client, notify
 
 logger = logging.getLogger(__name__)
+
+# 발췌 요약 설정 — Gemini 요약이 없을 때 원문 앞 문장으로 채운다.
+_EXTRACT_SENTENCES = 3
+_EXTRACT_MAX_CHARS = 300
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
+
+
+def _extractive_summary(
+    raw_text: str, max_sentences: int = _EXTRACT_SENTENCES, max_chars: int = _EXTRACT_MAX_CHARS
+) -> str:
+    """Gemini 요약이 없을 때 쓰는 발췌 요약. 원문 앞 문장 몇 개를 잘라 반환한다.
+
+    한국어 뉴스 문장은 대부분 '~다.'로 끝나므로 종결부호(. ! ?) 뒤에서 분리한다.
+    문장 구분이 없으면 앞 max_chars만 자른다. raw_text가 비어 있으면 빈 문자열.
+    """
+    text = (raw_text or "").strip()
+    if not text:
+        return ""
+    sentences = [s.strip() for s in _SENTENCE_SPLIT.split(text) if s.strip()]
+    summary = " ".join(sentences[:max_sentences]) if sentences else text
+    return summary[:max_chars].rstrip()
 
 _SUMMARY_SCHEMA = {
     "type": "object",
@@ -123,14 +145,25 @@ def run(
         summary = summaries.get(article["id"])
         if summary is None:
             if summaries:
-                logger.error("%s 요약 응답 누락, 헤드라인+링크로 폴백", article["id"])
-            article["summary"] = None
-            article["confirmation_tag"] = None
-            article["summary_fallback"] = True
+                logger.error("%s 요약 응답 누락, 발췌 요약으로 폴백", article["id"])
+            extractive = _extractive_summary(article.get("raw_text", ""))
+            if extractive:
+                # 원문 앞 문장을 발췌해 채운다. 원문 그대로라 항상 [관측]으로 태깅한다.
+                article["summary"] = extractive
+                article["confirmation_tag"] = "[관측]"
+                article["summary_fallback"] = False
+                article["summary_extractive"] = True
+            else:
+                # 발췌할 원문조차 없을 때만 진짜 폴백(헤드라인+링크).
+                article["summary"] = None
+                article["confirmation_tag"] = None
+                article["summary_fallback"] = True
+                article["summary_extractive"] = False
         else:
             article["summary"] = summary
             article["confirmation_tag"] = tag_confirmation_level(summary, article["source"], source_tiers_config)
             article["summary_fallback"] = False
+            article["summary_extractive"] = False
         summarized.append(article)
 
     output_path = Path(output_path)

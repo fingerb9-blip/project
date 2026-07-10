@@ -1147,6 +1147,73 @@ def test_build_dashboard_html_highlight_strip_appears_before_full_feed():
     assert highlight_pos < feed_pos
 
 
+def test_refresh_date_selects_adds_new_date_to_prior_pages(tmp_path):
+    # 버그 재현: 이전 페이지의 날짜 드롭다운은 생성 시점에 고정돼, 새 날짜가 추가돼도
+    # 이전 페이지에서는 최신 날짜로 이동할 수 없었다.
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    old_select = step5_assemble._build_date_select(["2026-07-09", "2026-07-08"], "2026-07-09")
+    (dashboard_dir / "2026-07-09.html").write_text(
+        f"<html><body><p>본문 유지</p>{old_select}</body></html>", encoding="utf-8"
+    )
+
+    step5_assemble._refresh_date_selects(
+        dashboard_dir, ["2026-07-10", "2026-07-09", "2026-07-08"]
+    )
+
+    refreshed = (dashboard_dir / "2026-07-09.html").read_text(encoding="utf-8")
+    assert '<option value="2026-07-10"' in refreshed  # 새 날짜가 드롭다운에 추가됨
+    assert '<option value="2026-07-09" selected' in refreshed  # 자기 날짜는 여전히 selected
+    assert "본문 유지" in refreshed  # 본문은 그대로
+
+
+def test_refresh_date_selects_skips_index_and_archive(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "index.html").write_text("<html>no select</html>", encoding="utf-8")
+    (dashboard_dir / "archive.html").write_text("<html>no select</html>", encoding="utf-8")
+
+    # index/archive에 date-select가 없어도 예외 없이 넘어간다.
+    step5_assemble._refresh_date_selects(dashboard_dir, ["2026-07-10"])
+
+    assert (dashboard_dir / "index.html").read_text(encoding="utf-8") == "<html>no select</html>"
+
+
+def test_run_refreshes_prior_page_date_selects(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    # 7/09 페이지가 이미 있고, 그 드롭다운엔 7/10이 없다.
+    stale_select = step5_assemble._build_date_select(["2026-07-09"], "2026-07-09")
+    (dashboard_dir / "2026-07-09.html").write_text(
+        f"<html><body>{stale_select}</body></html>", encoding="utf-8"
+    )
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text(
+        json.dumps({"last_run_date": "2026-07-10", "last_run_status": "success"}),
+        encoding="utf-8",
+    )
+
+    step5_assemble.run(
+        [], [], {}, str(tmp_path / "archive.md"), str(dashboard_dir),
+        "2026-07-10", str(state_path),
+    )
+
+    prior = (dashboard_dir / "2026-07-09.html").read_text(encoding="utf-8")
+    assert '<option value="2026-07-10"' in prior
+
+
+def test_extractive_summary_article_shows_badge_and_summary():
+    extractive = _sample_article(
+        summary="원문에서 가져온 첫 문장입니다.",
+        confirmation_tag="[관측]",
+        summary_fallback=False,
+        summary_extractive=True,
+    )
+    html_out = step5_assemble.build_dashboard_html([extractive], [], {}, "2026-07-08")
+    assert "원문에서 가져온 첫 문장입니다." in html_out
+    assert "발췌" in html_out  # 발췌 요약임을 알리는 배지 (요약 본문엔 '발췌'가 없다)
+
+
 def test_build_archive_html_groups_reports_by_month(tmp_path):
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()
