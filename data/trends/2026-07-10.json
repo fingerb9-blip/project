@@ -1,0 +1,52 @@
+{
+  "date": "2026-07-10",
+  "companies": [
+    {
+      "name": "SK하이닉스",
+      "count": 19,
+      "is_spike": true
+    },
+    {
+      "name": "삼성전자",
+      "count": 11,
+      "is_spike": true
+    },
+    {
+      "name": "TSMC",
+      "count": 3,
+      "is_spike": true
+    },
+    {
+      "name": "인텔",
+      "count": 2,
+      "is_spike": true
+    },
+    {
+      "name": "엔비디아",
+      "count": 1,
+      "is_spike": false
+    }
+  ],
+  "keywords": [
+    {
+      "name": "HBM",
+      "count": 12,
+      "is_spike": true
+    },
+    {
+      "name": "EUV",
+      "count": 5,
+      "is_spike": true
+    },
+    {
+      "name": "첨단 패키징",
+      "count": 2,
+      "is_spike": false
+    },
+    {
+      "name": "2나노 공정",
+      "count": 1,
+      "is_spike": true
+    }
+  ]
+}
