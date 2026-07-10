@@ -31,7 +31,8 @@ def fetch_ticker_ohlcv(ticker: str, today: str) -> tuple[float, float] | None:
     """지정 종목의 today 기준 가장 최근 거래일 종가·등락률을 조회한다.
 
     휴장일(주말·공휴일)을 감안해 today 기준 최근 _LOOKBACK_DAYS일을 조회 범위로 잡고,
-    조회된 마지막 행(가장 최근 거래일)을 사용한다.
+    조회된 마지막 행(가장 최근 거래일)을 사용한다. 브리핑이 09:00 개장 후 돌면 이 값은
+    당일 장중 시세(실행 시점 가격)이며, 저장 후 다음 실행 전까지 그대로 고정 표시된다.
 
     Args:
         ticker: 6자리 종목코드
