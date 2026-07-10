@@ -3,34 +3,34 @@
   "companies": [
     {
       "name": "SK하이닉스",
-      "count": 17,
+      "count": 16,
       "is_spike": true
     },
     {
       "name": "삼성전자",
-      "count": 10,
+      "count": 9,
+      "is_spike": true
+    },
+    {
+      "name": "엔비디아",
+      "count": 5,
+      "is_spike": true
+    },
+    {
+      "name": "TSMC",
+      "count": 5,
       "is_spike": true
     },
     {
       "name": "인텔",
       "count": 4,
       "is_spike": true
-    },
-    {
-      "name": "엔비디아",
-      "count": 4,
-      "is_spike": true
-    },
-    {
-      "name": "TSMC",
-      "count": 3,
-      "is_spike": true
     }
   ],
   "keywords": [
     {
       "name": "HBM",
-      "count": 11,
+      "count": 10,
       "is_spike": true
     },
     {
