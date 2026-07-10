@@ -55,6 +55,7 @@ jobs:
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://fingerb9-blip.github.io/project/' }}
           SUBSCRIBE_FORM_URL: ${{ secrets.SUBSCRIBE_FORM_URL }}
           SUBSCRIBERS_CSV_URL: ${{ secrets.SUBSCRIBERS_CSV_URL }}
+          SUBSCRIBE_EMAIL_ENTRY: ${{ vars.SUBSCRIBE_EMAIL_ENTRY || 'entry.105591811' }}
         run: python main.py
 
       - name: Commit state & archive
