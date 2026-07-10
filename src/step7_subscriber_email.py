@@ -56,6 +56,15 @@ def fetch_csv_subscribers(csv_url: str | None = None) -> list[str]:
         return []
 
 
+def gather_subscribers() -> list[str]:
+    """수동 명단(env)과 게시 CSV 명단을 합쳐 중복 제거한다(env 먼저, 순서 유지)."""
+    seen: dict[str, None] = {}
+    for email in [*load_subscribers(), *fetch_csv_subscribers()]:
+        if email not in seen:
+            seen[email] = None
+    return list(seen)
+
+
 def load_subscribers(raw: str | None = None) -> list[str]:
     """구독자 명단을 로드한다.
 
@@ -228,7 +237,7 @@ def run(
             return result
 
         if subscribers is None:
-            subscribers = load_subscribers()
+            subscribers = gather_subscribers()
         if not subscribers:
             logger.info("구독자 명단이 비어 있어 발송하지 않습니다")
             return result

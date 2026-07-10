@@ -271,3 +271,28 @@ def test_fetch_csv_subscribers_returns_empty_on_fetch_error(monkeypatch):
         raise OSError("network down")
     monkeypatch.setattr(news, "_http_get_text", boom)
     assert news.fetch_csv_subscribers("https://sheet/pub.csv") == []
+
+
+def test_gather_subscribers_merges_env_and_csv(monkeypatch):
+    monkeypatch.setattr(news, "load_subscribers", lambda: ["a@x.com", "b@y.com"])
+    monkeypatch.setattr(news, "fetch_csv_subscribers", lambda: ["b@y.com", "c@z.com"])
+    # env 먼저, CSV의 중복(b@y.com) 제거, 순서 유지
+    assert news.gather_subscribers() == ["a@x.com", "b@y.com", "c@z.com"]
+
+
+def test_run_uses_gather_subscribers_when_no_list(tmp_path, monkeypatch):
+    # subscribers=None이면 gather_subscribers 경로를 탄다.
+    dash = tmp_path / "dashboard"; dash.mkdir()
+    (dash / "2026-07-11.html").write_text(
+        '<html><head><link rel="stylesheet" href="style.css"></head><body>x</body></html>',
+        encoding="utf-8")
+    summ = tmp_path / "summarized" / "2026-07-11.json"
+    summ.parent.mkdir(parents=True, exist_ok=True)
+    summ.write_text("[]", encoding="utf-8")
+    state = tmp_path / "state" / "newsletter_state.json"
+    monkeypatch.setattr(news, "gather_subscribers", lambda: ["z@z.com"])
+    with patch("src.step7_subscriber_email._send_html_email") as send:
+        result = news.run(dash, summ, state, "2026-07-11", "https://site/")
+    send.assert_called_once()
+    assert send.call_args.args[0] == "z@z.com"
+    assert result["sent"] == 1
