@@ -201,6 +201,7 @@ def main() -> None:
             pending_keywords=step5_assemble.load_pending_keywords(pending_path),
             mention_trend_data=trend_data,
             cold_start_stage=cold_start_stage,
+            subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
         )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
@@ -229,6 +230,7 @@ def main() -> None:
         pending_keywords=step5_assemble.load_pending_keywords(pending_path),
         mention_trend_data=trend_data,
         cold_start_stage=cold_start_stage,
+        subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
     )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 

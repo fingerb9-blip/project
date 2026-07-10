@@ -209,6 +209,20 @@ def _build_date_select(all_dates: list[str], target_date: str) -> str:
     )
 
 
+def _build_subscribe_section(subscribe_form_url: str | None) -> str:
+    """구글 폼을 임베드한 '뉴스레터 구독' 섹션. URL이 없으면 빈 문자열."""
+    if not subscribe_form_url:
+        return ""
+    url = _esc(subscribe_form_url)
+    return (
+        '<section class="subscribe"><h2 class="sec">뉴스레터 구독</h2>'
+        "<p>매일 아침 브리핑을 이메일로 받아보세요.</p>"
+        f'<iframe src="{url}" title="뉴스레터 구독 폼" loading="lazy" '
+        'style="width:100%;max-width:640px;height:520px;border:0"></iframe>'
+        "</section>"
+    )
+
+
 _DATE_SELECT_RE = re.compile(r'<select class="date-select".*?</select>', re.S)
 
 
@@ -1134,6 +1148,7 @@ def build_index_html(
     pending_keywords: list[dict] | None = None,
     mention_trend_data: dict | None = None,
     cold_start_stage: str = "active",
+    subscribe_form_url: str | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> 히어로 배너(최신 브리핑) -> 리포트 카드 목록 순으로 인덱스 페이지를
     만든다 (§5-1 레이아웃, SAVE 스타일). 조회수·알림 등은 §0 스코프 밖이라 표시하지 않는다.
@@ -1156,6 +1171,8 @@ def build_index_html(
             "hidden"이면 호출부가 아예 넘기지 않아 섹션이 렌더링되지 않는다.
         cold_start_stage: step_mention_trend.cold_start_stage() 결과. "preview"면 섹션 제목에
             "(참고용)" 라벨이 붙는다.
+        subscribe_form_url: 구글 폼(뉴스레터 구독) URL (선택). 주어지면 임베드 iframe 섹션을
+            footer 위에 추가한다.
 
     Returns:
         단일 HTML 문서 문자열
@@ -1231,6 +1248,7 @@ def build_index_html(
 
     parts.append('<p class="row"><a href="archive.html">지난 리포트 전체보기 &rarr;</a></p>')
 
+    parts.append(_build_subscribe_section(subscribe_form_url))
     parts.append(_SITE_FOOTER)
     parts.append(_DASHBOARD_SCRIPT)
     parts.append("</body></html>")
