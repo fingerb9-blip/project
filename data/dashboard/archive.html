@@ -9,9 +9,9 @@
 <p class="row"><a href="index.html">&larr; 최신 브리핑으로</a><span class="spacer"></span><a href="scraps.html">★ 스크랩</a></p>
 <div id="feed">
 <h2 class="sec">2026년 7월</h2>
-<div class="card report" data-text="2026-07-10"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:10 갱신</span></div><p class="datetitle">2026년 7월 10일 (금)</p><div class="actions"><a href="2026-07-10.html">📄 리포트 읽기</a></div></div>
-<div class="card report" data-text="2026-07-09"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:09 갱신</span></div><p class="datetitle">2026년 7월 9일 (목)</p><div class="actions"><a href="2026-07-09.html">📄 리포트 읽기</a></div></div>
-<div class="card report" data-text="2026-07-08"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:09 갱신</span></div><p class="datetitle">2026년 7월 8일 (수)</p><div class="actions"><a href="2026-07-08.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-10"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:20 갱신</span></div><p class="datetitle">2026년 7월 10일 (금)</p><div class="actions"><a href="2026-07-10.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-09"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:19 갱신</span></div><p class="datetitle">2026년 7월 9일 (목)</p><div class="actions"><a href="2026-07-09.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-08"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">13:19 갱신</span></div><p class="datetitle">2026년 7월 8일 (수)</p><div class="actions"><a href="2026-07-08.html">📄 리포트 읽기</a></div></div>
 </div>
 <p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · EE Times · DigiTimes · Semiconductor Engineering</p>
 <script>
@@ -98,6 +98,29 @@ document.querySelectorAll('.noise-btn').forEach(function(b){
 });
 applyFilters();
 applyNoise();
+
+// Giscus 댓글 위젯 — 로드 전 스켈레톤을 보여주고, iframe이 삽입되는 순간 숨긴다.
+document.querySelectorAll('.giscus-embed').forEach(function(container){
+  var skeleton=container.querySelector('.giscus-skeleton');
+  if(!skeleton) return;
+  var observer=new MutationObserver(function(){
+    if(container.querySelector('iframe.giscus-frame')){
+      skeleton.hidden=true;
+      observer.disconnect();
+    }
+  });
+  observer.observe(container,{childList:true});
+});
+
+// 다크모드 확장 포인트: 이 사이트에는 아직 다크모드 토글이 없어 giscus는 항상
+// data-theme="light"로 렌더링된다(build_giscus_section_html 참고). 다크모드 토글이
+// 추가되면, 토글 변경 이벤트에서 setGiscusTheme('dark') 또는 setGiscusTheme('light')를
+// 호출해 이미 로드된 giscus iframe의 테마도 즉시 맞춰 전환할 수 있다.
+function setGiscusTheme(theme){
+  var frame=document.querySelector('iframe.giscus-frame');
+  if(!frame) return;
+  frame.contentWindow.postMessage({giscus:{setConfig:{theme:theme}}},'https://giscus.app');
+}
 </script>
 
 </body></html>
