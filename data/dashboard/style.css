@@ -196,6 +196,8 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .stat-card .stat-value{display:block;font-size:1.15rem;font-weight:700;color:var(--ink);
   font-variant-numeric:tabular-nums}
 .chart-wrap{position:relative;height:240px;margin:0 0 1.8rem}
+.chart-wrap .chart-unavailable{position:absolute;top:50%;left:0;right:0;margin:0;
+  transform:translateY(-50%);text-align:center}
 @media(max-width:480px){
   .stat-cards{grid-template-columns:repeat(2,1fr)}
   .chart-wrap{height:200px}

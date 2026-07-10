@@ -19,7 +19,7 @@
 <h3 class="sec">키워드 Top 10</h3><div id="keyword-bars" class="radar-bars"></div>
 </div>
 <p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · EE Times · DigiTimes · Semiconductor Engineering</p>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function(){
   var loadingEl = document.getElementById('stats-loading');
@@ -164,12 +164,26 @@
     });
   }
 
+  function markChartsUnavailable(){
+    document.querySelectorAll('.chart-wrap').forEach(function(wrap){
+      if (wrap.querySelector('.chart-unavailable')) return;
+      var msg = document.createElement('p');
+      msg.className = 'chart-unavailable summary';
+      msg.textContent = '차트 라이브러리를 불러오지 못해 차트를 표시할 수 없습니다.';
+      wrap.appendChild(msg);
+    });
+  }
+
   function render(){
     var rows = filterByDays(currentDays);
     renderSummaryCards(rows);
-    renderCategoryChart(rows);
-    renderSourceChart(rows);
-    renderConfidenceChart(rows);
+    if (typeof Chart === 'undefined') {
+      markChartsUnavailable();
+    } else {
+      renderCategoryChart(rows);
+      renderSourceChart(rows);
+      renderConfidenceChart(rows);
+    }
     renderKeywordBars(rows);
   }
 
