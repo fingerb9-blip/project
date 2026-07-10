@@ -611,7 +611,8 @@
       "1d61d5fada220fdfcc8a8285568c26342f6b5f9c",
       "020b75dd9cad75693fd8388e9650348d5d045e64",
       "1d034f1e6add22c26aef918fa12fc92544cb390b",
-      "9b8b7980a1899f7f48023067758e49b512708457"
+      "9b8b7980a1899f7f48023067758e49b512708457",
+      "aa927455cd3afa593b64e8fdd79f228b91c240d9"
     ]
   },
   {
@@ -2419,7 +2420,10 @@
     "status": "진행중",
     "related_article_ids": [
       "00aa690510c9fe2b982c7f82817e3bd47babab3c",
-      "d82b2acd7923a540b27362c35752753467b4c22c"
+      "d82b2acd7923a540b27362c35752753467b4c22c",
+      "fe0a321f18a492970f33d19d72fdf40c8559bf60",
+      "9bfc69b19453d3d37cc14838c4073aaf6a3fd4f0",
+      "a413383bb1384cf3a3e9ad3ccd17d5db9c4a384b"
     ]
   },
   {
@@ -3462,17 +3466,6 @@
     ]
   },
   {
-    "issue_id": "c4eda67c47b8",
-    "entity": "SK하이닉스",
-    "title": "“SK하이닉스, ADR 공모가 주당 149달러 확정”",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "fe0a321f18a492970f33d19d72fdf40c8559bf60"
-    ]
-  },
-  {
     "issue_id": "4eca2551afee",
     "entity": "미상",
     "title": "\"우유에 물 많으니 물과 같다고?\" TC본더 특허전 '논리 비약' 공방",
@@ -3580,6 +3573,193 @@
     "status": "진행중",
     "related_article_ids": [
       "bd31ca6b7288aded4292799ebe74ff045e6ee443"
+    ]
+  },
+  {
+    "issue_id": "7f6d2fcceae0",
+    "entity": "삼성전자",
+    "title": "Analysis: Samsung, SK Hynix, and Micron's diverging approach to HBM4 base dies",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "25f5620a3267e224290c12c0a5e2307edcc30748"
+    ]
+  },
+  {
+    "issue_id": "5db2012444b3",
+    "entity": "삼성전자",
+    "title": "삼성전자 노조, 성과급 지역화폐 지급 반대…\"국회의원부터 적용하라\"",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "1d3796d15a6caa70d079b7bd84f6980a07c5ef8a"
+    ]
+  },
+  {
+    "issue_id": "fec1e7ac615a",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 미국 상장, 한국 자본시장 '멀티마켓 시대' 여나",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "0e8266395a88f7c3a3c514cf0f4edb80560fb1d6"
+    ]
+  },
+  {
+    "issue_id": "36eeb632d2a1",
+    "entity": "삼성전자",
+    "title": "SK하이닉스 220만원대인데 “185만원 간다” 대체 무슨 말?…충격의 리포...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "b9b2d982b2ca16957902831bba570182f09f346b"
+    ]
+  },
+  {
+    "issue_id": "30e018372026",
+    "entity": "삼성전자",
+    "title": "'AI 거품론' 쐈던 메타, 오히려 AI 인프라 투자 늘린다…올해 7GW→내년...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "2f2aba3eef4a4c2863a3c8734407d654085086c9"
+    ]
+  },
+  {
+    "issue_id": "6161cab7ad41",
+    "entity": "SK하이닉스",
+    "title": "[MD포커스] 美증시 입성 SK하이닉스…‘40조 메가히트’가 국내 증시에...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "b0613d948f5a5aa5698888c4ff0167cdc9d1ef60"
+    ]
+  },
+  {
+    "issue_id": "10855a2eb06f",
+    "entity": "미상",
+    "title": "메모리 쇼크에 백기…삼성 갤럭시 Z 폴드·플립8 가격 인상 불가피",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "4b720abe23e726a975898acc87b65f322d79da35"
+    ]
+  },
+  {
+    "issue_id": "d7d0e33993e0",
+    "entity": "TSMC",
+    "title": "\"최강 태풍 온다\" 초긴장…학교 문 닫고 증시 '올스톱'",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "715c8bd9d1464ae6f4e48f926a2a7671698d31ca"
+    ]
+  },
+  {
+    "issue_id": "81abd62e3b4c",
+    "entity": "TSMC",
+    "title": "초대형 태풍에 TSMC 실적발표 연기",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "bc8737e09414334ee4085c2068350a48b9b88164"
+    ]
+  },
+  {
+    "issue_id": "0a98c7fea78c",
+    "entity": "TSMC",
+    "title": "초강력 태풍 '바비' 북상에 대만 비상…TSMC 실적 발표도 연기",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "7ea9ae424a19aaa488884caae016c2e6fe3a99e2"
+    ]
+  },
+  {
+    "issue_id": "6499aa0b08e6",
+    "entity": "삼성전자",
+    "title": "[이슈+] '고객' 잡는 이재용·'자본' 모으는 최태원…美서 AI 반도체 승부...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "67ee6e6b56259675b2146dab4fc3101595a6c3b8"
+    ]
+  },
+  {
+    "issue_id": "99000841bfbf",
+    "entity": "TSMC",
+    "title": "태풍 '바비' 상륙 임박 대만 초비상, 지자체 휴무·휴교령, 증권거래소...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "1e62cd7146f2ee65d86cec274c43328ce09c1039"
+    ]
+  },
+  {
+    "issue_id": "ceabb80824d0",
+    "entity": "삼성전자",
+    "title": "삼성 이재용·SK 최태원, 잇단 미국행…AI 반도체 수주·투자 전면전",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "8d698d9fe8425c1997ff7cf5456701fb78d1cfdd"
+    ]
+  },
+  {
+    "issue_id": "31fd98d4374a",
+    "entity": "TSMC",
+    "title": "태풍 바비 상륙…대만 지자체 휴무·휴교령→TSMC 실적발표 연기",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "23268bb9f45e4e32c11fab93f3296a7d93fc4e10"
+    ]
+  },
+  {
+    "issue_id": "5d839892afc5",
+    "entity": "SK하이닉스",
+    "title": "'하이닉스' 외국기업 IPO 최대 규모 … 알리바바 넘었다",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "9cf9367bdcae0067795200401a20813cf59bba7e"
+    ]
+  },
+  {
+    "issue_id": "9ce0f42e14a6",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 나스닥 입성해 40조 조달...국내 AI 반도체 생산기지 확충",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "8dce19c0b6b8730bef0bcb3b816c1c45e5cf2611"
+    ]
+  },
+  {
+    "issue_id": "4f9742675c04",
+    "entity": "SK하이닉스",
+    "title": "SK Hynix Achieves the Second Largest IPO After SpaceX",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "cf447b4f4ea5c63e242b374536fa4ad025fa5409"
     ]
   }
 ]
