@@ -2,7 +2,12 @@ name: daily-briefing
 
 on:
   schedule:
-    - cron: "0 23 * * *" # UTC 23:00 = KST 08:00 (익일)
+    # GitHub 예약 이벤트는 정각(:00)에 몰려 드롭·지연이 잦다. 정각을 피한 분(minute)으로
+    # 08:07 / 08:37 / 09:07(KST) 3회 시도해 하나라도 걸리게 한다. 오늘 이미 성공 실행됐으면
+    # step0_init의 DuplicateRunError로 후속 시도는 즉시 스킵되므로 중복 브리핑은 없다.
+    - cron: "7 23 * * *"  # UTC 23:07 = KST 08:07
+    - cron: "37 23 * * *" # UTC 23:37 = KST 08:37
+    - cron: "7 0 * * *"   # UTC 00:07 = KST 09:07
   workflow_dispatch:
     inputs:
       force_run:

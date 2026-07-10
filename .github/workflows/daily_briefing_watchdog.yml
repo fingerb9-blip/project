@@ -2,7 +2,9 @@ name: daily-briefing-watchdog
 
 on:
   schedule:
-    - cron: "0 1 * * *" # UTC 01:00 = KST 10:00 (08:30 목표보다 1.5시간 늦은 안전 마진)
+    # 정각 회피 + 마지막 브리핑 시도(09:07 KST) 이후로 마진 확보. 워치독 자신도 예약 이벤트라
+    # 드롭될 수 있으므로 브리핑 다중 cron과 함께 이중 안전망으로 둔다.
+    - cron: "13 1 * * *" # UTC 01:13 = KST 10:13 (마지막 시도보다 1시간 뒤, 정각 회피)
   workflow_dispatch: {}
 
 permissions:
