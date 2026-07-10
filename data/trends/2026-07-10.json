@@ -8,7 +8,7 @@
     },
     {
       "name": "삼성전자",
-      "count": 11,
+      "count": 12,
       "is_spike": true
     },
     {
@@ -30,13 +30,18 @@
   "keywords": [
     {
       "name": "HBM",
-      "count": 7,
+      "count": 6,
       "is_spike": true
     },
     {
       "name": "EUV",
-      "count": 5,
+      "count": 6,
       "is_spike": true
+    },
+    {
+      "name": "첨단 패키징",
+      "count": 1,
+      "is_spike": false
     }
   ]
 }
