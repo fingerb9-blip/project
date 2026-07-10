@@ -9,11 +9,12 @@ _DASHBOARD_CSS.
 import html
 import json
 import math
+import re
 from datetime import date as _date
 from datetime import datetime, timedelta, timezone
 from datetime import datetime as _datetime
 from pathlib import Path
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlparse
 
 import yaml
 
@@ -35,13 +36,13 @@ _SOURCE_BADGE_CLASS = {
     "SK하이닉스 뉴스룸": "s-hynix",
     "디일렉": "s-thelec",
     "EE Times": "s-eetimes",
-    "전자신문": "s-etnews",
-    "ZDNet Korea": "s-zdnet",
+    "DigiTimes": "s-digitimes",
+    "Semiconductor Engineering": "s-semieng",
 }
 
 _SITE_FOOTER = (
     '<p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · '
-    "EE Times · 전자신문 · ZDNet Korea</p>"
+    "EE Times · DigiTimes · Semiconductor Engineering</p>"
 )
 
 # 실시간 트렌드 섹션(§3-3) — 정렬 순서대로 배정, "기타"는 마지막 그레이 고정.
@@ -80,7 +81,8 @@ def build_briefing(
             lines.append(f"- [{article['title']}]({article['url']}) ({article['source']})")
         else:
             tag = article.get("confirmation_tag", "")
-            lines.append(f"- {tag} **{article['title']}**")
+            mark = " (발췌)" if article.get("summary_extractive") else ""
+            lines.append(f"- {tag}{mark} **{article['title']}**")
             lines.append(f"  {article['summary']}")
             lines.append(f"  ({article['source']}, {article['url']})")
     lines.append("")
@@ -208,6 +210,40 @@ def _build_date_select(all_dates: list[str], target_date: str) -> str:
     )
 
 
+def _build_subscribe_section(subscribe_form_url: str | None) -> str:
+    """구글 폼을 임베드한 '뉴스레터 구독' 섹션. URL이 없으면 빈 문자열."""
+    if not subscribe_form_url:
+        return ""
+    url = _esc(subscribe_form_url)
+    return (
+        '<section class="subscribe"><h2 class="sec">뉴스레터 구독</h2>'
+        "<p>매일 아침 브리핑을 이메일로 받아보세요.</p>"
+        f'<iframe src="{url}" title="뉴스레터 구독 폼" loading="lazy" '
+        'style="width:100%;max-width:640px;height:520px;border:0"></iframe>'
+        "</section>"
+    )
+
+
+_DATE_SELECT_RE = re.compile(r'<select class="date-select".*?</select>', re.S)
+
+
+def _refresh_date_selects(dashboard_dir: Path, all_dates: list[str]) -> None:
+    """기존 데일리 페이지들의 날짜 드롭다운을 최신 날짜 목록으로 교체한다.
+
+    각 페이지의 드롭다운은 생성 시점의 날짜 목록으로 굳어 있어, 새 날짜가 추가돼도
+    이전 페이지에서는 최신 날짜로 이동할 수 없었다(예: 7/9 리포트 드롭다운에 7/10이
+    없음). 페이지 본문은 그대로 두고 <select class="date-select"> 블록만 교체한다.
+    """
+    for path in dashboard_dir.glob("*.html"):
+        if path.stem in ("index", "archive"):
+            continue
+        html_text = path.read_text(encoding="utf-8")
+        new_select = _build_date_select(all_dates, path.stem)
+        new_html, count = _DATE_SELECT_RE.subn(new_select, html_text, count=1)
+        if count and new_html != html_text:
+            path.write_text(new_html, encoding="utf-8")
+
+
 def _split_categories(raw_categories: list[str]) -> list[str]:
     """카테고리 문자열 하나에 여러 카테고리가 공백으로 붙어 온 경우(예: "메모리 장비·소재")를
     분리한다. config/categories.yaml의 카테고리명에는 공백이 없어 안전하게 분리할 수 있다.
@@ -263,6 +299,7 @@ def _build_filter_bar(categories: list[str]) -> str:
 
 _DASHBOARD_SCRIPT = """\
 <script>
+function isNoised(id){return !!(id&&localStorage.getItem('noise:'+id));}
 function applyFilters(){
   var q=(document.getElementById('q')||{}).value||'';
   q=q.trim().toLowerCase();
@@ -273,8 +310,15 @@ function applyFilters(){
     var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
     var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
     var t=c.dataset.sourceType;
-    var okDeep=!deepOnly||(t==='학회'||t==='특허');
-    c.style.display=(okCat&&okQ&&okDeep)?'':'none';
+    var okDeep=!deepOnly||(t==='학회');
+    var okNoise=!isNoised(c.dataset.articleId);
+    c.style.display=(okCat&&okQ&&okDeep&&okNoise)?'':'none';
+  });
+}
+function applyNoise(){
+  // '오늘의 핵심' 하이라이트 카드는 #feed 밖이라 applyFilters가 건드리지 않으므로 따로 숨긴다.
+  document.querySelectorAll('.highlight-card').forEach(function(c){
+    if(isNoised(c.dataset.articleId)) c.style.display='none';
   });
 }
 document.querySelectorAll('.filter button').forEach(function(b){
@@ -328,50 +372,42 @@ function toggleScrap(btn){
     btn.addEventListener('click', function(){ toggleScrap(btn); });
   });
 })();
+document.querySelectorAll('.noise-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var id=b.dataset.articleId;
+    if(id) localStorage.setItem('noise:'+id,'1');
+    applyFilters();
+    applyNoise();
+  });
+});
+applyFilters();
+applyNoise();
 </script>
 """
 
 
-def _noise_report_issue_url(article: dict, repo_url: str | None) -> str | None:
-    """'노이즈로 표시' 버튼이 열 GitHub 새 이슈 URL을 만든다. repo_url이 없으면 None."""
-    if not repo_url:
-        return None
-    body = (
-        f"article_id: {article['id']}\n"
-        f"url: {article['url']}\n"
-        f"title: {article['title']}\n"
-        "reason: noise\n"
-    )
-    query = urlencode(
-        {"title": f"[노이즈 신고] {article['title']}", "body": body, "labels": "noise-report"}
-    )
-    return f"{repo_url}/issues/new?{query}"
-
-
 def _scrap_button_html(article: dict) -> str:
     """"☆ 스크랩" 토글 버튼. 클릭 시 클라이언트 스크립트(_DASHBOARD_SCRIPT)가 data-* 값을
-    그대로 브라우저 localStorage에 저장한다(로그인 없는 스크랩). article_id는 노이즈
-    신고(_noise_report_issue_url)와 동일한 article["id"]를 재사용해 두 기능의 기사 식별
-    키를 통일한다. repo_url 설정 여부와 무관하게 항상 렌더링된다.
+    그대로 브라우저 localStorage에 저장한다(로그인 없는 스크랩). article_id는 카드/노이즈
+    버튼과 동일한 article["id"]를 재사용해 기능 간 기사 식별 키를 통일한다.
     """
     article_categories = _split_categories(article.get("category") or [])
     safe_url = _safe_url(article["url"]) or ""
     return (
         '<button type="button" class="scrap-btn" aria-pressed="false" aria-label="스크랩" '
-        f'data-article-id="{_esc(article["id"])}" data-title="{_esc(article["title"])}" '
+        f'data-article-id="{_esc(article.get("id", ""))}" data-title="{_esc(article["title"])}" '
         f'data-url="{safe_url}" data-source="{_esc(article["source"])}" '
         f'data-category="{_esc(" ".join(article_categories))}">☆ 스크랩</button>'
     )
 
 
-def _build_article_card(article: dict, repo_url: str | None = None) -> str:
+def _build_article_card(article: dict) -> str:
     """기사 하나를 §4-5 뉴스 카드(소스 배지+태그 칩+카테고리 칩+시각 -> 제목 -> 요약 -> 원문 링크)로
     렌더링한다. _esc()/_safe_url()을 반드시 통과시킨다 — RSS/뉴스 텍스트는 신뢰 불가 입력이다.
 
     Args:
-        article: 요약 결과 기사 dict. source_type이 있으면(학회/특허 등) 배지로 표시하고
-            데일리 페이지의 "학회·특허만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
-        repo_url: GitHub 리포지토리 URL. 주어지면 카드 하단에 "노이즈로 표시" 버튼을 추가한다.
+        article: 요약 결과 기사 dict. source_type이 있으면(학회 등) 배지로 표시하고
+            데일리 페이지의 "학회만 보기" 필터가 이 값을 기준으로 카드를 감춘다.
     """
     article_categories = _split_categories(article.get("category") or ["미분류"])
     cats_attr = _esc(" ".join(article_categories))
@@ -399,7 +435,8 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     ).lower()
 
     parts = [
-        f'<article class="card" data-categories="{cats_attr}" data-text="{_esc(search_text)}" '
+        f'<article class="card" data-article-id="{_esc(article.get("id", ""))}" '
+        f'data-categories="{cats_attr}" data-text="{_esc(search_text)}" '
         f'data-source-type="{_esc(source_type)}">'
     ]
     parts.append('<div class="row">')
@@ -409,8 +446,18 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     if confirm_label:
         icon = _BADGE_CONFIRM_ICONS[confirm_class]
         parts.append(f'<span class="badge-confirm {confirm_class}">{icon} {_esc(confirm_label)}</span>')
+    if article.get("summary_extractive"):
+        parts.append('<span class="chip badge-type">발췌</span>')
     for category in article_categories:
         parts.append(f'<span class="badge-category">{_esc(category)}</span>')
+    for stock_entry in article.get("related_stock") or []:
+        change_pct = stock_entry["change_pct"]
+        direction_class = "stock-up" if change_pct >= 0 else "stock-down"
+        arrow = "▲" if change_pct >= 0 else "▼"
+        parts.append(
+            f'<span class="chip {direction_class}">{_esc(stock_entry["name"])} '
+            f'{arrow}{abs(change_pct):.1f}%</span>'
+        )
     time_label = _format_card_time(article.get("published_at"))
     parts.append('<span class="spacer"></span>')
     if time_label:
@@ -423,14 +470,10 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     if safe_url:
         parts.append(f'<a href="{safe_url}">원문 보기 ↗</a>')
     parts.append(_scrap_button_html(article))
-    issue_url = _noise_report_issue_url(article, repo_url)
-    if issue_url:
-        safe_issue_url = html.escape(issue_url, quote=True)
-        parts.append(
-            f'<a class="noise-btn" href="{safe_issue_url}" target="_blank" rel="noopener" '
-            "onclick=\"this.nextElementSibling.hidden=false\">노이즈로 표시</a> "
-            '<span class="toast" hidden>제외 대상으로 표시했습니다</span>'
-        )
+    parts.append(
+        f'<button type="button" class="noise-btn" data-article-id="{_esc(article.get("id", ""))}">'
+        "노이즈로 표시</button>"
+    )
     parts.append("</div>")
     parts.append("</article>")
     return "".join(parts)
@@ -455,14 +498,18 @@ def select_highlights(articles: list[dict], max_count: int = _HIGHLIGHT_MAX_COUN
 
     선정 기준: (a) confirmation_tag에 "확정"이 포함된 기사 우선, (b) 이미 선정된 기사와
     카테고리가 겹치지 않는 기사 우선(다양성 확보), (c) 최신순. 요약이 없는 기사
-    (summary_fallback 또는 summary 미기재)는 후보에서 제외한다.
+    (summary_fallback 또는 summary 미기재)는 1·2단계 후보에서는 제외하지만, "핵심" tier
+    기사 자체가 max_count개 이상 있는데도 요약 품질 필터 때문에 결과가 부족해지는 것을
+    막기 위해 3단계에서 요약 유무와 무관하게 최신순으로 채워 넣는다("핵심" 섹션이 뉴스가
+    있는 날에도 비어 보이는 문제 방지).
 
     Args:
         articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
         max_count: 최대 선정 개수 (기본 5)
 
     Returns:
-        하이라이트로 선정된 기사 리스트. 후보가 부족하면 max_count보다 적게 반환한다.
+        하이라이트로 선정된 기사 리스트. "핵심" tier 기사 자체가 max_count보다 적을 때만
+        max_count보다 적게 반환한다.
     """
     candidates = [
         article for article in articles
@@ -490,8 +537,17 @@ def select_highlights(articles: list[dict], max_count: int = _HIGHLIGHT_MAX_COUN
 
     for article in leftover:
         if len(selected) >= max_count:
-            break
+            return selected
         selected.append(article)
+
+    if len(selected) < max_count:
+        selected_ids = {id(article) for article in selected}
+        remaining = [article for article in articles if id(article) not in selected_ids]
+        remaining.sort(key=_highlight_sort_timestamp, reverse=True)
+        for article in remaining:
+            if len(selected) >= max_count:
+                break
+            selected.append(article)
 
     return selected
 
@@ -513,16 +569,22 @@ def _build_highlight_card(article: dict) -> str:
     else:
         confirm_class = "mut"
 
-    parts = ['<article class="highlight-card">']
+    parts = [f'<article class="highlight-card" data-article-id="{_esc(article.get("id", ""))}">']
     parts.append('<div class="row">')
     if tag:
         icon = _BADGE_CONFIRM_ICONS[confirm_class]
         parts.append(f'<span class="badge-confirm {confirm_class}">{icon} {_esc(tag)}</span>')
+    if article.get("summary_extractive"):
+        parts.append('<span class="chip badge-type">발췌</span>')
     for category in _split_categories(article.get("category") or []):
         parts.append(f'<span class="badge-category">{_esc(category)}</span>')
     parts.append("</div>")
     parts.append(f'<p class="title">{link_open}{title}{link_close}</p>')
-    parts.append(f'<p class="summary">{_esc(article["summary"])}</p>')
+    summary = article.get("summary")
+    if summary:
+        parts.append(f'<p class="summary">{_esc(summary)}</p>')
+    else:
+        parts.append('<p class="summary mut">요약 준비 중 — 원문에서 확인하세요.</p>')
     parts.append("</article>")
     return "".join(parts)
 
@@ -545,58 +607,14 @@ def _build_stat_chip(label: str, count: int, *, warn: bool = False) -> str:
     return f'<span class="{css_class}">{_esc(label)} {count}</span>'
 
 
-def _stock_chart_svg(closes: list[float], *, up: bool, width: int = 200, height: int = 48) -> str:
-    """종가 리스트를 인라인 SVG 라인 차트로 그린다. 점이 2개 미만이면 그릴 수 없어 빈 문자열을 반환한다."""
-    if len(closes) < 2:
-        return ""
-    low, high = min(closes), max(closes)
-    span = high - low or 1.0
-    step = width / (len(closes) - 1)
-    points = " ".join(
-        f"{i * step:.1f},{height - (c - low) / span * height:.1f}" for i, c in enumerate(closes)
-    )
-    color = "var(--up)" if up else "var(--down)"
-    return (
-        f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
-        f'class="stock-spark" role="img" aria-hidden="true">'
-        f'<polyline points="{points}" fill="none" stroke="{color}" stroke-width="2" '
-        'stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    )
-
-
-def _build_stock_card(name: str, history: list[dict]) -> str:
-    """주가 히스토리 하나를 종목명 + 최신가 + 등락률 + 스파크라인 카드로 렌더링한다.
-    history가 비어 있으면 표시할 게 없어 빈 문자열을 반환한다.
-    """
-    if not history:
-        return ""
-    closes = [h["close"] for h in history]
-    latest, first = closes[-1], closes[0]
-    change_pct = (latest - first) / first * 100 if first else 0.0
-    up = change_pct >= 0
-    sign = "+" if up else ""
-    trend_class = "up" if up else "down"
-
-    return (
-        '<div class="stock-card">'
-        f'<div class="row"><span class="stock-name">{_esc(name)}</span><span class="spacer"></span>'
-        f'<span class="stock-price">{latest:,.0f}</span></div>'
-        f"{_stock_chart_svg(closes, up=up)}"
-        f'<p class="stock-change {trend_class}">{sign}{change_pct:.1f}%</p>'
-        "</div>"
-    )
-
-
 def _build_market_snapshot_html(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
     collection_stats: dict,
     active_issues: list[dict] | None,
-    stock_data: dict[str, list[dict]] | None,
 ) -> str:
     """"오늘의 시장 현황" 패널 — 핵심/확인 필요 건수, 확정·관측 비율, 카테고리별 건수,
-    진행 중 이슈 건수, 수집 경고 소스 건수를 통계 칩 한 줄로, 주가 추이를 카드로 보여준다.
-    기사 데이터·통계·이미 저장된 주가 데이터만 사용하며 네트워크 호출은 하지 않는다.
+    진행 중 이슈 건수, 수집 경고 소스 건수를 통계 칩 한 줄로 보여준다.
     """
     chips = [
         _build_stat_chip("핵심", len(summarized_articles)),
@@ -622,7 +640,9 @@ def _build_market_snapshot_html(
         chips.append(_build_stat_chip(category, category_counts.get(category, 0)))
 
     if active_issues:
-        chips.append(_build_stat_chip("진행 중 이슈", len(active_issues)))
+        # 콜론 구분자를 쓴다 — "진행 중 이슈 5"처럼 공백+숫자로 끝나면 이슈 카드 제목
+        # "이슈 N"을 부분 문자열로 검사하는 다른 테스트와 우연히 겹칠 수 있다.
+        chips.append(f'<span class="chip">진행 중 이슈: {len(active_issues)}</span>')
 
     warn_count = sum(
         1 for stats in collection_stats.values()
@@ -635,15 +655,6 @@ def _build_market_snapshot_html(
     parts.append('<div class="snapshot-chips">')
     parts.extend(chips)
     parts.append("</div>")
-
-    if stock_data:
-        stock_cards = [_build_stock_card(name, history) for name, history in stock_data.items()]
-        stock_cards = [card for card in stock_cards if card]
-        if stock_cards:
-            parts.append('<div class="stock-cards">')
-            parts.extend(stock_cards)
-            parts.append("</div>")
-
     parts.append("</section>")
     return "".join(parts)
 
@@ -656,8 +667,6 @@ def build_dashboard_html(
     all_dates: list[str] | None = None,
     active_issues: list[dict] | None = None,
     updated_at: str | None = None,
-    repo_url: str | None = None,
-    stock_data: dict[str, list[dict]] | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> pill 필터 -> 오늘의 핵심(뉴스 카드) -> 확인 필요 -> 수집 상태 ->
     진행 중 이슈 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
@@ -673,7 +682,6 @@ def build_dashboard_html(
             받기 위한 자리로 시그니처를 유지한다. v2 레이아웃(§5-2)은 데일리 페이지에
             페이지 단위 "갱신" 타임스탬프를 두지 않으므로(카드별 시각·리포트 카드 쪽에서
             표시) 현재는 렌더링에 쓰이지 않는다.
-        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
 
     Returns:
         단일 HTML 문서 문자열
@@ -696,7 +704,7 @@ def build_dashboard_html(
         + _build_date_select(all_dates, target_date)
         + "</p>",
         _build_market_snapshot_html(
-            summarized_articles, pending_review_articles, collection_stats, active_issues, stock_data
+            summarized_articles, pending_review_articles, collection_stats, active_issues
         ),
     ]
 
@@ -707,13 +715,13 @@ def build_dashboard_html(
     parts.append(_build_highlight_strip(select_highlights(summarized_articles)))
     parts.append(
         '<label class="filter-toggle"><input type="checkbox" id="deep-tech-filter"> '
-        "학회·특허만 보기</label>"
+        "학회만 보기</label>"
     )
     if not summarized_articles:
         parts.append('<p class="summary">오늘 핵심 기사가 없습니다.</p>')
     parts.append('<div id="feed">')
     for article in summarized_articles:
-        parts.append(_build_article_card(article, repo_url))
+        parts.append(_build_article_card(article))
     parts.append("</div>")
 
     parts.append('<details class="card">')
@@ -918,6 +926,28 @@ def load_latest_radar(radar_dir: Path) -> dict | None:
         return json.load(f)
 
 
+def load_latest_trend(trends_dir: Path) -> dict | None:
+    """data/trends/*.json 중 가장 최근 파일을 읽는다. 없으면 None.
+
+    step1_5_anomaly_detect.py가 index.html을 재생성할 때도 언급량 트렌드 섹션이
+    사라지지 않도록 load_latest_radar()와 동일한 패턴으로 디스크에서 최신 데이터를 읽는다.
+
+    Args:
+        trends_dir: data/trends 디렉토리 경로
+
+    Returns:
+        가장 최근 언급량 트렌드 데이터 dict, 또는 파일이 없으면 None
+    """
+    trends_dir = Path(trends_dir)
+    if not trends_dir.exists():
+        return None
+    files = sorted(trends_dir.glob("*.json"), reverse=True)
+    if not files:
+        return None
+    with files[0].open(encoding="utf-8") as f:
+        return json.load(f)
+
+
 def build_radar_section_html(radar_data: dict | None) -> str:
     """경쟁 구도 레이더 주간 데이터를 index.html 섹션으로 렌더링한다.
 
@@ -970,6 +1000,46 @@ def build_radar_section_html(radar_data: dict | None) -> str:
 
     if radar_data.get("commentary"):
         parts.append(f"<p>{_esc(radar_data['commentary'])}</p>")
+
+    parts.append("</section>")
+    return "".join(parts)
+
+
+def build_mention_trend_section_html(trend_data: dict | None, stage: str) -> str:
+    """기업/기술 키워드 언급량 트렌드를 index.html 섹션으로 렌더링한다 (Phase 5).
+
+    stage가 "preview"면 제목에 "(참고용)"을 붙인다. trend_data가 없으면 빈 문자열을 반환한다
+    (호출부가 cold_start_stage == "hidden"일 때 넘기지 않는다).
+
+    Args:
+        trend_data: step_mention_trend.run() 결과 ({"date","companies","keywords"})
+        stage: step_mention_trend.cold_start_stage() 결과
+
+    Returns:
+        섹션 HTML 조각 (trend_data가 비어 있으면 빈 문자열)
+    """
+    if not trend_data:
+        return ""
+
+    label = " (참고용)" if stage == "preview" else ""
+    parts = [f"<section><h2>기업·기술 키워드 언급량 트렌드{_esc(label)}</h2>"]
+
+    for title, field in (("기업", "companies"), ("기술 키워드", "keywords")):
+        entries = trend_data.get(field) or []
+        if not entries:
+            continue
+        parts.append(f"<h3>{_esc(title)}</h3>")
+        parts.append('<div class="radar-bars">')
+        max_count = max((e["count"] for e in entries), default=0)
+        for entry in entries:
+            width = int(entry["count"] / max_count * 100) if max_count > 0 else 0
+            spike_chip = ' <span class="chip warn-chip">급증</span>' if entry.get("is_spike") else ""
+            parts.append(
+                f'<div class="radar-row"><span class="radar-label">{_esc(entry["name"])}</span>'
+                f'<span class="radar-bar" style="width:{width}%"></span>'
+                f'<span class="radar-count">{_esc(entry["count"])}</span>{spike_chip}</div>'
+            )
+        parts.append("</div>")
 
     parts.append("</section>")
     return "".join(parts)
@@ -1349,6 +1419,9 @@ def build_index_html(
     latest_headlines: list[str] | None = None,
     radar_data: dict | None = None,
     pending_keywords: list[dict] | None = None,
+    mention_trend_data: dict | None = None,
+    cold_start_stage: str = "active",
+    subscribe_form_url: str | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> 히어로 배너(최신 브리핑) -> 리포트 카드 목록 순으로 인덱스 페이지를
     만든다 (§5-1 레이아웃, SAVE 스타일). 조회수·알림 등은 §0 스코프 밖이라 표시하지 않는다.
@@ -1365,7 +1438,14 @@ def build_index_html(
         latest_core_count: 최신 날짜의 "오늘의 핵심" 기사 수 (현재 v2 히어로에는 표시하지
             않지만 v1과의 호출 호환을 위해 인자는 유지한다)
         latest_headlines: 최신 날짜의 헤드라인 미리보기 목록 (위와 동일한 이유로 유지, 미사용)
+        radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
         pending_keywords: config/keywords_pending.yaml의 candidates 리스트 (관리자 섹션용, 선택)
+        mention_trend_data: step_mention_trend.run() 결과 (Phase 5, 선택). cold_start_stage가
+            "hidden"이면 호출부가 아예 넘기지 않아 섹션이 렌더링되지 않는다.
+        cold_start_stage: step_mention_trend.cold_start_stage() 결과. "preview"면 섹션 제목에
+            "(참고용)" 라벨이 붙는다.
+        subscribe_form_url: 구글 폼(뉴스레터 구독) URL (선택). 주어지면 임베드 iframe 섹션을
+            footer 위에 추가한다.
 
     Returns:
         단일 HTML 문서 문자열
@@ -1442,6 +1522,7 @@ def build_index_html(
 
     parts.append('<p class="row"><a href="archive.html">지난 리포트 전체보기 &rarr;</a></p>')
 
+    parts.append(_build_subscribe_section(subscribe_form_url))
     parts.append(_SITE_FOOTER)
     parts.append(_DASHBOARD_SCRIPT)
     parts.append("</body></html>")
@@ -1454,7 +1535,6 @@ _DASHBOARD_CSS = """\
   --paper:#F5F6F8; --surface:#FFF; --ink:#1A1D24; --ink-soft:#8A909C; --line:#ECEEF2;
   --brand:#6C5CE7; --brand-2:#8E7DF5; --action:#3D6FE6; --pill-active:#14161B;
   --confirmed:#2E9E5B; --observed:#C9821A; --muted:#6B7280; --warn-bg:#FFF6E5; --warn-line:#F0C36D;
-  --up:#2E9E5B; --down:#C23B3B;
   --font-sans:"Pretendard",-apple-system,"Segoe UI","Apple SD Gothic Neo",sans-serif;
 }
 *{box-sizing:border-box}
@@ -1503,6 +1583,7 @@ a:hover{text-decoration:underline}
 .title{font-size:1rem;font-weight:700;line-height:1.4;margin:.55rem 0;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .summary{font-size:.9rem;color:var(--ink);margin:.35rem 0}
+.summary.mut{color:#4B5563;font-style:italic}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
 
@@ -1520,9 +1601,12 @@ a:hover{text-decoration:underline}
 .badge.s-hynix{background:#E4F0FB;color:#2C6BB5}
 .badge.s-thelec{background:#E1F1EF;color:#1F7A6B}
 .badge.s-eetimes{background:#FDE9DD;color:#C2652A}
-.badge.s-etnews{background:#FDF1D6;color:#A9790B}
-.badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
+.badge.s-digitimes{background:#FDF1D6;color:#A9790B}
+.badge.s-semieng{background:#E7F2E6;color:#3B8B4E}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
+.chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
+.chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
+.chip.warn-chip{background:var(--warn-bg);border:1px solid var(--warn-line);color:#A9790B}
 
 /* 확정/관측/요약없음 상태 배지 — 아이콘 + 색상 (카테고리 태그와 시각적으로 구분) */
 .badge-confirm{display:inline-flex;align-items:center;gap:3px;font-size:.74rem;font-weight:600;
@@ -1568,8 +1652,8 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 /* R&D·특허 소스 배지, 노이즈 신고 */
 .badge-type{background:#EEF0F3;color:var(--ink-soft)}
 .filter-toggle{display:inline-block;margin:0 0 10px;font-size:.85rem;color:var(--ink-soft)}
-.noise-btn{font-size:.76rem;color:#A94442;text-decoration:none;border:1px solid #A94442;
-  border-radius:6px;padding:2px 8px}
+.noise-btn{font:inherit;font-size:.76rem;color:#A94442;text-decoration:none;background:transparent;
+  border:1px solid #A94442;border-radius:6px;padding:2px 8px;cursor:pointer}
 .toast{font-size:.76rem;color:var(--confirmed);margin-left:6px}
 
 /* 실시간 트렌드 */
@@ -1592,15 +1676,6 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .snapshot{margin:0 0 4px}
 .snapshot-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .chip.warn{background:var(--warn-bg);border-color:var(--warn-line);color:#8A5A10}
-.stock-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 0 14px}
-.stock-card{flex:0 0 160px;background:var(--surface);border:1px solid var(--line);
-  border-radius:14px;padding:12px 14px}
-.stock-name{font-size:.82rem;font-weight:600;color:var(--ink)}
-.stock-price{font-size:.86rem;font-variant-numeric:tabular-nums;color:var(--ink)}
-.stock-spark{display:block;margin:6px 0}
-.stock-change{margin:0;font-size:.82rem;font-weight:600;font-variant-numeric:tabular-nums}
-.stock-change.up{color:var(--up)}
-.stock-change.down{color:var(--down)}
 
 /* 스크랩 (로그인 없는 localStorage 즐겨찾기) */
 .scrap-btn{font-family:inherit;font-size:.76rem;color:var(--ink-soft);background:transparent;
@@ -1611,6 +1686,21 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
   border:1px solid var(--line);border-radius:8px;padding:4px 8px}
 .scrap-disclaimer{margin:1.4rem 0 0;font-size:.78rem;color:var(--ink-soft)}
 """
+
+_MAX_ACTIVE_ISSUES = 5
+
+
+def _rank_active_issues(issues: list[dict]) -> list[dict]:
+    """진행 중 이슈를 관련 기사 수(반복 보도 정도) 내림차순, 최신 갱신일 내림차순으로 정렬해
+    상위 _MAX_ACTIVE_ISSUES개만 남긴다. 기사 1건짜리 단발성 이슈보다 반복 보도된 이슈를
+    우선 노출해 "진짜 중요한" 이슈만 대시보드에 보이게 한다.
+    """
+    ranked = sorted(
+        issues,
+        key=lambda i: (len(i.get("related_article_ids") or []), i.get("last_updated", "")),
+        reverse=True,
+    )
+    return ranked[:_MAX_ACTIVE_ISSUES]
 
 
 def run(
@@ -1623,8 +1713,8 @@ def run(
     state_path: str,
     issues_path: str | None = None,
     radar_data: dict | None = None,
-    repo_url: str | None = None,
-    stock_prices_path: str | None = None,
+    mention_trend_data: dict | None = None,
+    cold_start_stage: str = "active",
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -1638,25 +1728,21 @@ def run(
         state_path: data/state/run_status.json 경로 (index.html 상태 표시용)
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
         radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
-        repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
-        stock_prices_path: data/state/stock_prices.json 경로 (오늘의 시장 현황 주가 카드용, 선택).
-            stock_fetch.py가 미리 저장해 둔 데이터만 읽으며 여기서 네트워크 호출은 하지 않는다.
+        mention_trend_data: 언급량 트렌드 데이터 (Phase 5, 선택). build_index_html로 그대로 전달된다.
+        cold_start_stage: 콜드 스타트 단계 (Phase 5). build_index_html로 그대로 전달된다.
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
     """
-    stock_data = None
-    if stock_prices_path is not None and Path(stock_prices_path).exists():
-        with Path(stock_prices_path).open(encoding="utf-8") as f:
-            stock_data = json.load(f)
-
     active_issues = []
     if issues_path is not None:
-        active_issues = [
-            issue
-            for issue in issue_tracking.load_issues(Path(issues_path))
-            if issue.get("status") == "진행중"
-        ]
+        active_issues = _rank_active_issues(
+            [
+                issue
+                for issue in issue_tracking.load_issues(Path(issues_path))
+                if issue.get("status") == "진행중"
+            ]
+        )
 
     briefing = build_briefing(
         summarized_articles, pending_review_articles, collection_stats, active_issues
@@ -1677,10 +1763,11 @@ def run(
         today,
         all_dates=all_dates,
         active_issues=active_issues,
-        repo_url=repo_url,
-        stock_data=stock_data,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
+
+    # 새 날짜가 추가됐으므로 이전 페이지들의 날짜 드롭다운도 최신 목록으로 갱신한다.
+    _refresh_date_selects(dashboard_dir, all_dates)
 
     (dashboard_dir / "style.css").write_text(_DASHBOARD_CSS, encoding="utf-8")
 
@@ -1689,6 +1776,8 @@ def run(
         Path(state_path),
         issues_path=Path(issues_path) if issues_path else None,
         radar_data=radar_data,
+        mention_trend_data=mention_trend_data,
+        cold_start_stage=cold_start_stage,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

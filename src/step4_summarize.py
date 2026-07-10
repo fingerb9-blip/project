@@ -2,11 +2,33 @@
 
 import json
 import logging
+import re
 from pathlib import Path
 
-from src import gemini_client
+from src import gemini_client, notify
 
 logger = logging.getLogger(__name__)
+
+# 발췌 요약 설정 — Gemini 요약이 없을 때 원문 앞 문장으로 채운다.
+_EXTRACT_SENTENCES = 3
+_EXTRACT_MAX_CHARS = 300
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
+
+
+def _extractive_summary(
+    raw_text: str, max_sentences: int = _EXTRACT_SENTENCES, max_chars: int = _EXTRACT_MAX_CHARS
+) -> str:
+    """Gemini 요약이 없을 때 쓰는 발췌 요약. 원문 앞 문장 몇 개를 잘라 반환한다.
+
+    한국어 뉴스 문장은 대부분 '~다.'로 끝나므로 종결부호(. ! ?) 뒤에서 분리한다.
+    문장 구분이 없으면 앞 max_chars만 자른다. raw_text가 비어 있으면 빈 문자열.
+    """
+    text = (raw_text or "").strip()
+    if not text:
+        return ""
+    sentences = [s.strip() for s in _SENTENCE_SPLIT.split(text) if s.strip()]
+    summary = " ".join(sentences[:max_sentences]) if sentences else text
+    return summary[:max_chars].rstrip()
 
 _SUMMARY_SCHEMA = {
     "type": "object",
@@ -29,8 +51,9 @@ _SUMMARY_SCHEMA = {
 _CONFIRMED_EXPRESSIONS = ["발표했다", "발표"]
 _OBSERVED_EXPRESSIONS = ["알려졌다", "알려"]
 _RAW_TEXT_LEN = 1500
-# 실제 응답 품질 비교 전까지는 DEFAULT_MODEL(Flash) 유지. 검증 후 LITE_MODEL로 바꿀 때 이 한 줄만 수정하면 된다.
-_SUMMARY_MODEL = gemini_client.DEFAULT_MODEL
+# 무료 티어 할당량이 넉넉하지 않아 매일 도는 이 호출부터 LITE_MODEL로 전환했다.
+# 품질이 부족하면 이 한 줄만 DEFAULT_MODEL로 되돌리면 된다.
+_SUMMARY_MODEL = gemini_client.LITE_MODEL
 
 
 def generate_summaries(articles: list[dict]) -> dict[str, str]:
@@ -60,6 +83,46 @@ def generate_summaries(articles: list[dict]) -> dict[str, str]:
     )
     result = gemini_client.call_gemini(prompt, _SUMMARY_SCHEMA, model=_SUMMARY_MODEL)
     return {item["id"]: item["summary"] for item in result.get("summaries", [])}
+
+
+def _fill_extractive(article: dict) -> None:
+    """요약이 없는 기사에 발췌 요약(원문 앞 문장)을 채운다. 원문도 없으면 진짜 폴백으로 둔다.
+
+    발췌는 원문 그대로라 항상 [관측]으로 태깅하고 summary_extractive=True로 표시한다
+    (대시보드가 '발췌' 배지를 붙일 근거). 원문이 없으면 헤드라인+링크만 남는 폴백.
+    """
+    extractive = _extractive_summary(article.get("raw_text", ""))
+    if extractive:
+        article["summary"] = extractive
+        article["confirmation_tag"] = "[관측]"
+        article["summary_fallback"] = False
+        article["summary_extractive"] = True
+    else:
+        article["summary"] = None
+        article["confirmation_tag"] = None
+        article["summary_fallback"] = True
+        article["summary_extractive"] = False
+
+
+def backfill_extractive(articles: list[dict]) -> list[dict]:
+    """저장된 summarized 데이터에서 요약이 빠진(과거 폴백) 기사에 발췌 요약을 소급 적용한다.
+
+    이미 요약이 있는 기사는 그대로 두고, summary가 없는 기사만 원문 앞 문장으로 채운다.
+    rebuild_dashboard가 과거 페이지를 최신 형식으로 재생성할 때, Gemini 요약이 실패했던
+    날의 '요약 준비 중' 자리를 발췌로 대체하기 위한 진입점이다(원본 재요약 없이 소급).
+
+    Args:
+        articles: 저장된 summarized 기사 리스트 (raw_text 포함)
+
+    Returns:
+        발췌가 채워진 동일 리스트
+    """
+    for article in articles:
+        if article.get("summary") is None:
+            _fill_extractive(article)
+        else:
+            article.setdefault("summary_extractive", False)
+    return articles
 
 
 def tag_confirmation_level(summary: str, source: str, source_tiers_config: dict) -> str:
@@ -110,6 +173,11 @@ def run(
         summaries = generate_summaries(core_articles)
     except RuntimeError as exc:
         logger.error("배치 요약 실패, 전체 헤드라인+링크로 폴백: %s", exc)
+        notify.notify_warning(
+            "기사 요약 실패",
+            f"Gemini 요약 호출이 실패해 '핵심' 기사 {len(core_articles)}건이 전부 "
+            f"헤드라인+링크만 있는 폴백으로 대체됐습니다: {type(exc).__name__}: {exc}",
+        )
         summaries = {}
 
     summarized = []
@@ -117,14 +185,13 @@ def run(
         summary = summaries.get(article["id"])
         if summary is None:
             if summaries:
-                logger.error("%s 요약 응답 누락, 헤드라인+링크로 폴백", article["id"])
-            article["summary"] = None
-            article["confirmation_tag"] = None
-            article["summary_fallback"] = True
+                logger.error("%s 요약 응답 누락, 발췌 요약으로 폴백", article["id"])
+            _fill_extractive(article)
         else:
             article["summary"] = summary
             article["confirmation_tag"] = tag_confirmation_level(summary, article["source"], source_tiers_config)
             article["summary_fallback"] = False
+            article["summary_extractive"] = False
         summarized.append(article)
 
     output_path = Path(output_path)

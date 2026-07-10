@@ -42,7 +42,7 @@
 
 ## 로드맵
 
-**현재 진행: 🔨 Phase 1 (MVP)** — Step 0~6 핵심 경로를 로컬 수동 실행으로 완성 중
+**현재 진행: 🔨 Phase 5 (개인 애널리스트 확장 II)** — 국내 주가 연동 + 기업/기술 키워드 언급량 트렌드
 
 | Phase | 상태 | 목표 | 상세 스펙 |
 |---|---|---|---|
@@ -50,22 +50,24 @@
 | **Phase 2 — 자동화 & 커버리지 확장** | ⏳ 예정 | GitHub Actions 매일 자동 실행 + 상태 저장 + 실패 알림 / R&D·특허 소스 추가 / 피드백 루프 | `docs/phase2_ipo.md` |
 | **Phase 3 — 이슈 추적 고도화** | ⏳ 예정 | 이상 신호 감지 & 대시보드 즉시 속보 / 이슈 지식그래프 기반 반복 이슈 경과 요약 | `docs/phase3_ipo.md` |
 | **Phase 4 — 개인 애널리스트 확장** | 🔨 구현 완료 (PR 대기) | 경쟁 구도 레이더 | `docs/phase4_ipo.md` |
+| **Phase 5 — 개인 애널리스트 확장 II** | 🔨 진행 중 | 국내 주가 연동 / 기업·기술 키워드 언급량 트렌드 | `docs/phase5_ipo.md` |
 
 - Phase는 순차 진행하되, 각 Phase는 이전 Phase의 완성을 전제로 한다.
-- Phase 4는 MVP(Phase 1~3) 안정화 이후 도입하는 차별화 확장으로, 코어 파이프라인 변경 없이 얹는다.
+- Phase 4·5는 MVP(Phase 1~3) 안정화 이후 도입하는 차별화 확장으로, 코어 파이프라인 변경 없이 얹는다.
 
 ### Phase별 상세 스펙
 
 > 현재 진행 중인 Phase 문서만 `@`로 자동 로드한다. Phase가 넘어가면 이전 Phase는 일반 링크로 되돌리고
 > 새 Phase 문서를 `@`로 바꾼다 (컨텍스트 낭비 방지).
 
-- Phase 1 — MVP 파이프라인: @docs/phase1_ipo.md (진행 중 — 자동 로드)
+- Phase 1 — MVP 파이프라인: docs/phase1_ipo.md
 - Phase 2 — 자동화 & 커버리지 확장: docs/phase2_ipo.md
 - Phase 3 — 이슈 추적 고도화: docs/phase3_ipo.md
 - Phase 4 — 개인 애널리스트 확장: docs/phase4_ipo.md
+- Phase 5 — 개인 애널리스트 확장 II: @docs/phase5_ipo.md (진행 중 — 자동 로드)
 
 ## 작업 지침
 
-- 지금은 **Phase 1**을 구현·테스트한다. 상세 IPO·Config 스키마·Gemini 연동·알림 규칙은 @docs/phase1_ipo.md를 따른다.
+- 지금은 **Phase 5**를 구현·테스트한다. 상세 IPO는 @docs/phase5_ipo.md를 따른다.
 - 새 Phase에 착수할 때 이 문서 상단 "현재 진행" 표시와 로드맵 표의 상태(🔨/⏳/💡/✅)를 갱신한다.
 - 각 `src/` 모듈은 독립 실행 가능하게 작성해 `main.py`에서 순차 호출하거나 Step별로 개별 테스트한다.

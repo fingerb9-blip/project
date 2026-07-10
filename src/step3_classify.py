@@ -4,7 +4,7 @@ import json
 import logging
 from pathlib import Path
 
-from src import gemini_client
+from src import gemini_client, notify
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +30,19 @@ _CLASSIFY_SCHEMA = {
 _REGULATION_CATEGORY = "규제·정책"
 _REGULATION_KEYWORD_GROUP = "규제_무역"
 _CORE_KEYWORD_GROUP = "반도체_핵심"
+# "관세"/"수출통제"는 반도체 무관 기사(자동차 관세, 농산물 수출통제 등)에도 흔히 등장해
+# 그 자체로는 반도체 관련성의 증거가 되지 못한다. "반도체법"만 이름 자체로 반도체 특정적이라
+# 다른 반도체 신호 없이도 규제·정책 카테고리를 강제할 수 있는 유일한 예외로 둔다.
+_UNAMBIGUOUS_REGULATION_TERM = "반도체법"
 _SNIPPET_LEN = 300
 _TITLE_MATCH_WEIGHT = 3
 _BODY_STRONG_WEIGHT = 2
 _BODY_WEAK_WEIGHT = 1
-_RELEVANCE_EXCLUDE_THRESHOLD = 1
+_RELEVANCE_EXCLUDE_THRESHOLD = 2
+# Gemini 분류 호출이 실패했을 때 AI 판단 없이 "핵심"으로 승격할 최소 관련도 점수.
+# _TITLE_MATCH_WEIGHT(제목에 반도체_핵심 키워드 등장)와 같은 기준으로, 본문 후반부
+# 1회 언급 정도의 약한 신호(_BODY_WEAK_WEIGHT)까지는 승격하지 않는다.
+_HEURISTIC_FALLBACK_MIN_SCORE = _TITLE_MATCH_WEIGHT
 
 
 def _matched_keywords(text: str, keyword_group: dict) -> list[str]:
@@ -114,6 +122,33 @@ def filter_by_keywords(articles: list[dict], keywords_config: dict) -> list[dict
     return filtered
 
 
+def _heuristic_tier(article: dict) -> str:
+    """Gemini 분류 응답이 없을 때(호출 실패 또는 응답에 id 누락) AI 판단 없이 임시로
+    매길 tier. 기업이 특정됐거나 제목에 반도체_핵심 키워드가 등장한 강한 신호가 있으면
+    "핵심"으로 승격해, Gemini 장애 중에도 "오늘의 핵심"이 비어 보이지 않게 한다.
+    """
+    if article.get("companies") or article.get("relevance_score", 0) >= _HEURISTIC_FALLBACK_MIN_SCORE:
+        return "핵심"
+    return "확인 필요"
+
+
+def _heuristic_categories(article: dict, categories_config: dict) -> list[str]:
+    """Gemini 분류 응답이 없을 때 카테고리를 결정적으로 추정한다.
+
+    각 카테고리의 segment 키워드(config/categories.yaml)를 제목+본문에서 매칭한다.
+    카테고리를 하나도 못 붙이면 대시보드 pill 필터가 통째로 사라지므로(Gemini 장애 중
+    "메모리/파운드리/…" 필터 실종의 원인), AI 없이도 최소한의 카테고리를 채운다.
+    규제·정책은 segment가 비어 있어 여기선 안 잡히고, 이후 규제 키워드 로직이 부여한다.
+    """
+    text = f"{article.get('title', '')} {article.get('raw_text', '')}"
+    matched = []
+    for category, spec in categories_config.items():
+        segments = (spec or {}).get("segment") or []
+        if any(segment in text for segment in segments):
+            matched.append(category)
+    return matched
+
+
 def classify_tier_and_category(articles: list[dict], categories_config: dict) -> list[dict]:
     """Gemini API(Flash-Lite)로 핵심/확인 필요/제외 3단 분류 및 카테고리 태깅을 수행한다.
 
@@ -150,16 +185,42 @@ def classify_tier_and_category(articles: list[dict], categories_config: dict) ->
         result = gemini_client.call_gemini(prompt, _CLASSIFY_SCHEMA, model=gemini_client.LITE_MODEL)
         by_id = {r["id"]: r for r in result.get("results", [])}
     except RuntimeError as exc:
-        logger.error("분류 실패, 전체 '확인 필요'로 대체: %s", exc)
+        logger.error("분류 실패, 관련도 휴리스틱으로 대체: %s", exc)
+        notify.notify_warning(
+            "기사 분류 실패",
+            f"Gemini 분류 호출이 실패해 오늘 기사 {len(articles)}건을 관련도 휴리스틱으로 "
+            f"임시 분류했습니다(AI 판단 없이 분류됨, 검토 필요): {type(exc).__name__}: {exc}",
+        )
         by_id = {}
 
+    missing_ids = [a["id"] for a in articles if a["id"] not in by_id]
+    if by_id and missing_ids:
+        notify.notify_warning(
+            "기사 분류 일부 실패",
+            f"Gemini 응답에 {len(missing_ids)}/{len(articles)}건의 분류 결과가 빠져 "
+            "관련도 휴리스틱으로 임시 분류했습니다.",
+        )
+
     for article in articles:
-        result = by_id.get(article["id"], {"tier": "확인 필요", "category": []})
-        article["tier"] = result["tier"]
-        article["category"] = list(result["category"])
+        result = by_id.get(article["id"])
+        if result is None:
+            article["tier"] = _heuristic_tier(article)
+            article["category"] = _heuristic_categories(article, categories_config)
+        else:
+            article["tier"] = result["tier"]
+            article["category"] = list(result["category"])
         no_company = not article.get("companies")
         has_regulation_hint = _REGULATION_KEYWORD_GROUP in article.get("keyword_hints", [])
-        if no_company and has_regulation_hint and _REGULATION_CATEGORY not in article["category"]:
+        text = f"{article.get('title', '')} {article.get('raw_text', '')}"
+        has_semiconductor_signal = (
+            article.get("relevance_score", 0) > 0 or _UNAMBIGUOUS_REGULATION_TERM in text
+        )
+        if (
+            no_company
+            and has_regulation_hint
+            and has_semiconductor_signal
+            and _REGULATION_CATEGORY not in article["category"]
+        ):
             article["category"].append(_REGULATION_CATEGORY)
 
         low_relevance = article.get("relevance_score", 0) <= _RELEVANCE_EXCLUDE_THRESHOLD

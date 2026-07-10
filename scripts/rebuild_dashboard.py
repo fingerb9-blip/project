@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 from main import _compute_collection_stats  # noqa: E402
-from src import step5_assemble  # noqa: E402
+from src import step4_summarize, step5_assemble, step_stock_price  # noqa: E402
 
 
 def _load_json(path: Path) -> list[dict] | None:
@@ -108,6 +108,13 @@ def _rebuild_one(base_dir: Path, today: str, feeds: list[dict], all_dates: list[
     시점이 맞지 않는 정보를 보여주게 된다.
     """
     summarized, timestamp_source = _load_or_reconstruct_summarized(base_dir, today)
+    # 요약이 실패했던 날의 '요약 준비 중' 기사를 원문 앞 문장 발췌로 소급 대체한다(최신 형식 통일).
+    step4_summarize.backfill_extractive(summarized)
+    # 주가 뱃지는 summarized.json에 저장되지 않으므로, 그날 stock 데이터로 다시 매칭해 보존한다.
+    stock_path = base_dir / "data" / "stock" / f"{today}.json"
+    if stock_path.exists():
+        with stock_path.open(encoding="utf-8") as f:
+            step_stock_price.match_articles_to_stocks(summarized, json.load(f))
     classified = _load_json(base_dir / "data" / "classified" / f"{today}.json") or []
     raw_articles = _load_json(base_dir / "data" / "raw" / f"{today}.json") or []
     pending_review = [a for a in classified if a.get("tier") == "확인 필요"]

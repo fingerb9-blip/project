@@ -19,7 +19,9 @@ from src import (
     step4_summarize,
     step5_assemble,
     step6_send,
-    stock_fetch,
+    step7_subscriber_email,
+    step_mention_trend,
+    step_stock_price,
 )
 
 KST = timezone(timedelta(hours=9))
@@ -78,16 +80,21 @@ def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str, weekday: i
         notify.notify_warning("경쟁 구도 레이더 갱신 실패", f"{type(exc).__name__}: {exc}")
 
 
-def _update_stock_prices(stock_prices_path: Path) -> None:
-    """오늘의 시장 현황 패널의 주가 카드용 데이터를 갱신한다.
+_DEFAULT_DASHBOARD_URL = "https://fingerb9-blip.github.io/project/"
 
-    보조 데이터라 실패해도 파이프라인을 막지 않는다 — stock_fetch.run() 자체도
-    종목별로 실패를 흡수하지만, 파일 시스템 오류 등 예상 밖 실패까지 여기서 막아준다.
-    """
+
+def _maybe_send_newsletter(base_dir, paths, today: str) -> None:
+    """Step 6 성공 후 구독자에게 뉴스레터를 발송한다. 실패해도 파이프라인에 영향 없음."""
     try:
-        stock_fetch.run(str(stock_prices_path))
-    except Exception as exc:
-        notify.notify_warning("주가 데이터 갱신 실패", f"{type(exc).__name__}: {exc}")
+        dashboard_url = os.environ.get("DASHBOARD_URL", _DEFAULT_DASHBOARD_URL)
+        summarized_path = base_dir / "data" / "summarized" / f"{today}.json"
+        state_path = base_dir / "data" / "state" / "newsletter_state.json"
+        result = step7_subscriber_email.run(
+            paths["dashboard_dir"], summarized_path, state_path, today, dashboard_url
+        )
+        print(f"[NEWSLETTER] {result}")
+    except Exception as exc:  # noqa: BLE001 - 발송 실패가 파이프라인을 막지 않도록 흡수
+        print(f"[NEWSLETTER] 발송 래퍼 오류(무시): {exc}")
 
 
 def main() -> None:
@@ -106,6 +113,8 @@ def main() -> None:
 
     steps_completed = []
     raw_articles = []
+    trend_data = None
+    cold_start_stage = "hidden"
     try:
         raw_articles = step1_collect.run(config["feeds"], paths["raw"])
         steps_completed.append("collect")
@@ -129,13 +138,30 @@ def main() -> None:
         step4_5_issue_match.run(core_articles, config["company_aliases"], paths["issues"], today)
         steps_completed.append("issue_match")
 
+        trends_dir = base_dir / "data" / "trends"
+        tech_keywords = step_mention_trend.load_tech_keywords(base_dir / "config" / "tech_keywords.yaml")
+        accumulated_days = step_mention_trend.count_accumulated_days(str(trends_dir), today)
+        cold_start_stage = step_mention_trend.cold_start_stage(accumulated_days)
+
+        trend_data = step_mention_trend.run(
+            classified_articles, config["company_aliases"], tech_keywords, str(trends_dir), today
+        )
+        steps_completed.append("mention_trend")
+
+        watch_tickers = step_stock_price.load_watch_tickers(base_dir / "config" / "watch_tickers.yaml")
+        stock_data = step_stock_price.run(
+            watch_tickers, str(base_dir / "data" / "stock" / f"{today}.json"), today
+        )
+        steps_completed.append("stock_price")
+
+        summarized_articles = step_stock_price.match_articles_to_stocks(summarized_articles, stock_data)
+        if cold_start_stage == "hidden":
+            trend_data = None
+
         _maybe_run_weekly_radar(base_dir, config, today, datetime.now(KST).weekday())
 
         pending_review = [a for a in classified_articles if a.get("tier") == "확인 필요"]
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
-        github_repo = os.environ.get("GITHUB_REPOSITORY")
-        repo_url = f"https://github.com/{github_repo}" if github_repo else None
-        _update_stock_prices(paths["stock_prices"])
         step5_assemble.run(
             summarized_articles,
             pending_review,
@@ -146,8 +172,8 @@ def main() -> None:
             paths["state"],
             paths["issues"],
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
-            repo_url=repo_url,
-            stock_prices_path=paths["stock_prices"],
+            mention_trend_data=trend_data,
+            cold_start_stage=cold_start_stage,
         )
         steps_completed.append("assemble")
 
@@ -173,6 +199,9 @@ def main() -> None:
             issues_path=paths["issues"],
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
             pending_keywords=step5_assemble.load_pending_keywords(pending_path),
+            mention_trend_data=trend_data,
+            cold_start_stage=cold_start_stage,
+            subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
         )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
@@ -192,12 +221,16 @@ def main() -> None:
             "failed_sources": [],
         },
     )
+    _maybe_send_newsletter(base_dir, paths, today)
     index_html = step5_assemble.build_index_html(
         paths["dashboard_dir"],
         paths["state"],
         issues_path=paths["issues"],
         radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
         pending_keywords=step5_assemble.load_pending_keywords(pending_path),
+        mention_trend_data=trend_data,
+        cold_start_stage=cold_start_stage,
+        subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
     )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 

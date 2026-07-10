@@ -51,6 +51,7 @@ a:hover{text-decoration:underline}
 .title{font-size:1rem;font-weight:700;line-height:1.4;margin:.55rem 0;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .summary{font-size:.9rem;color:var(--ink);margin:.35rem 0}
+.summary.mut{color:#4B5563;font-style:italic}
 .cardfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
 .cardfoot a{font-size:.85rem}
 
@@ -68,13 +69,22 @@ a:hover{text-decoration:underline}
 .badge.s-hynix{background:#E4F0FB;color:#2C6BB5}
 .badge.s-thelec{background:#E1F1EF;color:#1F7A6B}
 .badge.s-eetimes{background:#FDE9DD;color:#C2652A}
-.badge.s-etnews{background:#FDF1D6;color:#A9790B}
-.badge.s-zdnet{background:#E7F2E6;color:#3B8B4E}
-.tag{font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px}
-.tag.ok{background:rgba(46,158,91,.12);color:var(--confirmed)}
-.tag.obs{background:rgba(201,130,26,.14);color:var(--observed)}
-.tag.mut{background:#EEF0F3;color:var(--muted)}
+.badge.s-digitimes{background:#FDF1D6;color:#A9790B}
+.badge.s-semieng{background:#E7F2E6;color:#3B8B4E}
 .chip{font-size:.74rem;color:var(--ink-soft);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
+.chip.stock-up{background:rgba(46,158,91,.12);color:var(--confirmed);border-color:transparent}
+.chip.stock-down{background:rgba(194,59,59,.1);color:#C23B3B;border-color:transparent}
+.chip.warn-chip{background:var(--warn-bg);border:1px solid var(--warn-line);color:#A9790B}
+
+/* 확정/관측/요약없음 상태 배지 — 아이콘 + 색상 (카테고리 태그와 시각적으로 구분) */
+.badge-confirm{display:inline-flex;align-items:center;gap:3px;font-size:.74rem;font-weight:600;
+  padding:3px 9px;border-radius:999px}
+.badge-confirm.ok{background:#E3F6EA;color:#1B7A45}
+.badge-confirm.obs{background:#FBEFDD;color:#8A5A10}
+.badge-confirm.mut{background:#EEF0F3;color:#4B5563}
+
+/* 카테고리 배지 — 알약 모양 윤곽선 (확정/관측 배지와 구분) */
+.badge-category{font-size:.74rem;color:#5D6470;padding:3px 9px;border:1px solid var(--line);border-radius:999px}
 
 /* 리포트 카드(인덱스) */
 .report .datetitle{font-size:1.05rem;font-weight:700;margin:.5rem 0 .6rem}
@@ -110,8 +120,8 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 /* R&D·특허 소스 배지, 노이즈 신고 */
 .badge-type{background:#EEF0F3;color:var(--ink-soft)}
 .filter-toggle{display:inline-block;margin:0 0 10px;font-size:.85rem;color:var(--ink-soft)}
-.noise-btn{font-size:.76rem;color:#A94442;text-decoration:none;border:1px solid #A94442;
-  border-radius:6px;padding:2px 8px}
+.noise-btn{font:inherit;font-size:.76rem;color:#A94442;text-decoration:none;background:transparent;
+  border:1px solid #A94442;border-radius:6px;padding:2px 8px;cursor:pointer}
 .toast{font-size:.76rem;color:var(--confirmed);margin-left:6px}
 
 /* 실시간 트렌드 */

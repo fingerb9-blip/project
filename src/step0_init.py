@@ -75,7 +75,6 @@ def prepare_today_paths(base_dir: Path, today: str) -> dict:
         "state": base_dir / "data" / "state" / "run_status.json",
         "issues": base_dir / "data" / "state" / "issues.json",
         "frequency_baseline": base_dir / "data" / "state" / "frequency_baseline.json",
-        "stock_prices": base_dir / "data" / "state" / "stock_prices.json",
     }
     for key, path in paths.items():
         if key == "dashboard_dir":

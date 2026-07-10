@@ -1,0 +1,9 @@
+keywords:
+  - canonical: "HBM"
+    aliases: ["고대역폭메모리", "HBM3", "HBM3E", "HBM4"]
+  - canonical: "EUV"
+    aliases: ["극자외선", "EUV 노광"]
+  - canonical: "첨단 패키징"
+    aliases: ["CoWoS", "2.5D 패키징", "칩렛"]
+  - canonical: "2나노 공정"
+    aliases: ["2nm", "GAA"]

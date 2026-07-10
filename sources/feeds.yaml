@@ -14,32 +14,27 @@ feeds:
   - name: "EE Times"
     url: "https://www.eetimes.com/feed/"
     source_type: "언론"
-  - name: "전자신문"
-    url: "https://rss.etnews.com/Section901.xml"
+  - name: "DigiTimes"
+    url: "https://www.digitimes.com/rss/daily.xml"
     source_type: "언론"
-  - name: "ZDNet Korea"
-    url: "https://zdnet.co.kr/feed"
+  - name: "Semiconductor Engineering"
+    url: "https://semiengineering.com/feed/"
     source_type: "언론"
 
 # 네이버 뉴스 검색 API 보강 수집용 키워드
+# "수출통제" 단독 검색은 반도체 무관 품목(농산물·철강 등) 기사가 잔뜩 섞여 들어와
+# "반도체 수출통제" 복합 검색으로 좁혔다 (반도체 무관 기사 유입 + 불필요한 API 호출 비용 절감).
 naver_search_keywords:
   - "반도체"
   - "HBM"
   - "파운드리"
   - "EUV"
   - "AI반도체"
-  - "수출통제"
+  - "반도체 수출통제"
 
-# Semantic Scholar 논문 검색 API 보강 수집용 키워드 (영문 권장 - 학술 검색 특성상 매칭률이 높음)
+# OpenAlex 논문 검색 API 보강 수집용 키워드 (영문 권장 - 학술 검색 특성상 매칭률이 높음)
+# API 키 등록 없이 무료로 호출 가능.
 paper_search_keywords:
   - "HBM memory"
   - "EUV lithography"
   - "GAA transistor"
-
-# KIPRIS 특허 공개 검색 API(getWordSearch) 보강 수집용 키워드 (한글 권장 - 국내 출원 특허 제목/초록 매칭)
-# KIPRIS_API_KEY 미설정 시 이 소스는 자동으로 건너뜁니다.
-patent_search_keywords:
-  - "HBM"
-  - "EUV 노광"
-  - "GAA 트랜지스터"
-  - "반도체 패키징"

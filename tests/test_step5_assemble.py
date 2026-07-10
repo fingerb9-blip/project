@@ -230,6 +230,21 @@ def test_build_index_html_lists_dates_newest_first(tmp_path):
     assert first < second < third
 
 
+def test_build_index_html_ignores_archive_html_as_a_date(tmp_path):
+    """archive.html은 날짜 페이지가 아니다 — 문자열 정렬상 'archive'가 날짜보다 앞에 와서
+    두 번째 실행부터(archive.html이 이미 존재하는 상태) 최신 날짜로 잘못 인식되거나
+    날짜 파싱이 깨지면 안 된다."""
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "archive.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "2026-07-09.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert 'href="2026-07-09.html"' in html_out
+    assert 'href="archive.html"' not in html_out or "지난 리포트" in html_out
+
+
 def test_build_index_html_includes_latest_date_as_report_card_too(tmp_path):
     """v2는 v1과 달리 최신 날짜도 히어로 아래 리포트 카드 목록에 그대로 포함된다 (§5-1)."""
     dashboard_dir = tmp_path / "dashboard"
@@ -382,11 +397,82 @@ def test_build_dashboard_html_no_issue_section_when_no_active_issues():
     assert "진행 중 이슈" not in html_out
 
 
+def test_build_briefing_marks_extractive_summary():
+    extractive = _sample_article(
+        summary="원문에서 가져온 문장.", confirmation_tag="[관측]",
+        summary_fallback=False, summary_extractive=True,
+    )
+    md = step5_assemble.build_briefing([extractive], [], {})
+    assert "(발췌)" in md
+    assert "원문에서 가져온 문장." in md
+
+
+def test_build_briefing_no_extract_mark_for_ai_summary():
+    ai = _sample_article(summary="AI 요약", summary_fallback=False, summary_extractive=False)
+    md = step5_assemble.build_briefing([ai], [], {})
+    assert "(발췌)" not in md
+
+
 def test_build_briefing_renders_active_issue_timeline():
     issue = _sample_issue()
     md = step5_assemble.build_briefing([], [], {}, active_issues=[issue])
     assert "진행 중 이슈" in md
     assert "청주 M15X 증설 관련 이슈" in md
+
+
+def test_rank_active_issues_caps_at_five():
+    issues = [
+        _sample_issue(issue_id=f"i{n}", related_article_ids=["a"], last_updated="2026-07-08")
+        for n in range(8)
+    ]
+    ranked = step5_assemble._rank_active_issues(issues)
+    assert len(ranked) == 5
+
+
+def test_rank_active_issues_prefers_more_related_articles():
+    minor = _sample_issue(issue_id="minor", related_article_ids=["a"], last_updated="2026-07-09")
+    major = _sample_issue(issue_id="major", related_article_ids=["a", "b", "c"], last_updated="2026-07-01")
+    ranked = step5_assemble._rank_active_issues([minor, major])
+    assert ranked[0]["issue_id"] == "major"
+
+
+def test_rank_active_issues_breaks_tie_by_recency():
+    older = _sample_issue(issue_id="older", related_article_ids=["a", "b"], last_updated="2026-07-01")
+    newer = _sample_issue(issue_id="newer", related_article_ids=["a", "b"], last_updated="2026-07-08")
+    ranked = step5_assemble._rank_active_issues([older, newer])
+    assert ranked[0]["issue_id"] == "newer"
+
+
+def test_run_limits_rendered_active_issues_to_five(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    issues_path = tmp_path / "issues.json"
+    issues_path.write_text(
+        json.dumps(
+            [
+                _sample_issue(
+                    issue_id=f"i{n}",
+                    title=f"이슈 {n}",
+                    related_article_ids=["a"],
+                    last_updated="2026-07-08",
+                )
+                for n in range(8)
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    step5_assemble.run(
+        [], [], {}, str(archive_path), str(dashboard_dir), "2026-07-08", str(state_path),
+        issues_path=str(issues_path),
+    )
+
+    dashboard_html = (dashboard_dir / "2026-07-08.html").read_text(encoding="utf-8")
+    rendered = sum(1 for n in range(8) if f"이슈 {n}" in dashboard_html)
+    assert rendered == 5
 
 
 def test_build_alert_banner_html_renders_alert():
@@ -470,6 +556,21 @@ def test_load_latest_radar_returns_most_recent_week(tmp_path):
     assert data["week"] == "2026-W28"
 
 
+def test_load_latest_trend_returns_none_when_dir_missing(tmp_path):
+    assert step5_assemble.load_latest_trend(tmp_path / "trends") is None
+
+
+def test_load_latest_trend_reads_most_recent_file(tmp_path):
+    trends_dir = tmp_path / "trends"
+    trends_dir.mkdir()
+    (trends_dir / "2026-07-08.json").write_text('{"date": "2026-07-08"}', encoding="utf-8")
+    (trends_dir / "2026-07-09.json").write_text('{"date": "2026-07-09"}', encoding="utf-8")
+
+    data = step5_assemble.load_latest_trend(trends_dir)
+
+    assert data["date"] == "2026-07-09"
+
+
 def test_build_radar_section_html_renders_bars_and_commentary():
     radar_data = {
         "week": "2026-W28",
@@ -545,30 +646,49 @@ def test_build_dashboard_html_defaults_source_type_to_news_when_missing():
 def test_build_dashboard_html_includes_deep_tech_filter_toggle():
     html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
     assert 'id="deep-tech-filter"' in html_out
-    assert "학회·특허만 보기" in html_out
+    assert "학회만 보기" in html_out
 
 
-def test_build_dashboard_html_omits_noise_button_when_no_repo_url():
-    html_out = step5_assemble.build_dashboard_html([_sample_article()], [], {}, "2026-07-08")
-    assert "노이즈로 표시" not in html_out
-
-
-def test_build_dashboard_html_renders_noise_button_with_repo_url():
+def test_build_dashboard_html_renders_noise_button_without_github_link():
+    """노이즈 신고는 GitHub 이슈로 이동하지 않고 브라우저(localStorage)에서만 처리한다."""
     article = _sample_article(id="art1", url="https://example.com/a", title="테스트 기사")
-    html_out = step5_assemble.build_dashboard_html(
-        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
-    )
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
     assert "노이즈로 표시" in html_out
-    assert "https://github.com/owner/repo/issues/new?" in html_out
-    assert "labels=noise-report" in html_out
+    assert '<button type="button" class="noise-btn" data-article-id="art1">' in html_out
+    assert "github.com" not in html_out
 
 
-def test_build_dashboard_html_noise_button_escapes_title_in_url():
-    article = _sample_article(id="art1", url="https://example.com/a", title="<script>x</script>")
-    html_out = step5_assemble.build_dashboard_html(
-        [article], [], {}, "2026-07-08", repo_url="https://github.com/owner/repo"
-    )
+def test_build_dashboard_html_noise_button_escapes_article_id():
+    article = _sample_article(id='"><script>x</script>', url="https://example.com/a")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
     assert "<script>x</script>" not in html_out
+
+
+def test_article_card_carries_article_id_for_local_hiding():
+    # 카드 숨김은 카드 요소의 data-article-id를 보고 판단하므로 카드에 id가 있어야 한다.
+    article = _sample_article(id="art1")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert '<article class="card" data-article-id="art1"' in html_out
+
+
+def test_highlight_card_carries_article_id_for_local_hiding():
+    # 같은 기사가 '오늘의 핵심'에도 있으면 거기서도 숨겨야 하므로 하이라이트 카드에도 id가 필요.
+    article = _sample_article(id="art1")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert '<article class="highlight-card" data-article-id="art1"' in html_out
+
+
+def test_dashboard_script_hides_noised_cards_locally_on_load():
+    """노이즈로 표시하면 버튼만 감추던 예전 동작 대신, 카드 자체를 숨기고 새로고침 후에도
+    유지한다(순수 로컬). 필터/검색과 충돌하지 않도록 applyFilters가 노이즈를 반영하고
+    로드 시 한 번 실행돼야 한다."""
+    html_out = step5_assemble.build_dashboard_html([_sample_article(id="art1")], [], {}, "2026-07-08")
+    # 노이즈 플래그가 카드 표시 여부에 반영된다.
+    assert "noise:" in html_out
+    # 예전의 토스트 노출(형제 요소 표시) 동작은 사라졌다.
+    assert "nextElementSibling" not in html_out
+    # 로드 시 필터/노이즈 상태를 즉시 적용한다.
+    assert "applyNoise" in html_out
 
 
 def test_load_pending_keywords_returns_empty_when_missing(tmp_path):
@@ -620,7 +740,7 @@ def test_build_pending_keywords_section_html_flags_priority_candidate():
 
 
 def test_build_dashboard_html_deep_tech_filter_scoped_to_today_core_section():
-    """학회·특허만 보기 필터는 '오늘의 핵심' 섹션 카드만 대상으로 해야 한다.
+    """학회만 보기 필터는 '오늘의 핵심' 섹션 카드만 대상으로 해야 한다.
 
     '진행 중 이슈' 섹션의 카드는 data-source-type이 없어 전역 .card 셀렉터를
     쓰면 필터 체크 시 같이 숨겨진다 (Finding 1). #feed로 스코핑해야 한다 ("오늘의 핵심"
@@ -647,6 +767,109 @@ def test_build_index_html_includes_pending_keywords_section(tmp_path):
     html_out = step5_assemble.build_index_html(dashboard_dir, state_path, pending_keywords=candidates)
 
     assert "테마주" in html_out
+
+
+def test_build_article_card_renders_positive_stock_badge():
+    article = {
+        "id": "a1",
+        "title": "삼성전자, HBM4 수율 개선",
+        "url": "https://example.com/1",
+        "source": "삼성전자 뉴스룸",
+        "category": ["메모리"],
+        "summary": "요약",
+        "confirmation_tag": "[확정]",
+        "related_stock": [{"name": "삼성전자", "change_pct": 1.8}],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-up" in html
+    assert "삼성전자" in html
+    assert "1.8%" in html
+
+
+def test_build_article_card_renders_negative_stock_badge():
+    article = {
+        "id": "a1",
+        "title": "삼성전자, HBM4 수율 개선",
+        "url": "https://example.com/1",
+        "source": "삼성전자 뉴스룸",
+        "category": ["메모리"],
+        "summary": "요약",
+        "confirmation_tag": "[확정]",
+        "related_stock": [{"name": "삼성전자", "change_pct": -2.3}],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-down" in html
+    assert "2.3%" in html
+
+
+def test_build_article_card_omits_stock_badge_when_no_related_stock():
+    article = {
+        "id": "a1",
+        "title": "TSMC, 2나노 공정 발표",
+        "url": "https://example.com/1",
+        "source": "디일렉",
+        "category": ["파운드리"],
+        "summary": "요약",
+        "confirmation_tag": "[관측]",
+        "related_stock": [],
+    }
+
+    html = step5_assemble._build_article_card(article)
+
+    assert "stock-up" not in html
+    assert "stock-down" not in html
+
+
+_TREND_DATA = {
+    "date": "2026-07-09",
+    "companies": [{"name": "삼성전자", "count": 5, "is_spike": True}],
+    "keywords": [{"name": "HBM", "count": 3, "is_spike": False}],
+}
+
+
+def test_build_mention_trend_section_html_renders_bars_and_spike_chip():
+    html = step5_assemble.build_mention_trend_section_html(_TREND_DATA, "active")
+
+    assert "삼성전자" in html
+    assert "HBM" in html
+    assert "급증" in html
+
+
+def test_build_mention_trend_section_html_adds_preview_label():
+    html = step5_assemble.build_mention_trend_section_html(_TREND_DATA, "preview")
+
+    assert "참고용" in html
+
+
+def test_build_mention_trend_section_html_empty_when_no_data():
+    assert step5_assemble.build_mention_trend_section_html(None, "active") == ""
+
+
+def test_build_index_html_omits_mention_trend_section_even_with_data(tmp_path):
+    """§실시간 트렌드 도넛 섹션과 중복되므로 막대그래프형 언급량 트렌드 섹션은 렌더링하지 않는다."""
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "state" / "run_status.json"
+
+    html = step5_assemble.build_index_html(
+        dashboard_dir, state_path, mention_trend_data=_TREND_DATA, cold_start_stage="active"
+    )
+
+    assert "언급량 트렌드" not in html
+
+
+def test_build_index_html_omits_mention_trend_section_when_none(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    state_path = tmp_path / "state" / "run_status.json"
+
+    html = step5_assemble.build_index_html(dashboard_dir, state_path)
+
+    assert "언급량 트렌드" not in html
 
 
 # --- 실시간 트렌드 섹션 (실시간_트렌드_섹션_명세.md) ---
@@ -812,19 +1035,45 @@ def test_build_index_html_omits_trend_section_when_no_source_data(tmp_path):
     assert "실시간 트렌드" not in html_out
 
 
-def test_select_highlights_excludes_articles_without_summary():
+def test_select_highlights_prioritizes_articles_with_summary_over_without():
+    no_summary = _sample_article(id="a1", summary=None, summary_fallback=True)
+    has_summary = _sample_article(id="a2", summary="요약 있음", summary_fallback=False)
+
+    result = step5_assemble.select_highlights([no_summary, has_summary], max_count=1)
+
+    assert [a["id"] for a in result] == ["a2"]
+
+
+def test_select_highlights_backfills_with_no_summary_article_to_avoid_empty_section():
     no_summary = _sample_article(id="a1", summary=None, summary_fallback=True)
     has_summary = _sample_article(id="a2", summary="요약 있음", summary_fallback=False)
 
     result = step5_assemble.select_highlights([no_summary, has_summary])
 
-    assert [a["id"] for a in result] == ["a2"]
+    # "핵심" tier 기사가 있는데도 요약 품질 필터 때문에 하이라이트가 부족해지는 것을 막기 위해
+    # 요약 없는 기사도 후순위로 채워 넣는다.
+    assert [a["id"] for a in result] == ["a2", "a1"]
 
 
-def test_select_highlights_excludes_articles_with_empty_summary_string():
+def test_select_highlights_backfills_with_empty_summary_when_only_candidate():
     empty_summary = _sample_article(id="a1", summary="", summary_fallback=False)
     result = step5_assemble.select_highlights([empty_summary])
-    assert result == []
+    assert [a["id"] for a in result] == ["a1"]
+
+
+def test_select_highlights_backfill_reaches_max_count_when_enough_articles_exist():
+    with_summary = [
+        _sample_article(id=f"s{i}", category=[f"cat{i}"], published_at="2026-07-09T09:00:00+09:00")
+        for i in range(2)
+    ]
+    without_summary = [
+        _sample_article(id=f"n{i}", summary=None, summary_fallback=True, category=[f"cat{10 + i}"])
+        for i in range(5)
+    ]
+
+    result = step5_assemble.select_highlights(with_summary + without_summary, max_count=5)
+
+    assert len(result) == 5
 
 
 def test_select_highlights_prefers_confirmed_over_observed():
@@ -921,10 +1170,16 @@ def test_build_dashboard_html_highlight_card_shows_category_chip():
     assert "메모리" in html_out
 
 
-def test_build_dashboard_html_omits_highlight_strip_when_no_eligible_articles():
+def test_build_dashboard_html_omits_highlight_strip_when_no_articles_at_all():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert 'class="highlight-strip"' not in html_out
+
+
+def test_build_dashboard_html_renders_highlight_strip_even_without_summary():
     no_summary = _sample_article(summary=None, summary_fallback=True)
     html_out = step5_assemble.build_dashboard_html([no_summary], [], {}, "2026-07-08")
-    assert 'class="highlight-strip"' not in html_out
+    assert 'class="highlight-strip"' in html_out
+    assert "요약 준비 중" in html_out
 
 
 def test_build_dashboard_html_highlight_strip_appears_before_full_feed():
@@ -933,6 +1188,73 @@ def test_build_dashboard_html_highlight_strip_appears_before_full_feed():
     highlight_pos = html_out.index('class="highlight-strip"')
     feed_pos = html_out.index('id="feed"')
     assert highlight_pos < feed_pos
+
+
+def test_refresh_date_selects_adds_new_date_to_prior_pages(tmp_path):
+    # 버그 재현: 이전 페이지의 날짜 드롭다운은 생성 시점에 고정돼, 새 날짜가 추가돼도
+    # 이전 페이지에서는 최신 날짜로 이동할 수 없었다.
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    old_select = step5_assemble._build_date_select(["2026-07-09", "2026-07-08"], "2026-07-09")
+    (dashboard_dir / "2026-07-09.html").write_text(
+        f"<html><body><p>본문 유지</p>{old_select}</body></html>", encoding="utf-8"
+    )
+
+    step5_assemble._refresh_date_selects(
+        dashboard_dir, ["2026-07-10", "2026-07-09", "2026-07-08"]
+    )
+
+    refreshed = (dashboard_dir / "2026-07-09.html").read_text(encoding="utf-8")
+    assert '<option value="2026-07-10"' in refreshed  # 새 날짜가 드롭다운에 추가됨
+    assert '<option value="2026-07-09" selected' in refreshed  # 자기 날짜는 여전히 selected
+    assert "본문 유지" in refreshed  # 본문은 그대로
+
+
+def test_refresh_date_selects_skips_index_and_archive(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "index.html").write_text("<html>no select</html>", encoding="utf-8")
+    (dashboard_dir / "archive.html").write_text("<html>no select</html>", encoding="utf-8")
+
+    # index/archive에 date-select가 없어도 예외 없이 넘어간다.
+    step5_assemble._refresh_date_selects(dashboard_dir, ["2026-07-10"])
+
+    assert (dashboard_dir / "index.html").read_text(encoding="utf-8") == "<html>no select</html>"
+
+
+def test_run_refreshes_prior_page_date_selects(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    # 7/09 페이지가 이미 있고, 그 드롭다운엔 7/10이 없다.
+    stale_select = step5_assemble._build_date_select(["2026-07-09"], "2026-07-09")
+    (dashboard_dir / "2026-07-09.html").write_text(
+        f"<html><body>{stale_select}</body></html>", encoding="utf-8"
+    )
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text(
+        json.dumps({"last_run_date": "2026-07-10", "last_run_status": "success"}),
+        encoding="utf-8",
+    )
+
+    step5_assemble.run(
+        [], [], {}, str(tmp_path / "archive.md"), str(dashboard_dir),
+        "2026-07-10", str(state_path),
+    )
+
+    prior = (dashboard_dir / "2026-07-09.html").read_text(encoding="utf-8")
+    assert '<option value="2026-07-10"' in prior
+
+
+def test_extractive_summary_article_shows_badge_and_summary():
+    extractive = _sample_article(
+        summary="원문에서 가져온 첫 문장입니다.",
+        confirmation_tag="[관측]",
+        summary_fallback=False,
+        summary_extractive=True,
+    )
+    html_out = step5_assemble.build_dashboard_html([extractive], [], {}, "2026-07-08")
+    assert "원문에서 가져온 첫 문장입니다." in html_out
+    assert "발췌" in html_out  # 발췌 요약임을 알리는 배지 (요약 본문엔 '발췌'가 없다)
 
 
 def test_build_archive_html_groups_reports_by_month(tmp_path):
@@ -1045,7 +1367,7 @@ def test_run_writes_archive_html(tmp_path):
 def test_build_market_snapshot_html_shows_core_and_pending_counts():
     core = _sample_article()
     pending = _sample_article(id="p1", title="확인 필요 기사")
-    html_out = step5_assemble._build_market_snapshot_html([core], [pending], {}, None, None)
+    html_out = step5_assemble._build_market_snapshot_html([core], [pending], {}, None)
     assert "핵심 1" in html_out
     assert "확인 필요 1" in html_out
 
@@ -1053,7 +1375,7 @@ def test_build_market_snapshot_html_shows_core_and_pending_counts():
 def test_build_market_snapshot_html_shows_confirmed_and_observed_counts():
     confirmed = _sample_article(id="a1", confirmation_tag="[확정]")
     observed = _sample_article(id="a2", confirmation_tag="[관측]")
-    html_out = step5_assemble._build_market_snapshot_html([confirmed, observed], [], {}, None, None)
+    html_out = step5_assemble._build_market_snapshot_html([confirmed, observed], [], {}, None)
     assert "확정 1" in html_out
     assert "관측 1" in html_out
 
@@ -1064,32 +1386,32 @@ def test_build_market_snapshot_html_shows_category_counts():
         _sample_article(id="a2", category=["메모리"]),
         _sample_article(id="a3", category=["파운드리"]),
     ]
-    html_out = step5_assemble._build_market_snapshot_html(articles, [], {}, None, None)
+    html_out = step5_assemble._build_market_snapshot_html(articles, [], {}, None)
     assert "메모리 2" in html_out
     assert "파운드리 1" in html_out
 
 
 def test_build_market_snapshot_html_shows_issue_count_when_present():
     issue = _sample_issue()
-    html_out = step5_assemble._build_market_snapshot_html([], [], {}, [issue], None)
-    assert "진행 중 이슈 1" in html_out
+    html_out = step5_assemble._build_market_snapshot_html([], [], {}, [issue])
+    assert "진행 중 이슈: 1" in html_out
 
 
 def test_build_market_snapshot_html_omits_issue_chip_when_no_active_issues():
-    html_out = step5_assemble._build_market_snapshot_html([], [], {}, [], None)
+    html_out = step5_assemble._build_market_snapshot_html([], [], {}, [])
     assert "진행 중 이슈" not in html_out
 
 
 def test_build_market_snapshot_html_flags_warn_source_count():
     stats = {"디일렉": {"today": 1, "avg7d": 10.0}, "EE Times": {"today": 5, "avg7d": 5.0}}
-    html_out = step5_assemble._build_market_snapshot_html([], [], stats, None, None)
+    html_out = step5_assemble._build_market_snapshot_html([], [], stats, None)
     assert "수집 경고 1" in html_out
     assert 'class="chip warn"' in html_out
 
 
 def test_build_market_snapshot_html_omits_warn_chip_when_no_low_sources():
     stats = {"디일렉": {"today": 10, "avg7d": 10.0}}
-    html_out = step5_assemble._build_market_snapshot_html([], [], stats, None, None)
+    html_out = step5_assemble._build_market_snapshot_html([], [], stats, None)
     assert "수집 경고" not in html_out
 
 
@@ -1099,82 +1421,6 @@ def test_build_dashboard_html_includes_market_snapshot_before_filter_bar():
     snapshot_pos = html_out.index("오늘의 시장 현황")
     filter_pos = html_out.index('class="filter"')
     assert snapshot_pos < filter_pos
-
-
-def test_stock_chart_svg_returns_polyline_for_multiple_points():
-    svg = step5_assemble._stock_chart_svg([100.0, 105.0, 98.0, 110.0], up=True)
-    assert "<polyline" in svg
-    assert "<svg" in svg
-
-
-def test_stock_chart_svg_empty_for_insufficient_data():
-    assert step5_assemble._stock_chart_svg([100.0], up=True) == ""
-    assert step5_assemble._stock_chart_svg([], up=True) == ""
-
-
-def test_build_stock_card_shows_name_price_and_change():
-    history = [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]
-    html_out = step5_assemble._build_stock_card("삼성전자", history)
-    assert "삼성전자" in html_out
-    assert "72,000" in html_out
-    assert "+2.9%" in html_out
-
-
-def test_build_stock_card_up_and_down_classes():
-    up_history = [{"date": "2026-07-01", "close": 100.0}, {"date": "2026-07-09", "close": 110.0}]
-    down_history = [{"date": "2026-07-01", "close": 100.0}, {"date": "2026-07-09", "close": 90.0}]
-    up_html = step5_assemble._build_stock_card("삼성전자", up_history)
-    down_html = step5_assemble._build_stock_card("SK하이닉스", down_history)
-    assert 'class="stock-change up"' in up_html
-    assert 'class="stock-change down"' in down_html
-
-
-def test_build_stock_card_empty_when_no_history():
-    assert step5_assemble._build_stock_card("삼성전자", []) == ""
-
-
-def test_build_market_snapshot_html_includes_stock_cards_when_data_present():
-    stock_data = {"삼성전자": [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]}
-    html_out = step5_assemble._build_market_snapshot_html([], [], {}, None, stock_data)
-    assert "삼성전자" in html_out
-    assert 'class="stock-card"' in html_out
-
-
-def test_build_market_snapshot_html_omits_stock_section_when_no_data():
-    html_out = step5_assemble._build_market_snapshot_html([], [], {}, None, None)
-    assert 'class="stock-card"' not in html_out
-
-
-def test_build_dashboard_html_passes_stock_data_through():
-    stock_data = {"삼성전자": [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]}
-    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", stock_data=stock_data)
-    assert 'class="stock-card"' in html_out
-
-
-def test_run_loads_stock_prices_from_state_path(tmp_path):
-    archive_path = tmp_path / "archive" / "2026-07-08.md"
-    dashboard_dir = tmp_path / "dashboard"
-    state_path = tmp_path / "run_status.json"
-    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
-    stock_path = tmp_path / "stock_prices.json"
-    stock_path.write_text(
-        json.dumps({"삼성전자": [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]}),
-        encoding="utf-8",
-    )
-
-    step5_assemble.run(
-        [_sample_article()],
-        [],
-        {},
-        str(archive_path),
-        str(dashboard_dir),
-        "2026-07-08",
-        str(state_path),
-        stock_prices_path=str(stock_path),
-    )
-
-    dashboard_html = (dashboard_dir / "2026-07-08.html").read_text(encoding="utf-8")
-    assert 'class="stock-card"' in dashboard_html
 
 
 # --- 로그인 없는 스크랩 기능 ---
@@ -1202,11 +1448,11 @@ def test_build_article_card_scrap_button_escapes_title():
     assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html_out
 
 
-def test_build_article_card_scrap_button_present_without_repo_url():
-    """노이즈 신고 버튼은 repo_url이 없으면 안 뜨지만, 스크랩 버튼은 항상 뜬다."""
+def test_build_article_card_scrap_button_next_to_noise_button():
+    """노이즈 버튼(로컬 숨김)과 스크랩 버튼은 서로 무관하게 항상 함께 뜬다."""
     article = _sample_article(id="art1")
     html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
-    assert "노이즈로 표시" not in html_out
+    assert "노이즈로 표시" in html_out
     assert 'class="scrap-btn"' in html_out
 
 
@@ -1301,3 +1547,35 @@ def test_dashboard_script_defines_scrap_storage_key_and_cap():
     assert "localStorage" in html_out
     assert "SCRAP_MAX" in html_out
     assert "200" in html_out
+
+
+def _index_state(tmp_path):
+    state = tmp_path / "run_status.json"
+    state.write_text(json.dumps({"last_run_date": "2026-07-10", "last_run_status": "success"}),
+                     encoding="utf-8")
+    return state
+
+
+def test_build_index_shows_subscribe_iframe_when_url_set(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    out = step5_assemble.build_index_html(
+        dashboard_dir, _index_state(tmp_path),
+        subscribe_form_url="https://forms.example/x",
+    )
+    assert "뉴스레터 구독" in out
+    assert 'src="https://forms.example/x"' in out
+
+
+def test_build_index_omits_subscribe_when_no_url(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    out = step5_assemble.build_index_html(dashboard_dir, _index_state(tmp_path))
+    assert "뉴스레터 구독" not in out
+
+
+def test_build_index_escapes_subscribe_url(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    out = step5_assemble.build_index_html(
+        dashboard_dir, _index_state(tmp_path),
+        subscribe_form_url='https://f/x"><script>alert(1)</script>',
+    )
+    assert "<script>alert(1)</script>" not in out

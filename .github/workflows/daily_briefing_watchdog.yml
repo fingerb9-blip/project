@@ -1,0 +1,33 @@
+name: daily-briefing-watchdog
+
+on:
+  schedule:
+    # 정각 회피 + 마지막 브리핑 시도(09:07 KST) 이후로 마진 확보. 워치독 자신도 예약 이벤트라
+    # 드롭될 수 있으므로 브리핑 다중 cron과 함께 이중 안전망으로 둔다.
+    - cron: "13 1 * * *" # UTC 01:13 = KST 10:13 (마지막 시도보다 1시간 뒤, 정각 회피)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Check today's daily-briefing run landed
+        env:
+          SMTP_HOST: smtp.gmail.com
+          SMTP_PORT: "587"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: python scripts/check_daily_run_freshness.py

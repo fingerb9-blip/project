@@ -1,16 +1,18 @@
 {
-  "last_run_date": "2026-07-09",
+  "last_run_date": "2026-07-10",
   "last_run_status": "success",
-  "last_success_at": "2026-07-09T16:50:49.111948+09:00",
+  "last_success_at": "2026-07-10T12:13:09.697344+09:00",
   "steps_completed": [
     "collect",
     "dedup",
     "classify",
     "summarize",
     "issue_match",
+    "mention_trend",
+    "stock_price",
     "assemble",
     "send"
   ],
-  "article_count": 185,
+  "article_count": 162,
   "failed_sources": []
 }

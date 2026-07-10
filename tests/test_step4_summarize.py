@@ -23,6 +23,11 @@ def _core_article(**overrides):
     return article
 
 
+def test_summary_model_uses_lite_tier_for_quota():
+    # 무료 할당량이 넉넉하지 않은 매일 배치라 LITE_MODEL을 쓴다 (할당량이 더 큰 티어).
+    assert step4_summarize._SUMMARY_MODEL == step4_summarize.gemini_client.LITE_MODEL
+
+
 @patch("src.step4_summarize.gemini_client.call_gemini")
 def test_generate_summaries_returns_id_to_summary_map(mock_call):
     mock_call.return_value = {
@@ -101,28 +106,110 @@ def test_run_calls_generate_summaries_once_for_all_core_articles(mock_generate, 
 
 
 @patch("src.step4_summarize.generate_summaries")
-def test_run_falls_back_only_article_missing_from_batch_response(mock_generate, tmp_path):
+def test_run_uses_extractive_summary_when_article_missing_from_batch(mock_generate, tmp_path):
+    # Gemini 응답에서 빠진 기사는 raw_text 앞 문장을 발췌 요약으로 채우고 [관측]으로 태깅한다.
     mock_generate.return_value = {"art1": "요약1"}
     output_path = tmp_path / "summarized.json"
-    articles = [_core_article(id="art1"), _core_article(id="art2", title="응답에 없는 기사")]
+    missing_raw = "SK하이닉스가 HBM4 양산을 시작했다고 발표했다. 두 번째 문장이다. 세 번째 문장이다. 네 번째 문장이다."
+    articles = [
+        _core_article(id="art1"),
+        _core_article(id="art2", title="응답에 없는 기사", raw_text=missing_raw),
+    ]
 
     result = step4_summarize.run(articles, _SOURCE_TIERS, str(output_path))
 
     by_id = {a["id"]: a for a in result}
     assert by_id["art1"]["summary_fallback"] is False
-    assert by_id["art2"]["summary_fallback"] is True
-    assert by_id["art2"]["summary"] is None
+    assert by_id["art1"]["summary_extractive"] is False
+    # art2: 발췌 요약이 채워지고 fallback이 아니며 [관측] 태그가 붙는다.
+    assert by_id["art2"]["summary_fallback"] is False
+    assert by_id["art2"]["summary_extractive"] is True
+    assert by_id["art2"]["confirmation_tag"] == "[관측]"
+    assert by_id["art2"]["summary"] is not None
+    assert "SK하이닉스가 HBM4 양산을 시작했다고 발표했다." in by_id["art2"]["summary"]
+    assert "네 번째 문장이다." not in by_id["art2"]["summary"]  # 앞 3문장만
 
 
-@patch("src.step4_summarize.generate_summaries", side_effect=RuntimeError("boom"))
-def test_run_falls_back_all_articles_when_batch_call_fails(mock_generate, tmp_path):
+@patch("src.step4_summarize.generate_summaries")
+def test_run_true_fallback_only_when_no_raw_text(mock_generate, tmp_path):
+    # 발췌할 raw_text조차 없으면 진짜 폴백(summary=None, summary_fallback=True)으로 남는다.
+    mock_generate.return_value = {}
     output_path = tmp_path / "summarized.json"
-    articles = [_core_article(id="art1"), _core_article(id="art2")]
+    articles = [_core_article(id="art1", raw_text="")]
 
     result = step4_summarize.run(articles, _SOURCE_TIERS, str(output_path))
 
-    assert all(a["summary_fallback"] is True for a in result)
-    assert all(a["summary"] is None for a in result)
+    assert result[0]["summary_fallback"] is True
+    assert result[0]["summary"] is None
+    assert result[0]["summary_extractive"] is False
+
+
+@patch("src.step4_summarize.notify.notify_warning")
+@patch("src.step4_summarize.generate_summaries", side_effect=RuntimeError("boom"))
+def test_run_uses_extractive_summary_when_batch_call_fails(mock_generate, mock_notify, tmp_path):
+    """배치 호출이 통째로 실패해도(예: Gemini 503) raw_text가 있으면 발췌 요약으로 채워
+    '요약 준비 중'이 전부 뜨는 것을 막는다. 실패 알림은 여전히 보낸다."""
+    output_path = tmp_path / "summarized.json"
+    articles = [
+        _core_article(id="art1", raw_text="첫 문장이다. 둘째 문장이다."),
+        _core_article(id="art2", raw_text="다른 첫 문장이다. 다른 둘째 문장이다."),
+    ]
+
+    result = step4_summarize.run(articles, _SOURCE_TIERS, str(output_path))
+
+    assert all(a["summary_fallback"] is False for a in result)
+    assert all(a["summary_extractive"] is True for a in result)
+    assert all(a["summary"] for a in result)
+    assert all(a["confirmation_tag"] == "[관측]" for a in result)
+    mock_notify.assert_called_once()
+
+
+def test_extractive_summary_takes_leading_sentences_only():
+    text = "첫째 문장이다. 둘째 문장이다. 셋째 문장이다. 넷째 문장이다."
+    out = step4_summarize._extractive_summary(text, max_sentences=3)
+    assert "첫째 문장이다." in out
+    assert "셋째 문장이다." in out
+    assert "넷째 문장이다." not in out
+
+
+def test_extractive_summary_empty_for_blank_raw_text():
+    assert step4_summarize._extractive_summary("") == ""
+    assert step4_summarize._extractive_summary("   ") == ""
+
+
+def test_backfill_extractive_fills_missing_summary_from_raw_text():
+    # 과거 폴백 기사(summary=None)를 원문 발췌로 소급 채운다.
+    articles = [
+        {"id": "a1", "summary": None, "summary_fallback": True,
+         "raw_text": "첫 문장이다. 둘째 문장이다. 셋째 문장이다. 넷째 문장이다."},
+    ]
+
+    step4_summarize.backfill_extractive(articles)
+
+    assert articles[0]["summary_fallback"] is False
+    assert articles[0]["summary_extractive"] is True
+    assert articles[0]["confirmation_tag"] == "[관측]"
+    assert "첫 문장이다." in articles[0]["summary"]
+    assert "넷째 문장이다." not in articles[0]["summary"]
+
+
+def test_backfill_extractive_keeps_existing_summary():
+    articles = [{"id": "a1", "summary": "이미 있는 AI 요약", "summary_fallback": False}]
+
+    step4_summarize.backfill_extractive(articles)
+
+    assert articles[0]["summary"] == "이미 있는 AI 요약"
+    assert articles[0]["summary_extractive"] is False
+
+
+def test_backfill_extractive_true_fallback_when_no_raw_text():
+    articles = [{"id": "a1", "summary": None, "summary_fallback": True, "raw_text": ""}]
+
+    step4_summarize.backfill_extractive(articles)
+
+    assert articles[0]["summary"] is None
+    assert articles[0]["summary_fallback"] is True
+    assert articles[0]["summary_extractive"] is False
 
 
 @patch("src.step4_summarize.generate_summaries")

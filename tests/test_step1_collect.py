@@ -104,7 +104,7 @@ def test_fetch_naver_news_tags_source_type_news(monkeypatch):
     assert articles[0]["source_type"] == "언론"
 
 
-def test_fetch_semantic_scholar_papers_tags_source_type_academic(monkeypatch):
+def test_fetch_openalex_papers_tags_source_type_academic(monkeypatch):
     since = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
     class _Resp:
@@ -115,104 +115,64 @@ def test_fetch_semantic_scholar_papers_tags_source_type_academic(monkeypatch):
 
         def json(self):
             return {
-                "data": [
+                "results": [
                     {
                         "title": "HBM paper",
-                        "url": "https://example.com/paper1",
-                        "abstract": "abstract",
-                        "publicationDate": "2024-06-01",
+                        "doi": "https://doi.org/10.1000/example",
+                        "primary_location": {"landing_page_url": "https://example.com/paper1"},
+                        "publication_date": "2024-06-01",
+                        "abstract_inverted_index": {"HBM": [0], "abstract": [1]},
                     }
                 ]
             }
 
     monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
 
-    papers = step1_collect.fetch_semantic_scholar_papers(["HBM memory"], since)
+    papers = step1_collect.fetch_openalex_papers(["HBM memory"], since)
 
     assert papers[0]["source_type"] == "학회"
+    assert papers[0]["source"] == "OpenAlex"
+    assert papers[0]["url"] == "https://example.com/paper1"
+    assert papers[0]["raw_text"] == "HBM abstract"
 
 
-_KIPRIS_XML = """<?xml version="1.0" encoding="UTF-8"?>
-<response><body><items>
-<item>
-  <application_number>1020240012345</application_number>
-  <invention_title>고대역폭 메모리 패키징 구조</invention_title>
-  <open_date>{open_date}</open_date>
-  <abstract_text>초록 내용</abstract_text>
-</item>
-</items></body></response>
-"""
-
-
-def test_fetch_kipris_patents_returns_empty_without_api_key(monkeypatch):
-    monkeypatch.delenv("KIPRIS_API_KEY", raising=False)
-
-    result = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
-
-    assert result == []
-
-
-def test_fetch_kipris_patents_parses_xml_response(monkeypatch):
-    monkeypatch.setenv("KIPRIS_API_KEY", "key")
-    since = datetime(2020, 1, 1, tzinfo=timezone.utc)
+def test_fetch_openalex_papers_falls_back_to_doi_when_no_landing_page(monkeypatch):
+    since = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
     class _Resp:
         status_code = 200
-        text = _KIPRIS_XML.format(open_date="20240601")
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "results": [
+                    {
+                        "title": "HBM paper",
+                        "doi": "https://doi.org/10.1000/example",
+                        "publication_date": "2024-06-01",
+                    }
+                ]
+            }
 
     monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
 
-    patents = step1_collect.fetch_kipris_patents(["HBM"], since)
+    papers = step1_collect.fetch_openalex_papers(["HBM memory"], since)
 
-    assert len(patents) == 1
-    assert patents[0]["title"] == "고대역폭 메모리 패키징 구조"
-    assert patents[0]["source_type"] == "특허"
-    assert patents[0]["source"] == "KIPRIS"
-    assert "1020240012345" in patents[0]["url"]
+    assert papers[0]["url"] == "https://doi.org/10.1000/example"
+    assert papers[0]["raw_text"] == ""
 
 
-def test_fetch_kipris_patents_filters_articles_before_since(monkeypatch):
-    monkeypatch.setenv("KIPRIS_API_KEY", "key")
-    since = datetime(2024, 6, 2, tzinfo=timezone.utc)
+def test_fetch_openalex_papers_skips_keyword_after_repeated_rate_limit(monkeypatch):
+    since = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
     class _Resp:
-        status_code = 200
-        text = _KIPRIS_XML.format(open_date="20240601")
-
-    monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
-
-    patents = step1_collect.fetch_kipris_patents(["HBM"], since)
-
-    assert patents == []
-
-
-def test_fetch_kipris_patents_skips_keyword_after_repeated_failure(monkeypatch):
-    monkeypatch.setenv("KIPRIS_API_KEY", "key")
-
-    class _Resp:
-        status_code = 500
-        text = ""
+        status_code = 429
 
     monkeypatch.setattr(step1_collect.requests, "get", lambda *a, **k: _Resp())
     monkeypatch.setattr(step1_collect.time, "sleep", lambda *_: None)
 
-    patents = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
+    papers = step1_collect.fetch_openalex_papers(["HBM memory"], since)
 
-    assert patents == []
-
-
-def test_fetch_kipris_patents_catches_network_exception_and_skips_keyword(monkeypatch):
-    """Verify that network exceptions (timeout, DNS failure, etc.) don't crash the pipeline."""
-    import requests
-    monkeypatch.setenv("KIPRIS_API_KEY", "key")
-
-    def mock_get_raises(*a, **k):
-        raise requests.exceptions.RequestException("Connection failed")
-
-    monkeypatch.setattr(step1_collect.requests, "get", mock_get_raises)
-    monkeypatch.setattr(step1_collect.time, "sleep", lambda *_: None)
-
-    # Should return empty list for that keyword instead of raising
-    patents = step1_collect.fetch_kipris_patents(["HBM"], datetime(2020, 1, 1, tzinfo=timezone.utc))
-
-    assert patents == []
+    assert papers == []
