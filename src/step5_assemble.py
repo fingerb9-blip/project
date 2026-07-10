@@ -382,6 +382,29 @@ document.querySelectorAll('.noise-btn').forEach(function(b){
 });
 applyFilters();
 applyNoise();
+
+// Giscus 댓글 위젯 — 로드 전 스켈레톤을 보여주고, iframe이 삽입되는 순간 숨긴다.
+document.querySelectorAll('.giscus-embed').forEach(function(container){
+  var skeleton=container.querySelector('.giscus-skeleton');
+  if(!skeleton) return;
+  var observer=new MutationObserver(function(){
+    if(container.querySelector('iframe.giscus-frame')){
+      skeleton.hidden=true;
+      observer.disconnect();
+    }
+  });
+  observer.observe(container,{childList:true});
+});
+
+// 다크모드 확장 포인트: 이 사이트에는 아직 다크모드 토글이 없어 giscus는 항상
+// data-theme="light"로 렌더링된다(build_giscus_section_html 참고). 다크모드 토글이
+// 추가되면, 토글 변경 이벤트에서 setGiscusTheme('dark') 또는 setGiscusTheme('light')를
+// 호출해 이미 로드된 giscus iframe의 테마도 즉시 맞춰 전환할 수 있다.
+function setGiscusTheme(theme){
+  var frame=document.querySelector('iframe.giscus-frame');
+  if(!frame) return;
+  frame.contentWindow.postMessage({giscus:{setConfig:{theme:theme}}},'https://giscus.app');
+}
 </script>
 """
 
@@ -667,9 +690,10 @@ def build_dashboard_html(
     all_dates: list[str] | None = None,
     active_issues: list[dict] | None = None,
     updated_at: str | None = None,
+    giscus_config: dict | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> pill 필터 -> 오늘의 핵심(뉴스 카드) -> 확인 필요 -> 수집 상태 ->
-    진행 중 이슈 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
+    진행 중 이슈 -> Giscus 댓글 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
 
     Args:
         summarized_articles: Step 4 결과 기사 리스트 ("핵심" tier, 요약 포함)
@@ -682,6 +706,8 @@ def build_dashboard_html(
             받기 위한 자리로 시그니처를 유지한다. v2 레이아웃(§5-2)은 데일리 페이지에
             페이지 단위 "갱신" 타임스탬프를 두지 않으므로(카드별 시각·리포트 카드 쪽에서
             표시) 현재는 렌더링에 쓰이지 않는다.
+        giscus_config: config/giscus.yaml 로드 결과 (선택). repo_id/category_id가 없으면
+            댓글 섹션 자체를 렌더링하지 않는다.
 
     Returns:
         단일 HTML 문서 문자열
@@ -766,6 +792,7 @@ def build_dashboard_html(
                 parts.append(f'<p class="summary">경과 요약: {_esc(issue["progress_summary"])}</p>')
             parts.append("</article>")
 
+    parts.append(build_giscus_section_html(giscus_config))
     parts.append(_SITE_FOOTER)
     parts.append(_DASHBOARD_SCRIPT)
     parts.append("</body></html>")
@@ -833,12 +860,23 @@ def build_alert_detail_html(issue: dict) -> str:
     return "\n".join(parts)
 
 
-def _build_report_card(dashboard_dir: Path, iso_date: str) -> str:
-    """§4-6 리포트 카드 (인덱스 아카이브 리스트 항목). PDF 다운로드는 스코프 밖(§0)이라 넣지 않는다."""
+def _build_report_card(
+    dashboard_dir: Path, iso_date: str, comment_counts: dict[str, int] | None = None
+) -> str:
+    """§4-6 리포트 카드 (인덱스 아카이브 리스트 항목). PDF 다운로드는 스코프 밖(§0)이라 넣지 않는다.
+
+    Args:
+        comment_counts: {날짜: 댓글 수} dict (load_comment_counts() 결과, 선택). 해당 날짜
+            데이터가 없으면 "💬 댓글" 칩 자체를 표시하지 않는다(0건과 "아직 캐시 없음" 구분).
+    """
     html_path = dashboard_dir / f"{iso_date}.html"
     time_label = _format_mtime_label(html_path) if html_path.exists() else ""
+    comment_count = (comment_counts or {}).get(iso_date)
     parts = ['<div class="card report" data-text="' + _esc(iso_date.lower()) + '">']
-    parts.append('<div class="row"><span class="chip">리포트</span><span class="spacer"></span>')
+    parts.append('<div class="row"><span class="chip">리포트</span>')
+    if comment_count is not None:
+        parts.append(f'<span class="chip">💬 댓글 {comment_count}개</span>')
+    parts.append('<span class="spacer"></span>')
     if time_label:
         parts.append(f'<span class="time">{_esc(time_label)}</span>')
     parts.append("</div>")
@@ -1089,6 +1127,89 @@ def build_pending_keywords_section_html(candidates: list[dict]) -> str:
         )
     parts.append("</table></section>")
     return "".join(parts)
+
+
+def load_giscus_config(path: Path) -> dict:
+    """config/giscus.yaml을 로드한다 (없으면 빈 dict).
+
+    repo_id/category_id는 giscus.app에서 Discussions를 연동해야 발급되므로, 파일이
+    없거나 값이 비어 있으면 build_giscus_section_html()이 위젯을 렌더링하지 않는다.
+
+    Args:
+        path: config/giscus.yaml 경로
+
+    Returns:
+        파싱된 설정 dict (파일이 없으면 빈 dict)
+    """
+    path = Path(path)
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def load_comment_counts(path: Path) -> dict[str, int]:
+    """data/state/comment_counts.json을 로드한다 (없으면 빈 dict).
+
+    scripts/refresh_comment_counts.py가 GitHub Discussions GraphQL API로 미리 저장해
+    둔 캐시만 읽으며, 여기서 네트워크 호출은 하지 않는다.
+
+    Args:
+        path: data/state/comment_counts.json 경로
+
+    Returns:
+        {날짜: 댓글 수} dict (파일이 없으면 빈 dict)
+    """
+    path = Path(path)
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+def build_giscus_section_html(giscus_config: dict | None) -> str:
+    """data-mapping="pathname"인 Giscus(GitHub Discussions 댓글) 위젯 섹션을 만든다.
+
+    repo_id/category_id가 비어 있으면(아직 giscus.app에서 Discussions 연동을 마치지
+    않음) 빈 문자열을 반환한다 — 빈 값으로 스크립트를 심으면 깨진 iframe만 남는다.
+    위젯이 로드되기 전에는 "댓글을 불러오는 중입니다" 스켈레톤을 보여주고,
+    _DASHBOARD_SCRIPT의 MutationObserver가 iframe.giscus-frame이 삽입되는 순간 숨긴다.
+
+    다크모드: 이 사이트에는 아직 다크모드 토글이 없어 data-theme을 "light"로 고정한다.
+    추후 토글이 추가되면 _DASHBOARD_SCRIPT의 setGiscusTheme() 확장 포인트를 통해
+    런타임에 전환할 수 있다 (주석 참고).
+
+    Args:
+        giscus_config: config/giscus.yaml 로드 결과 ({repo, repo_id, category, category_id, ...})
+
+    Returns:
+        섹션 HTML 조각 (설정이 없거나 필수 ID가 비어 있으면 빈 문자열)
+    """
+    if not giscus_config or not giscus_config.get("repo_id") or not giscus_config.get("category_id"):
+        return ""
+
+    attrs = {
+        "data-repo": giscus_config.get("repo", ""),
+        "data-repo-id": giscus_config["repo_id"],
+        "data-category": giscus_config.get("category", ""),
+        "data-category-id": giscus_config["category_id"],
+        "data-mapping": "pathname",
+        "data-strict": str(giscus_config.get("strict", "0")),
+        "data-reactions-enabled": str(giscus_config.get("reactions_enabled", "1")),
+        "data-emit-metadata": "0",
+        "data-input-position": giscus_config.get("input_position", "bottom"),
+        # 다크모드 토글이 생기기 전까지는 항상 light로 고정 렌더링한다.
+        "data-theme": "light",
+        "data-lang": giscus_config.get("lang", "ko"),
+    }
+    attr_str = " ".join(f'{key}="{_esc(value)}"' for key, value in attrs.items())
+
+    return (
+        '<section class="giscus-embed"><h2 class="sec">댓글</h2>'
+        '<p class="giscus-skeleton">댓글을 불러오는 중입니다…</p>'
+        f'<script src="https://giscus.app/client.js" {attr_str} crossorigin="anonymous" async></script>'
+        "</section>"
+    )
 
 
 def _load_tracked_terms() -> dict[str, list[str]]:
@@ -1422,6 +1543,7 @@ def build_index_html(
     mention_trend_data: dict | None = None,
     cold_start_stage: str = "active",
     subscribe_form_url: str | None = None,
+    comment_counts: dict[str, int] | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> 히어로 배너(최신 브리핑) -> 리포트 카드 목록 순으로 인덱스 페이지를
     만든다 (§5-1 레이아웃, SAVE 스타일). 조회수·알림 등은 §0 스코프 밖이라 표시하지 않는다.
@@ -1446,6 +1568,8 @@ def build_index_html(
             "(참고용)" 라벨이 붙는다.
         subscribe_form_url: 구글 폼(뉴스레터 구독) URL (선택). 주어지면 임베드 iframe 섹션을
             footer 위에 추가한다.
+        comment_counts: load_comment_counts() 결과 (선택). 각 리포트 카드에 "💬 댓글 N개"
+            칩으로 표시된다(해당 날짜 데이터가 없으면 칩을 생략한다).
 
     Returns:
         단일 HTML 문서 문자열
@@ -1517,7 +1641,7 @@ def build_index_html(
 
         parts.append('<div id="feed">')
         for d in dates:
-            parts.append(_build_report_card(dashboard_dir, d))
+            parts.append(_build_report_card(dashboard_dir, d, comment_counts))
         parts.append("</div>")
 
     parts.append('<p class="row"><a href="archive.html">지난 리포트 전체보기 &rarr;</a></p>')
@@ -1685,6 +1809,11 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .scrap-toolbar select{font-family:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);
   border:1px solid var(--line);border-radius:8px;padding:4px 8px}
 .scrap-disclaimer{margin:1.4rem 0 0;font-size:.78rem;color:var(--ink-soft)}
+
+/* Giscus 댓글 위젯 */
+.giscus-embed{margin:1.6rem 0 0}
+.giscus-skeleton{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;margin:0;font-size:.85rem;color:var(--ink-soft);text-align:center}
 """
 
 _MAX_ACTIVE_ISSUES = 5
@@ -1715,6 +1844,8 @@ def run(
     radar_data: dict | None = None,
     mention_trend_data: dict | None = None,
     cold_start_stage: str = "active",
+    giscus_config: dict | None = None,
+    comment_counts: dict[str, int] | None = None,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -1730,6 +1861,11 @@ def run(
         radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
         mention_trend_data: 언급량 트렌드 데이터 (Phase 5, 선택). build_index_html로 그대로 전달된다.
         cold_start_stage: 콜드 스타트 단계 (Phase 5). build_index_html로 그대로 전달된다.
+        giscus_config: load_giscus_config() 결과 (선택). 데일리 페이지 최하단 댓글
+            위젯용이며, repo_id/category_id가 없으면 위젯이 렌더링되지 않는다.
+        comment_counts: load_comment_counts() 결과 (선택). index.html 리포트 카드의
+            "💬 댓글 N개" 표시용이며, scripts/refresh_comment_counts.py가 주기적으로
+            갱신한 캐시를 그대로 읽어 쓴다(여기서 GitHub API를 호출하지 않는다).
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
@@ -1763,6 +1899,7 @@ def run(
         today,
         all_dates=all_dates,
         active_issues=active_issues,
+        giscus_config=giscus_config,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 
@@ -1778,6 +1915,7 @@ def run(
         radar_data=radar_data,
         mention_trend_data=mention_trend_data,
         cold_start_stage=cold_start_stage,
+        comment_counts=comment_counts,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 

@@ -1,0 +1,21 @@
+# Giscus(GitHub Discussions 기반 댓글 위젯) 설정.
+#
+# repo_id/category_id는 이 저장소에 Discussions를 켠 뒤 https://giscus.app 에서
+# repo/category를 선택하면 발급된다. 둘 중 하나라도 비어 있으면
+# step5_assemble.build_giscus_section_html()이 위젯 자체를 렌더링하지 않는다
+# (빈 값으로 스크립트를 심으면 깨진 iframe만 남기 때문).
+#
+# 설정 방법:
+#   1. GitHub 저장소 Settings > General > Features에서 Discussions 활성화
+#   2. https://giscus.app 접속 -> repository에 "fingerb9-blip/project" 입력
+#   3. Page ↔ Discussions Mapping은 "pathname"으로 선택
+#   4. 저장소 접근 권한 확인 후 생성된 data-repo-id/data-category-id 값을 아래에 채운다
+repo: fingerb9-blip/project
+repo_id: ""
+category: Announcements
+category_id: ""
+mapping: pathname
+strict: "0"
+reactions_enabled: "1"
+input_position: bottom
+lang: ko

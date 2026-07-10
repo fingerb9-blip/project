@@ -1,0 +1,59 @@
+name: refresh-comment-counts
+
+on:
+  schedule:
+    - cron: "23 */6 * * *" # 6시간마다, 정각 회피 (Giscus 댓글 수 캐시 갱신)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  discussions: read
+
+concurrency:
+  group: repo-writer
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Refresh Giscus comment counts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/refresh_comment_counts.py
+
+      - name: Commit state & dashboard
+        if: success()
+        run: |
+          git config user.name "briefing-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/state/comment_counts.json data/dashboard
+          git commit -m "chore: refresh giscus comment counts $(date -u +%FT%H)" || echo "no changes"
+          git fetch origin main
+          git rebase origin/main
+          git push
+
+      - name: Upload dashboard artifact
+        if: success()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: data/dashboard
+
+      - name: Deploy to GitHub Pages
+        if: success()
+        id: deployment
+        uses: actions/deploy-pages@v4

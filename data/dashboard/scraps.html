@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 스크랩 - 반도체 뉴스 브리핑</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div class="appbar"><span class="brand">반도체브리핑</span></div>
+<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>
+<div class="row scrap-toolbar">
+<h2 class="sec" style="margin:0">내 스크랩</h2>
+<span class="spacer"></span>
+<select id="scrap-filter-category" aria-label="카테고리 필터"><option value="all">전체 카테고리</option></select>
+<select id="scrap-filter-source" aria-label="소스 필터"><option value="all">전체 소스</option></select>
+<button type="button" id="scrap-clear-all" class="noise-btn">전체 삭제</button>
+</div>
+<div id="scrap-list"></div>
+<div id="scrap-empty" class="card" hidden><p class="summary">아직 스크랩한 기사가 없습니다.</p><p><a href="index.html">최신 리포트로 돌아가기</a></p></div>
+<p class="scrap-disclaimer">이 기능은 현재 브라우저에만 저장되며, 캐시 삭제 시 사라질 수 있습니다.</p>
+<p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · EE Times · DigiTimes · Semiconductor Engineering</p>
+<script>
+function isNoised(id){return !!(id&&localStorage.getItem('noise:'+id));}
+function applyFilters(){
+  var q=(document.getElementById('q')||{}).value||'';
+  q=q.trim().toLowerCase();
+  var active=document.querySelector('.filter button[aria-pressed="true"]');
+  var cat=active?active.dataset.cat:'all';
+  var deepOnly=(document.getElementById('deep-tech-filter')||{}).checked||false;
+  document.querySelectorAll('#feed .card').forEach(function(c){
+    var okCat=(cat==='all')||((c.dataset.categories||'').split(' ').indexOf(cat)>-1);
+    var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
+    var t=c.dataset.sourceType;
+    var okDeep=!deepOnly||(t==='학회');
+    var okNoise=!isNoised(c.dataset.articleId);
+    c.style.display=(okCat&&okQ&&okDeep&&okNoise)?'':'none';
+  });
+}
+function applyNoise(){
+  // '오늘의 핵심' 하이라이트 카드는 #feed 밖이라 applyFilters가 건드리지 않으므로 따로 숨긴다.
+  document.querySelectorAll('.highlight-card').forEach(function(c){
+    if(isNoised(c.dataset.articleId)) c.style.display='none';
+  });
+}
+document.querySelectorAll('.filter button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    applyFilters();
+  });
+});
+var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
+var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
+
+var SCRAP_KEY='sb-scraps-v1', SCRAP_MAX=200;
+function loadScraps(){
+  try{ return JSON.parse(localStorage.getItem(SCRAP_KEY)||'[]'); }catch(e){ return []; }
+}
+function saveScraps(list){
+  try{ localStorage.setItem(SCRAP_KEY, JSON.stringify(list)); }catch(e){}
+}
+function toggleScrap(btn){
+  var id=btn.dataset.articleId;
+  var list=loadScraps();
+  var idx=list.findIndex(function(s){ return s.articleId===id; });
+  if(idx>-1){
+    list.splice(idx,1);
+    btn.textContent='☆ 스크랩';
+    btn.setAttribute('aria-pressed','false');
+  }else{
+    list.unshift({
+      articleId:id,
+      title:btn.dataset.title,
+      url:btn.dataset.url,
+      source:btn.dataset.source,
+      category:btn.dataset.category,
+      savedAt:new Date().toISOString()
+    });
+    if(list.length>SCRAP_MAX) list=list.slice(0,SCRAP_MAX);
+    btn.textContent='★ 스크랩';
+    btn.setAttribute('aria-pressed','true');
+  }
+  saveScraps(list);
+}
+(function(){
+  var saved=loadScraps();
+  var savedIds={};
+  saved.forEach(function(s){ savedIds[s.articleId]=true; });
+  document.querySelectorAll('.scrap-btn').forEach(function(btn){
+    if(savedIds[btn.dataset.articleId]){
+      btn.textContent='★ 스크랩';
+      btn.setAttribute('aria-pressed','true');
+    }
+    btn.addEventListener('click', function(){ toggleScrap(btn); });
+  });
+})();
+document.querySelectorAll('.noise-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var id=b.dataset.articleId;
+    if(id) localStorage.setItem('noise:'+id,'1');
+    applyFilters();
+    applyNoise();
+  });
+});
+applyFilters();
+applyNoise();
+
+// Giscus 댓글 위젯 — 로드 전 스켈레톤을 보여주고, iframe이 삽입되는 순간 숨긴다.
+document.querySelectorAll('.giscus-embed').forEach(function(container){
+  var skeleton=container.querySelector('.giscus-skeleton');
+  if(!skeleton) return;
+  var observer=new MutationObserver(function(){
+    if(container.querySelector('iframe.giscus-frame')){
+      skeleton.hidden=true;
+      observer.disconnect();
+    }
+  });
+  observer.observe(container,{childList:true});
+});
+
+// 다크모드 확장 포인트: 이 사이트에는 아직 다크모드 토글이 없어 giscus는 항상
+// data-theme="light"로 렌더링된다(build_giscus_section_html 참고). 다크모드 토글이
+// 추가되면, 토글 변경 이벤트에서 setGiscusTheme('dark') 또는 setGiscusTheme('light')를
+// 호출해 이미 로드된 giscus iframe의 테마도 즉시 맞춰 전환할 수 있다.
+function setGiscusTheme(theme){
+  var frame=document.querySelector('iframe.giscus-frame');
+  if(!frame) return;
+  frame.contentWindow.postMessage({giscus:{setConfig:{theme:theme}}},'https://giscus.app');
+}
+</script>
+
+<script>
+(function(){
+  var listEl=document.getElementById('scrap-list');
+  var emptyEl=document.getElementById('scrap-empty');
+  var catSel=document.getElementById('scrap-filter-category');
+  var srcSel=document.getElementById('scrap-filter-source');
+  var clearBtn=document.getElementById('scrap-clear-all');
+  if(!listEl) return;
+
+  function safeUrlOrNull(url){
+    try{
+      var u=new URL(url, location.href);
+      return (u.protocol==='http:'||u.protocol==='https:')?url:null;
+    }catch(e){ return null; }
+  }
+
+  function fillOptions(select, values){
+    if(!select) return;
+    var current=select.value;
+    Array.prototype.slice.call(select.options).forEach(function(o){
+      if(o.value!=='all'&&values.indexOf(o.value)===-1) o.remove();
+    });
+    values.forEach(function(v){
+      if(!Array.prototype.some.call(select.options, function(o){ return o.value===v; })){
+        var opt=document.createElement('option'); opt.value=v; opt.textContent=v; select.appendChild(opt);
+      }
+    });
+    if(Array.prototype.some.call(select.options, function(o){ return o.value===current; })) select.value=current;
+  }
+
+  function buildScrapCard(s){
+    var art=document.createElement('article'); art.className='card';
+    var row=document.createElement('div'); row.className='row';
+    var badge=document.createElement('span'); badge.className='badge'; badge.textContent=s.source||'';
+    row.appendChild(badge);
+    (s.category||'').split(' ').filter(Boolean).forEach(function(c){
+      var chip=document.createElement('span'); chip.className='badge-category'; chip.textContent=c;
+      row.appendChild(chip);
+    });
+    var spacer=document.createElement('span'); spacer.className='spacer'; row.appendChild(spacer);
+    var del=document.createElement('button');
+    del.type='button'; del.className='noise-btn'; del.textContent='삭제'; del.dataset.remove=s.articleId;
+    row.appendChild(del);
+    art.appendChild(row);
+
+    var titleEl=document.createElement('p'); titleEl.className='title';
+    var safe=safeUrlOrNull(s.url);
+    if(safe){
+      var a=document.createElement('a'); a.href=safe; a.textContent=s.title||'';
+      titleEl.appendChild(a);
+    }else{
+      titleEl.textContent=s.title||'';
+    }
+    art.appendChild(titleEl);
+    return art;
+  }
+
+  function render(){
+    var list=loadScraps();
+    if(list.length===0){
+      listEl.innerHTML='';
+      if(emptyEl) emptyEl.hidden=false;
+      return;
+    }
+    if(emptyEl) emptyEl.hidden=true;
+
+    var cats={}, srcs={};
+    list.forEach(function(s){
+      (s.category||'').split(' ').filter(Boolean).forEach(function(c){ cats[c]=true; });
+      if(s.source) srcs[s.source]=true;
+    });
+    fillOptions(catSel, Object.keys(cats).sort());
+    fillOptions(srcSel, Object.keys(srcs).sort());
+
+    var catFilter=catSel?catSel.value:'all';
+    var srcFilter=srcSel?srcSel.value:'all';
+    var filtered=list.filter(function(s){
+      var okCat=catFilter==='all'||(s.category||'').split(' ').indexOf(catFilter)>-1;
+      var okSrc=srcFilter==='all'||s.source===srcFilter;
+      return okCat&&okSrc;
+    });
+
+    listEl.innerHTML='';
+    if(filtered.length===0){
+      var msg=document.createElement('p'); msg.className='summary'; msg.textContent='조건에 맞는 스크랩이 없습니다.';
+      listEl.appendChild(msg);
+      return;
+    }
+    filtered.forEach(function(s){ listEl.appendChild(buildScrapCard(s)); });
+  }
+
+  listEl.addEventListener('click', function(e){
+    var id=e.target && e.target.dataset ? e.target.dataset.remove : null;
+    if(!id) return;
+    saveScraps(loadScraps().filter(function(s){ return s.articleId!==id; }));
+    render();
+  });
+  if(clearBtn) clearBtn.addEventListener('click', function(){
+    if(confirm('스크랩한 기사를 모두 삭제할까요?')){ saveScraps([]); render(); }
+  });
+  if(catSel) catSel.addEventListener('change', render);
+  if(srcSel) srcSel.addEventListener('change', render);
+
+  render();
+})();
+</script>
+
+</body></html>

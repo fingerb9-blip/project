@@ -1579,3 +1579,163 @@ def test_build_index_escapes_subscribe_url(tmp_path):
         subscribe_form_url='https://f/x"><script>alert(1)</script>',
     )
     assert "<script>alert(1)</script>" not in out
+
+
+# --- Giscus 댓글 위젯 ---
+
+_GISCUS_CONFIG = {
+    "repo": "fingerb9-blip/project",
+    "repo_id": "R_kgDOtest",
+    "category": "Announcements",
+    "category_id": "DIC_kwDOtest",
+}
+
+
+def test_load_giscus_config_returns_empty_when_missing(tmp_path):
+    assert step5_assemble.load_giscus_config(tmp_path / "missing.yaml") == {}
+
+
+def test_load_giscus_config_returns_parsed_yaml(tmp_path):
+    path = tmp_path / "giscus.yaml"
+    path.write_text(
+        "repo: fingerb9-blip/project\nrepo_id: R_kgDOtest\ncategory: Announcements\n"
+        "category_id: DIC_kwDOtest\n",
+        encoding="utf-8",
+    )
+    config = step5_assemble.load_giscus_config(path)
+    assert config["repo"] == "fingerb9-blip/project"
+    assert config["repo_id"] == "R_kgDOtest"
+
+
+def test_build_giscus_section_html_omits_when_config_missing():
+    assert step5_assemble.build_giscus_section_html(None) == ""
+    assert step5_assemble.build_giscus_section_html({}) == ""
+
+
+def test_build_giscus_section_html_omits_when_ids_not_set():
+    config = {"repo": "fingerb9-blip/project", "category": "Announcements"}
+    assert step5_assemble.build_giscus_section_html(config) == ""
+
+
+def test_build_giscus_section_html_includes_required_attributes():
+    html_out = step5_assemble.build_giscus_section_html(_GISCUS_CONFIG)
+    assert 'src="https://giscus.app/client.js"' in html_out
+    assert 'data-repo="fingerb9-blip/project"' in html_out
+    assert 'data-repo-id="R_kgDOtest"' in html_out
+    assert 'data-category="Announcements"' in html_out
+    assert 'data-category-id="DIC_kwDOtest"' in html_out
+    assert 'data-mapping="pathname"' in html_out
+    assert "async" in html_out
+
+
+def test_build_giscus_section_html_defaults_theme_to_light():
+    html_out = step5_assemble.build_giscus_section_html(_GISCUS_CONFIG)
+    assert 'data-theme="light"' in html_out
+
+
+def test_build_giscus_section_html_shows_loading_skeleton():
+    html_out = step5_assemble.build_giscus_section_html(_GISCUS_CONFIG)
+    assert "댓글을 불러오는 중입니다" in html_out
+    assert 'class="giscus-skeleton"' in html_out
+
+
+def test_build_giscus_section_html_escapes_config_values():
+    config = dict(_GISCUS_CONFIG, category='"><script>alert(1)</script>')
+    html_out = step5_assemble.build_giscus_section_html(config)
+    assert "<script>alert(1)</script>" not in html_out
+
+
+def test_build_dashboard_html_includes_giscus_section_at_bottom():
+    html_out = step5_assemble.build_dashboard_html(
+        [], [], {}, "2026-07-08", giscus_config=_GISCUS_CONFIG
+    )
+    giscus_pos = html_out.index("giscus.app/client.js")
+    footer_pos = html_out.index("site-footer")
+    assert giscus_pos < footer_pos
+
+
+def test_build_dashboard_html_omits_giscus_when_config_missing():
+    """giscus.app 스크립트 삽입 자체는 없어야 한다. 공용 스크립트에 있는 스켈레톤
+    숨김 로직/setGiscusTheme() 확장 포인트는 giscus_config 유무와 무관하게 항상
+    존재하지만 무해하므로(.giscus-embed가 없으면 그냥 동작 안 함) 검사 대상이 아니다."""
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert "giscus.app/client.js" not in html_out
+    assert 'class="giscus-embed"' not in html_out
+
+
+def test_dashboard_script_defines_giscus_theme_extension_point():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", giscus_config=_GISCUS_CONFIG)
+    assert "setGiscusTheme" in html_out
+    assert "giscus-frame" in html_out
+
+
+def test_run_writes_dashboard_with_giscus_section(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    step5_assemble.run(
+        [], [], {}, str(archive_path), str(dashboard_dir), "2026-07-08", str(state_path),
+        giscus_config=_GISCUS_CONFIG,
+    )
+
+    dashboard_html = (dashboard_dir / "2026-07-08.html").read_text(encoding="utf-8")
+    assert "giscus.app/client.js" in dashboard_html
+
+
+# --- 인덱스 리포트 카드 댓글 수 표시 ---
+
+
+def test_load_comment_counts_returns_empty_when_missing(tmp_path):
+    assert step5_assemble.load_comment_counts(tmp_path / "missing.json") == {}
+
+
+def test_load_comment_counts_returns_parsed_json(tmp_path):
+    path = tmp_path / "comment_counts.json"
+    path.write_text(json.dumps({"2026-07-08": 3}), encoding="utf-8")
+    assert step5_assemble.load_comment_counts(path) == {"2026-07-08": 3}
+
+
+def test_build_report_card_shows_comment_count_when_present(tmp_path):
+    html_out = step5_assemble._build_report_card(tmp_path, "2026-07-08", {"2026-07-08": 5})
+    assert "💬 댓글 5개" in html_out
+
+
+def test_build_report_card_shows_zero_comment_count(tmp_path):
+    html_out = step5_assemble._build_report_card(tmp_path, "2026-07-08", {"2026-07-08": 0})
+    assert "💬 댓글 0개" in html_out
+
+
+def test_build_report_card_omits_comment_chip_when_no_data(tmp_path):
+    html_out = step5_assemble._build_report_card(tmp_path, "2026-07-08", {})
+    assert "댓글" not in html_out
+    html_out = step5_assemble._build_report_card(tmp_path, "2026-07-08")
+    assert "댓글" not in html_out
+
+
+def test_build_index_html_passes_comment_counts_to_report_cards(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(
+        dashboard_dir, tmp_path / "run_status.json", comment_counts={"2026-07-08": 7}
+    )
+
+    assert "💬 댓글 7개" in html_out
+
+
+def test_run_passes_comment_counts_to_index(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    step5_assemble.run(
+        [], [], {}, str(archive_path), str(dashboard_dir), "2026-07-08", str(state_path),
+        comment_counts={"2026-07-08": 4},
+    )
+
+    index_html = (dashboard_dir / "index.html").read_text(encoding="utf-8")
+    assert "💬 댓글 4개" in index_html

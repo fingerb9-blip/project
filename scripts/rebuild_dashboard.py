@@ -100,7 +100,9 @@ def _dates_with_source_data(base_dir: Path) -> list[str]:
     return sorted(dates)
 
 
-def _rebuild_one(base_dir: Path, today: str, feeds: list[dict], all_dates: list[str]) -> str:
+def _rebuild_one(
+    base_dir: Path, today: str, feeds: list[dict], all_dates: list[str], giscus_config: dict | None = None
+) -> str:
     """한 날짜의 대시보드 HTML을 현재 템플릿으로 렌더링한다 (파일에 쓰지 않는다).
 
     과거 날짜의 "진행 중 이슈" 섹션은 채우지 않는다 — issues.json은 그날의 스냅숏이
@@ -134,6 +136,7 @@ def _rebuild_one(base_dir: Path, today: str, feeds: list[dict], all_dates: list[
         all_dates=all_dates,
         active_issues=None,
         updated_at=updated_at,
+        giscus_config=giscus_config,
     )
 
 
@@ -152,10 +155,11 @@ def rebuild_all(base_dir: Path) -> list[str]:
     dashboard_dir.mkdir(parents=True, exist_ok=True)
     feeds = _load_feeds(base_dir)
     all_dates = sorted(dates, reverse=True)
+    giscus_config = step5_assemble.load_giscus_config(base_dir / "config" / "giscus.yaml")
 
     rebuilt = []
     for today in dates:
-        html_out = _rebuild_one(base_dir, today, feeds, all_dates)
+        html_out = _rebuild_one(base_dir, today, feeds, all_dates, giscus_config)
         (dashboard_dir / f"{today}.html").write_text(html_out, encoding="utf-8")
         rebuilt.append(today)
 
@@ -175,10 +179,11 @@ def preview_diffs(base_dir: Path, sample_size: int = 3) -> str:
     all_dates = sorted(dates, reverse=True)
     sample_dates = all_dates[:sample_size]
     dashboard_dir = base_dir / "data" / "dashboard"
+    giscus_config = step5_assemble.load_giscus_config(base_dir / "config" / "giscus.yaml")
 
     sections = []
     for today in sample_dates:
-        new_html = _rebuild_one(base_dir, today, feeds, all_dates)
+        new_html = _rebuild_one(base_dir, today, feeds, all_dates, giscus_config)
         existing_path = dashboard_dir / f"{today}.html"
         old_lines = (
             existing_path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -225,12 +230,14 @@ def rebuild_style_and_index(base_dir: Path) -> None:
             latest_core_count = len(latest_summarized)
             latest_headlines = [a["title"] for a in latest_summarized[:3]]
 
+    comment_counts = step5_assemble.load_comment_counts(base_dir / "data" / "state" / "comment_counts.json")
     index_html = step5_assemble.build_index_html(
         dashboard_dir,
         state_path,
         issues_path=issues_path if issues_path.exists() else None,
         latest_core_count=latest_core_count,
         latest_headlines=latest_headlines,
+        comment_counts=comment_counts,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
     (dashboard_dir / "scraps.html").write_text(step5_assemble.build_scraps_html(), encoding="utf-8")

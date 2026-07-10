@@ -103,6 +103,8 @@ def main() -> None:
     base_dir = Path(__file__).resolve().parent
     today = date.today().isoformat()
     pending_path = base_dir / "config" / "keywords_pending.yaml"
+    giscus_config = step5_assemble.load_giscus_config(base_dir / "config" / "giscus.yaml")
+    comment_counts = step5_assemble.load_comment_counts(base_dir / "data" / "state" / "comment_counts.json")
 
     try:
         config = step0_init.run(today)
@@ -174,6 +176,8 @@ def main() -> None:
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
             mention_trend_data=trend_data,
             cold_start_stage=cold_start_stage,
+            giscus_config=giscus_config,
+            comment_counts=comment_counts,
         )
         steps_completed.append("assemble")
 
@@ -202,6 +206,7 @@ def main() -> None:
             mention_trend_data=trend_data,
             cold_start_stage=cold_start_stage,
             subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
+            comment_counts=comment_counts,
         )
         (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
         if notify.looks_like_auth_error(exc):
@@ -231,6 +236,7 @@ def main() -> None:
         mention_trend_data=trend_data,
         cold_start_stage=cold_start_stage,
         subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
+        comment_counts=comment_counts,
     )
     (paths["dashboard_dir"] / "index.html").write_text(index_html, encoding="utf-8")
 
