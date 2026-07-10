@@ -3,7 +3,7 @@
   "companies": [
     {
       "name": "SK하이닉스",
-      "count": 18,
+      "count": 17,
       "is_spike": true
     },
     {
@@ -18,7 +18,7 @@
     },
     {
       "name": "엔비디아",
-      "count": 4,
+      "count": 3,
       "is_spike": true
     },
     {
@@ -30,7 +30,7 @@
   "keywords": [
     {
       "name": "HBM",
-      "count": 11,
+      "count": 8,
       "is_spike": true
     },
     {
