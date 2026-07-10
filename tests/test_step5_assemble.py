@@ -1556,26 +1556,68 @@ def _index_state(tmp_path):
     return state
 
 
-def test_build_index_shows_subscribe_iframe_when_url_set(tmp_path):
+def test_build_index_shows_subscribe_cta_when_url_set(tmp_path):
+    # 메인에는 iframe이 아니라 전용 구독 페이지로 가는 CTA만 둔다.
     dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
     out = step5_assemble.build_index_html(
         dashboard_dir, _index_state(tmp_path),
         subscribe_form_url="https://forms.example/x",
     )
-    assert "뉴스레터 구독" in out
-    assert 'src="https://forms.example/x"' in out
+    assert 'class="subscribe-cta"' in out
+    assert 'href="subscribe.html"' in out
+    assert "<iframe" not in out  # 폼 iframe을 메인에 심지 않는다
 
 
 def test_build_index_omits_subscribe_when_no_url(tmp_path):
     dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
     out = step5_assemble.build_index_html(dashboard_dir, _index_state(tmp_path))
-    assert "뉴스레터 구독" not in out
+    assert 'href="subscribe.html"' not in out
 
 
-def test_build_index_escapes_subscribe_url(tmp_path):
-    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
-    out = step5_assemble.build_index_html(
-        dashboard_dir, _index_state(tmp_path),
-        subscribe_form_url='https://f/x"><script>alert(1)</script>',
+def test_build_subscribe_html_posts_to_formresponse_with_entry(tmp_path):
+    html_out = step5_assemble.build_subscribe_html(
+        "https://docs.google.com/forms/d/e/ABC/viewform?embedded=true",
+        email_entry="entry.105591811",
     )
-    assert "<script>alert(1)</script>" not in out
+    # viewform URL에서 formResponse 엔드포인트를 도출해 POST
+    assert 'action="https://docs.google.com/forms/d/e/ABC/formResponse"' in html_out
+    assert 'method="post"' in html_out
+    assert 'name="entry.105591811"' in html_out
+    # 이메일 입력 + 수신동의 체크 + 구독 버튼
+    assert 'type="email"' in html_out
+    assert 'type="checkbox" required' in html_out
+    assert "구독하기" in html_out
+    # 대시보드와 같은 스타일시트 사용
+    assert 'href="style.css"' in html_out
+
+
+def test_build_subscribe_html_escapes_untrusted_url(tmp_path):
+    html_out = step5_assemble.build_subscribe_html(
+        'https://f/x"><script>alert(1)</script>/viewform', email_entry="entry.1"
+    )
+    assert "<script>alert(1)</script>" not in html_out
+
+
+def test_run_writes_subscribe_page_when_url_set(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    state = tmp_path / "run_status.json"
+    state.write_text(json.dumps({"last_run_date": "2026-07-10", "last_run_status": "success"}),
+                     encoding="utf-8")
+    step5_assemble.run(
+        [], [], {}, str(tmp_path / "archive.md"), str(dashboard_dir),
+        "2026-07-10", str(state),
+        subscribe_form_url="https://docs.google.com/forms/d/e/ABC/viewform",
+    )
+    assert (dashboard_dir / "subscribe.html").exists()
+
+
+def test_run_skips_subscribe_page_when_no_url(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    state = tmp_path / "run_status.json"
+    state.write_text(json.dumps({"last_run_date": "2026-07-10", "last_run_status": "success"}),
+                     encoding="utf-8")
+    step5_assemble.run(
+        [], [], {}, str(tmp_path / "archive.md"), str(dashboard_dir),
+        "2026-07-10", str(state),
+    )
+    assert not (dashboard_dir / "subscribe.html").exists()

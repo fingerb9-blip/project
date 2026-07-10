@@ -211,16 +211,73 @@ def _build_date_select(all_dates: list[str], target_date: str) -> str:
 
 
 def _build_subscribe_section(subscribe_form_url: str | None) -> str:
-    """구글 폼을 임베드한 '뉴스레터 구독' 섹션. URL이 없으면 빈 문자열."""
+    """index.html의 뉴스레터 구독 CTA. 전용 구독 페이지(subscribe.html)로 보낸다.
+
+    구글 폼 iframe은 우리 디자인으로 못 바꾸므로 메인에는 CTA만 두고, 실제 폼은
+    subscribe.html에서 대시보드 톤에 맞춰 렌더한다. URL이 없으면 빈 문자열.
+    """
     if not subscribe_form_url:
         return ""
-    url = _esc(subscribe_form_url)
     return (
-        '<section class="subscribe"><h2 class="sec">뉴스레터 구독</h2>'
-        "<p>매일 아침 브리핑을 이메일로 받아보세요.</p>"
-        f'<iframe src="{url}" title="뉴스레터 구독 폼" loading="lazy" '
-        'style="width:100%;max-width:640px;height:520px;border:0"></iframe>'
-        "</section>"
+        '<a class="subscribe-cta" href="subscribe.html">'
+        '<span class="sc-text">📮 매일 아침 브리핑을 이메일로<br>받아보세요</span>'
+        '<span class="sc-go">구독하기 →</span></a>'
+    )
+
+
+_SUBSCRIBE_EMAIL_ENTRY = "entry.105591811"
+
+
+def _form_response_url(subscribe_form_url: str) -> str:
+    """구글 폼 viewform URL에서 제출 엔드포인트(formResponse) URL을 도출한다."""
+    base = subscribe_form_url.split("/viewform")[0]
+    return f"{base}/formResponse"
+
+
+def build_subscribe_html(subscribe_form_url: str, email_entry: str = _SUBSCRIBE_EMAIL_ENTRY) -> str:
+    """대시보드 디자인에 맞춘 독립 '뉴스레터 구독' 페이지(subscribe.html)를 만든다.
+
+    구글 폼 iframe은 스타일을 바꿀 수 없으므로, 자체 폼을 렌더하고 제출은 숨은 iframe을
+    타깃으로 구글 폼 formResponse 엔드포인트에 POST한다(응답은 그대로 연결된 시트에 쌓인다).
+    이메일·수신동의는 브라우저 기본 검증(required)으로 막고, 제출 후 완료 메시지를 보여준다.
+    """
+    action = _esc(_form_response_url(subscribe_form_url))
+    entry = _esc(email_entry)
+    return (
+        "<!doctype html>"
+        '<html lang="ko"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        "<title>뉴스레터 구독 · 반도체 브리핑</title>"
+        '<link rel="stylesheet" href="style.css">'
+        "</head><body>"
+        '<div class="appbar"><span class="brand">반도체브리핑</span>'
+        '<a href="index.html">← 브리핑으로</a></div>'
+        '<div class="hero"><h2>🔔 뉴스레터 구독</h2></div>'
+        '<div class="card sub-card">'
+        '<p class="sub-lead">매일 아침, 반도체 업계의 핵심만 추려 이메일로 보내드립니다.</p>'
+        f'<form id="subForm" action="{action}" method="post" target="gform_sink">'
+        '<label class="sub-label" for="subEmail">이메일 주소</label>'
+        f'<input id="subEmail" class="sub-input" type="email" name="{entry}" '
+        'placeholder="you@example.com" required autocomplete="email">'
+        '<label class="sub-consent"><input type="checkbox" required>'
+        '<span>뉴스레터 수신에 동의합니다.</span></label>'
+        '<button type="submit" class="sub-btn">구독하기</button>'
+        "</form>"
+        '<p id="subMsg" class="sub-msg" hidden></p>'
+        "</div>"
+        '<iframe name="gform_sink" title="제출" style="display:none"></iframe>'
+        '<p class="site-footer">언제든 받은 메일에 회신해 구독을 취소할 수 있습니다.</p>'
+        "<script>"
+        "(function(){"
+        "var f=document.getElementById('subForm'),m=document.getElementById('subMsg'),"
+        "s=document.querySelector('iframe[name=\"gform_sink\"]'),sent=false;"
+        "f.addEventListener('submit',function(){sent=true;m.hidden=true;});"
+        "s.addEventListener('load',function(){if(!sent)return;sent=false;f.reset();"
+        "m.textContent='구독 완료 ✅ 내일 아침부터 브리핑을 보내드릴게요.';"
+        "m.className='sub-msg ok';m.hidden=false;});"
+        "})();"
+        "</script>"
+        "</body></html>"
     )
 
 
@@ -1685,6 +1742,31 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .scrap-toolbar select{font-family:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);
   border:1px solid var(--line);border-radius:8px;padding:4px 8px}
 .scrap-disclaimer{margin:1.4rem 0 0;font-size:.78rem;color:var(--ink-soft)}
+
+/* 뉴스레터 구독 — 메인 CTA */
+.subscribe-cta{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:linear-gradient(100deg,var(--brand-2),var(--brand));color:#fff;
+  border-radius:16px;padding:16px 18px;margin:0 0 11px;text-decoration:none}
+.subscribe-cta:hover{text-decoration:none;filter:brightness(1.03)}
+.subscribe-cta .sc-text{font-weight:600;font-size:.95rem;line-height:1.4;color:#fff}
+.subscribe-cta .sc-go{flex:0 0 auto;font-weight:700;font-size:.85rem;color:var(--brand);
+  background:#fff;border-radius:999px;padding:8px 14px;white-space:nowrap}
+
+/* 뉴스레터 구독 — 전용 페이지(subscribe.html) */
+.sub-card{padding:20px}
+.sub-lead{margin:0 0 18px;color:var(--ink-soft);font-size:.92rem}
+.sub-label{display:block;font-size:.82rem;font-weight:600;color:var(--ink);margin:0 0 7px}
+.sub-input{width:100%;font-family:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:0}
+.sub-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(108,92,231,.15)}
+.sub-consent{display:flex;align-items:center;gap:9px;font-size:.86rem;color:var(--ink-soft);
+  margin:13px 0 18px;cursor:pointer}
+.sub-consent input{accent-color:var(--brand);width:16px;height:16px;flex:0 0 auto}
+.sub-btn{width:100%;font-family:inherit;font-size:.95rem;font-weight:700;color:#fff;cursor:pointer;
+  background:linear-gradient(100deg,var(--brand-2),var(--brand));border:0;border-radius:12px;padding:13px}
+.sub-btn:hover{filter:brightness(1.05)}
+.sub-msg{margin:14px 0 0;font-size:.9rem;font-weight:600}
+.sub-msg.ok{color:var(--confirmed)}
 """
 
 _MAX_ACTIVE_ISSUES = 5
@@ -1715,6 +1797,8 @@ def run(
     radar_data: dict | None = None,
     mention_trend_data: dict | None = None,
     cold_start_stage: str = "active",
+    subscribe_form_url: str | None = None,
+    subscribe_email_entry: str = _SUBSCRIBE_EMAIL_ENTRY,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -1778,6 +1862,7 @@ def run(
         radar_data=radar_data,
         mention_trend_data=mention_trend_data,
         cold_start_stage=cold_start_stage,
+        subscribe_form_url=subscribe_form_url,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
 
@@ -1785,5 +1870,11 @@ def run(
     (dashboard_dir / "archive.html").write_text(archive_html, encoding="utf-8")
 
     (dashboard_dir / "scraps.html").write_text(build_scraps_html(), encoding="utf-8")
+
+    # 구독 폼 URL이 있으면 대시보드 톤에 맞춘 전용 구독 페이지를 생성한다.
+    if subscribe_form_url:
+        (dashboard_dir / "subscribe.html").write_text(
+            build_subscribe_html(subscribe_form_url, subscribe_email_entry), encoding="utf-8"
+        )
 
     return briefing

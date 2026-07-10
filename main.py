@@ -174,6 +174,10 @@ def main() -> None:
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
             mention_trend_data=trend_data,
             cold_start_stage=cold_start_stage,
+            subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
+            subscribe_email_entry=os.environ.get(
+                "SUBSCRIBE_EMAIL_ENTRY", step5_assemble._SUBSCRIBE_EMAIL_ENTRY
+            ),
         )
         steps_completed.append("assemble")
 
