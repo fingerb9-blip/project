@@ -1359,3 +1359,35 @@ def test_run_writes_archive_html(tmp_path):
     archive_html_path = dashboard_dir / "archive.html"
     assert archive_html_path.exists()
     assert "2026년 7월" in archive_html_path.read_text(encoding="utf-8")
+
+
+def _index_state(tmp_path):
+    state = tmp_path / "run_status.json"
+    state.write_text(json.dumps({"last_run_date": "2026-07-10", "last_run_status": "success"}),
+                     encoding="utf-8")
+    return state
+
+
+def test_build_index_shows_subscribe_iframe_when_url_set(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    out = step5_assemble.build_index_html(
+        dashboard_dir, _index_state(tmp_path),
+        subscribe_form_url="https://forms.example/x",
+    )
+    assert "뉴스레터 구독" in out
+    assert 'src="https://forms.example/x"' in out
+
+
+def test_build_index_omits_subscribe_when_no_url(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    out = step5_assemble.build_index_html(dashboard_dir, _index_state(tmp_path))
+    assert "뉴스레터 구독" not in out
+
+
+def test_build_index_escapes_subscribe_url(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    out = step5_assemble.build_index_html(
+        dashboard_dir, _index_state(tmp_path),
+        subscribe_form_url='https://f/x"><script>alert(1)</script>',
+    )
+    assert "<script>alert(1)</script>" not in out

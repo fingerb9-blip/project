@@ -233,3 +233,66 @@ def test_build_standalone_html_missing_style_link_returns_unchanged(tmp_path, ca
 
     assert out == original
     assert "style" in caplog.text.lower()
+
+
+# Tests for fetch_csv_subscribers
+from unittest.mock import patch
+
+_CSV = (
+    "타임스탬프,이메일 주소,수신 동의\n"
+    "2026-07-10 09:00:00,alice@x.com,예\n"
+    "2026-07-10 09:01:00,bob@y.com,예\n"
+    "2026-07-10 09:02:00,alice@x.com,예\n"      # 중복
+    "2026-07-10 09:03:00,notanemail,예\n"        # @ 없음
+)
+
+
+def test_fetch_csv_subscribers_extracts_emails_only(monkeypatch):
+    monkeypatch.setattr(news, "_http_get_text", lambda url: _CSV)
+    assert news.fetch_csv_subscribers("https://sheet/pub.csv") == ["alice@x.com", "bob@y.com"]
+
+
+def test_fetch_csv_subscribers_empty_url_returns_empty(monkeypatch):
+    called = []
+    monkeypatch.setattr(news, "_http_get_text", lambda url: called.append(url) or "")
+    assert news.fetch_csv_subscribers("") == []
+    assert news.fetch_csv_subscribers("   ") == []
+    assert called == []  # 빈 URL이면 HTTP 호출조차 안 함
+
+
+def test_fetch_csv_subscribers_reads_env_when_no_arg(monkeypatch):
+    monkeypatch.setenv("SUBSCRIBERS_CSV_URL", "https://sheet/pub.csv")
+    monkeypatch.setattr(news, "_http_get_text", lambda url: "이메일\nc@z.com\n")
+    assert news.fetch_csv_subscribers() == ["c@z.com"]
+
+
+def test_fetch_csv_subscribers_returns_empty_on_fetch_error(monkeypatch):
+    def boom(url):
+        raise OSError("network down")
+    monkeypatch.setattr(news, "_http_get_text", boom)
+    assert news.fetch_csv_subscribers("https://sheet/pub.csv") == []
+
+
+def test_gather_subscribers_merges_env_and_csv(monkeypatch):
+    monkeypatch.setattr(news, "load_subscribers", lambda: ["a@x.com", "b@y.com"])
+    monkeypatch.setattr(news, "fetch_csv_subscribers", lambda: ["b@y.com", "c@z.com"])
+    # env 먼저, CSV의 중복(b@y.com) 제거, 순서 유지
+    assert news.gather_subscribers() == ["a@x.com", "b@y.com", "c@z.com"]
+
+
+def test_run_uses_gather_subscribers_when_no_list(tmp_path, monkeypatch):
+    # subscribers=None이면 gather_subscribers 경로를 탄다.
+    dash = tmp_path / "dashboard"; dash.mkdir()
+    (dash / "2026-07-11.html").write_text(
+        '<html><head><link rel="stylesheet" href="style.css"></head><body>x</body></html>',
+        encoding="utf-8")
+    summ = tmp_path / "summarized" / "2026-07-11.json"
+    summ.parent.mkdir(parents=True, exist_ok=True)
+    summ.write_text("[]", encoding="utf-8")
+    state = tmp_path / "state" / "newsletter_state.json"
+    monkeypatch.setattr(news, "gather_subscribers", lambda: ["z@z.com"])
+    with patch("src.step7_subscriber_email._send_html_email") as send:
+        result = news.run(dash, summ, state, "2026-07-11", "https://site/")
+    send.assert_called_once()
+    assert send.call_args.args[0] == "z@z.com"
+    assert result["sent"] == 1

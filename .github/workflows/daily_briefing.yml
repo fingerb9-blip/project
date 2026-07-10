@@ -53,6 +53,8 @@ jobs:
           FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.force_run || 'false' }}
           SUBSCRIBERS: ${{ secrets.SUBSCRIBERS }}
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://fingerb9-blip.github.io/project/' }}
+          SUBSCRIBE_FORM_URL: ${{ secrets.SUBSCRIBE_FORM_URL }}
+          SUBSCRIBERS_CSV_URL: ${{ secrets.SUBSCRIBERS_CSV_URL }}
         run: python main.py
 
       - name: Commit state & archive
