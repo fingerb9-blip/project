@@ -17,6 +17,7 @@ def _seed_source_data(base_dir: Path, today: str) -> None:
         base_dir / "data" / "summarized" / f"{today}.json",
         [
             {
+                "id": "seed-a1",
                 "title": "삼성전자, 테스트 기사",
                 "url": "https://example.com/news/1",
                 "source": "디일렉",
@@ -59,6 +60,7 @@ def test_rebuild_all_falls_back_to_classified_when_summarized_missing(tmp_path):
         tmp_path / "data" / "classified" / "2026-07-09.json",
         [
             {
+                "id": "seed-a2",
                 "title": "SK하이닉스, 헤드라인만 남은 기사",
                 "url": "https://example.com/news/2",
                 "source": "디일렉",
@@ -66,6 +68,7 @@ def test_rebuild_all_falls_back_to_classified_when_summarized_missing(tmp_path):
                 "category": ["메모리"],
             },
             {
+                "id": "seed-a3",
                 "title": "제외된 기사",
                 "url": "https://example.com/news/3",
                 "source": "디일렉",

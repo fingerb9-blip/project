@@ -19,6 +19,7 @@ from src import (
     step4_summarize,
     step5_assemble,
     step6_send,
+    stock_fetch,
 )
 
 KST = timezone(timedelta(hours=9))
@@ -77,6 +78,18 @@ def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str, weekday: i
         notify.notify_warning("경쟁 구도 레이더 갱신 실패", f"{type(exc).__name__}: {exc}")
 
 
+def _update_stock_prices(stock_prices_path: Path) -> None:
+    """오늘의 시장 현황 패널의 주가 카드용 데이터를 갱신한다.
+
+    보조 데이터라 실패해도 파이프라인을 막지 않는다 — stock_fetch.run() 자체도
+    종목별로 실패를 흡수하지만, 파일 시스템 오류 등 예상 밖 실패까지 여기서 막아준다.
+    """
+    try:
+        stock_fetch.run(str(stock_prices_path))
+    except Exception as exc:
+        notify.notify_warning("주가 데이터 갱신 실패", f"{type(exc).__name__}: {exc}")
+
+
 def main() -> None:
     """오늘 날짜 기준으로 Step 0부터 Step 6까지 순차 실행한다."""
     load_dotenv()
@@ -122,6 +135,7 @@ def main() -> None:
         collection_stats = _compute_collection_stats(base_dir, config["feeds"], raw_articles, today)
         github_repo = os.environ.get("GITHUB_REPOSITORY")
         repo_url = f"https://github.com/{github_repo}" if github_repo else None
+        _update_stock_prices(paths["stock_prices"])
         step5_assemble.run(
             summarized_articles,
             pending_review,
@@ -133,6 +147,7 @@ def main() -> None:
             paths["issues"],
             radar_data=step5_assemble.load_latest_radar(base_dir / "data" / "radar"),
             repo_url=repo_url,
+            stock_prices_path=paths["stock_prices"],
         )
         steps_completed.append("assemble")
 

@@ -20,6 +20,7 @@ import yaml
 from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
+_NON_DATE_PAGE_STEMS = {"index", "archive", "scraps"}
 _CATEGORY_ORDER = ["메모리", "파운드리", "장비·소재", "팹리스·설계", "규제·정책"]
 _HIGHLIGHT_MAX_COUNT = 5
 _BADGE_CONFIRM_ICONS = {"ok": "✓", "obs": "○", "mut": "–"}
@@ -187,7 +188,7 @@ def _list_dashboard_dates(dashboard_dir: Path, include: str | None = None) -> li
         dashboard_dir: data/dashboard 디렉토리 경로
         include: 아직 파일로 쓰이지 않았더라도 목록에 포함할 날짜 (오늘 페이지 생성 시 사용)
     """
-    dates = {p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"}
+    dates = {p.stem for p in dashboard_dir.glob("*.html") if p.stem not in _NON_DATE_PAGE_STEMS}
     if include:
         dates.add(include)
     return sorted(dates, reverse=True)
@@ -284,6 +285,49 @@ document.querySelectorAll('.filter button').forEach(function(b){
 });
 var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
 var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
+
+var SCRAP_KEY='sb-scraps-v1', SCRAP_MAX=200;
+function loadScraps(){
+  try{ return JSON.parse(localStorage.getItem(SCRAP_KEY)||'[]'); }catch(e){ return []; }
+}
+function saveScraps(list){
+  try{ localStorage.setItem(SCRAP_KEY, JSON.stringify(list)); }catch(e){}
+}
+function toggleScrap(btn){
+  var id=btn.dataset.articleId;
+  var list=loadScraps();
+  var idx=list.findIndex(function(s){ return s.articleId===id; });
+  if(idx>-1){
+    list.splice(idx,1);
+    btn.textContent='☆ 스크랩';
+    btn.setAttribute('aria-pressed','false');
+  }else{
+    list.unshift({
+      articleId:id,
+      title:btn.dataset.title,
+      url:btn.dataset.url,
+      source:btn.dataset.source,
+      category:btn.dataset.category,
+      savedAt:new Date().toISOString()
+    });
+    if(list.length>SCRAP_MAX) list=list.slice(0,SCRAP_MAX);
+    btn.textContent='★ 스크랩';
+    btn.setAttribute('aria-pressed','true');
+  }
+  saveScraps(list);
+}
+(function(){
+  var saved=loadScraps();
+  var savedIds={};
+  saved.forEach(function(s){ savedIds[s.articleId]=true; });
+  document.querySelectorAll('.scrap-btn').forEach(function(btn){
+    if(savedIds[btn.dataset.articleId]){
+      btn.textContent='★ 스크랩';
+      btn.setAttribute('aria-pressed','true');
+    }
+    btn.addEventListener('click', function(){ toggleScrap(btn); });
+  });
+})();
 </script>
 """
 
@@ -302,6 +346,22 @@ def _noise_report_issue_url(article: dict, repo_url: str | None) -> str | None:
         {"title": f"[노이즈 신고] {article['title']}", "body": body, "labels": "noise-report"}
     )
     return f"{repo_url}/issues/new?{query}"
+
+
+def _scrap_button_html(article: dict) -> str:
+    """"☆ 스크랩" 토글 버튼. 클릭 시 클라이언트 스크립트(_DASHBOARD_SCRIPT)가 data-* 값을
+    그대로 브라우저 localStorage에 저장한다(로그인 없는 스크랩). article_id는 노이즈
+    신고(_noise_report_issue_url)와 동일한 article["id"]를 재사용해 두 기능의 기사 식별
+    키를 통일한다. repo_url 설정 여부와 무관하게 항상 렌더링된다.
+    """
+    article_categories = _split_categories(article.get("category") or [])
+    safe_url = _safe_url(article["url"]) or ""
+    return (
+        '<button type="button" class="scrap-btn" aria-pressed="false" aria-label="스크랩" '
+        f'data-article-id="{_esc(article["id"])}" data-title="{_esc(article["title"])}" '
+        f'data-url="{safe_url}" data-source="{_esc(article["source"])}" '
+        f'data-category="{_esc(" ".join(article_categories))}">☆ 스크랩</button>'
+    )
 
 
 def _build_article_card(article: dict, repo_url: str | None = None) -> str:
@@ -362,6 +422,7 @@ def _build_article_card(article: dict, repo_url: str | None = None) -> str:
     parts.append('<div class="cardfoot">')
     if safe_url:
         parts.append(f'<a href="{safe_url}">원문 보기 ↗</a>')
+    parts.append(_scrap_button_html(article))
     issue_url = _noise_report_issue_url(article, repo_url)
     if issue_url:
         safe_issue_url = html.escape(issue_url, quote=True)
@@ -479,6 +540,114 @@ def _build_highlight_strip(articles: list[dict]) -> str:
     return "".join(parts)
 
 
+def _build_stat_chip(label: str, count: int, *, warn: bool = False) -> str:
+    css_class = "chip warn" if warn else "chip"
+    return f'<span class="{css_class}">{_esc(label)} {count}</span>'
+
+
+def _stock_chart_svg(closes: list[float], *, up: bool, width: int = 200, height: int = 48) -> str:
+    """종가 리스트를 인라인 SVG 라인 차트로 그린다. 점이 2개 미만이면 그릴 수 없어 빈 문자열을 반환한다."""
+    if len(closes) < 2:
+        return ""
+    low, high = min(closes), max(closes)
+    span = high - low or 1.0
+    step = width / (len(closes) - 1)
+    points = " ".join(
+        f"{i * step:.1f},{height - (c - low) / span * height:.1f}" for i, c in enumerate(closes)
+    )
+    color = "var(--up)" if up else "var(--down)"
+    return (
+        f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
+        f'class="stock-spark" role="img" aria-hidden="true">'
+        f'<polyline points="{points}" fill="none" stroke="{color}" stroke-width="2" '
+        'stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    )
+
+
+def _build_stock_card(name: str, history: list[dict]) -> str:
+    """주가 히스토리 하나를 종목명 + 최신가 + 등락률 + 스파크라인 카드로 렌더링한다.
+    history가 비어 있으면 표시할 게 없어 빈 문자열을 반환한다.
+    """
+    if not history:
+        return ""
+    closes = [h["close"] for h in history]
+    latest, first = closes[-1], closes[0]
+    change_pct = (latest - first) / first * 100 if first else 0.0
+    up = change_pct >= 0
+    sign = "+" if up else ""
+    trend_class = "up" if up else "down"
+
+    return (
+        '<div class="stock-card">'
+        f'<div class="row"><span class="stock-name">{_esc(name)}</span><span class="spacer"></span>'
+        f'<span class="stock-price">{latest:,.0f}</span></div>'
+        f"{_stock_chart_svg(closes, up=up)}"
+        f'<p class="stock-change {trend_class}">{sign}{change_pct:.1f}%</p>'
+        "</div>"
+    )
+
+
+def _build_market_snapshot_html(
+    summarized_articles: list[dict],
+    pending_review_articles: list[dict],
+    collection_stats: dict,
+    active_issues: list[dict] | None,
+    stock_data: dict[str, list[dict]] | None,
+) -> str:
+    """"오늘의 시장 현황" 패널 — 핵심/확인 필요 건수, 확정·관측 비율, 카테고리별 건수,
+    진행 중 이슈 건수, 수집 경고 소스 건수를 통계 칩 한 줄로, 주가 추이를 카드로 보여준다.
+    기사 데이터·통계·이미 저장된 주가 데이터만 사용하며 네트워크 호출은 하지 않는다.
+    """
+    chips = [
+        _build_stat_chip("핵심", len(summarized_articles)),
+        _build_stat_chip("확인 필요", len(pending_review_articles)),
+    ]
+
+    confirmed = sum(
+        1 for a in summarized_articles
+        if not a.get("summary_fallback") and "확정" in (a.get("confirmation_tag") or "")
+    )
+    observed = sum(
+        1 for a in summarized_articles
+        if not a.get("summary_fallback") and "관측" in (a.get("confirmation_tag") or "")
+    )
+    chips.append(_build_stat_chip("확정", confirmed))
+    chips.append(_build_stat_chip("관측", observed))
+
+    category_counts: dict[str, int] = {}
+    for article in summarized_articles:
+        for category in _split_categories(article.get("category") or []):
+            category_counts[category] = category_counts.get(category, 0) + 1
+    for category in _ordered_categories(summarized_articles):
+        chips.append(_build_stat_chip(category, category_counts.get(category, 0)))
+
+    if active_issues:
+        chips.append(_build_stat_chip("진행 중 이슈", len(active_issues)))
+
+    warn_count = sum(
+        1 for stats in collection_stats.values()
+        if stats.get("avg7d", 0) > 0 and stats.get("today", 0) < stats.get("avg7d", 0) * 0.3
+    )
+    if warn_count:
+        chips.append(_build_stat_chip("수집 경고", warn_count, warn=True))
+
+    parts = ['<section class="snapshot">', '<h2 class="sec">오늘의 시장 현황</h2>']
+    parts.append('<div class="snapshot-chips">')
+    parts.extend(chips)
+    parts.append("</div>")
+
+    if stock_data:
+        stock_cards = [_build_stock_card(name, history) for name, history in stock_data.items()]
+        stock_cards = [card for card in stock_cards if card]
+        if stock_cards:
+            parts.append('<div class="stock-cards">')
+            parts.extend(stock_cards)
+            parts.append("</div>")
+
+    parts.append("</section>")
+    return "".join(parts)
+
+
 def build_dashboard_html(
     summarized_articles: list[dict],
     pending_review_articles: list[dict],
@@ -488,6 +657,7 @@ def build_dashboard_html(
     active_issues: list[dict] | None = None,
     updated_at: str | None = None,
     repo_url: str | None = None,
+    stock_data: dict[str, list[dict]] | None = None,
 ) -> str:
     """헤더(브랜드+검색) -> pill 필터 -> 오늘의 핵심(뉴스 카드) -> 확인 필요 -> 수집 상태 ->
     진행 중 이슈 순으로 데일리 대시보드 페이지를 만든다 (§5-2 레이아웃, SAVE 스타일).
@@ -521,9 +691,13 @@ def build_dashboard_html(
         _build_appbar(),
         _build_search_bar(),
         '<p class="row"><a href="index.html">&larr; 전체 목록</a>'
+        '<a href="scraps.html">★ 스크랩</a>'
         '<span class="spacer"></span>'
         + _build_date_select(all_dates, target_date)
         + "</p>",
+        _build_market_snapshot_html(
+            summarized_articles, pending_review_articles, collection_stats, active_issues, stock_data
+        ),
     ]
 
     categories = _ordered_categories(summarized_articles)
@@ -635,7 +809,8 @@ def build_alert_detail_html(issue: dict) -> str:
         '<link rel="stylesheet" href="../style.css">',
         "</head><body>",
         _build_appbar(),
-        '<p><a href="../index.html">&larr; 전체 목록</a></p>',
+        '<p class="row"><a href="../index.html">&larr; 전체 목록</a>'
+        '<span class="spacer"></span><a href="../scraps.html">★ 스크랩</a></p>',
         '<article class="card">',
         f'<div class="row"><span class="chip">{_esc(issue.get("entity", ""))}</span></div>',
         f"<p class=\"title\">🚨 {_esc(issue.get('tag', ''))} {_esc(title)}</p>",
@@ -687,7 +862,7 @@ def build_archive_html(dashboard_dir: Path) -> str:
         단일 HTML 문서 문자열
     """
     dates = sorted(
-        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in ("index", "archive")),
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in _NON_DATE_PAGE_STEMS),
         reverse=True,
     )
 
@@ -704,7 +879,8 @@ def build_archive_html(dashboard_dir: Path) -> str:
         "</head><body>",
         _build_appbar(),
         _build_search_bar(),
-        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>',
+        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a>'
+        '<span class="spacer"></span><a href="scraps.html">★ 스크랩</a></p>',
     ]
 
     if not by_month:
@@ -1014,6 +1190,156 @@ def _load_latest_trend_articles(
     return []
 
 
+_SCRAPS_SCRIPT = """\
+<script>
+(function(){
+  var listEl=document.getElementById('scrap-list');
+  var emptyEl=document.getElementById('scrap-empty');
+  var catSel=document.getElementById('scrap-filter-category');
+  var srcSel=document.getElementById('scrap-filter-source');
+  var clearBtn=document.getElementById('scrap-clear-all');
+  if(!listEl) return;
+
+  function safeUrlOrNull(url){
+    try{
+      var u=new URL(url, location.href);
+      return (u.protocol==='http:'||u.protocol==='https:')?url:null;
+    }catch(e){ return null; }
+  }
+
+  function fillOptions(select, values){
+    if(!select) return;
+    var current=select.value;
+    Array.prototype.slice.call(select.options).forEach(function(o){
+      if(o.value!=='all'&&values.indexOf(o.value)===-1) o.remove();
+    });
+    values.forEach(function(v){
+      if(!Array.prototype.some.call(select.options, function(o){ return o.value===v; })){
+        var opt=document.createElement('option'); opt.value=v; opt.textContent=v; select.appendChild(opt);
+      }
+    });
+    if(Array.prototype.some.call(select.options, function(o){ return o.value===current; })) select.value=current;
+  }
+
+  function buildScrapCard(s){
+    var art=document.createElement('article'); art.className='card';
+    var row=document.createElement('div'); row.className='row';
+    var badge=document.createElement('span'); badge.className='badge'; badge.textContent=s.source||'';
+    row.appendChild(badge);
+    (s.category||'').split(' ').filter(Boolean).forEach(function(c){
+      var chip=document.createElement('span'); chip.className='badge-category'; chip.textContent=c;
+      row.appendChild(chip);
+    });
+    var spacer=document.createElement('span'); spacer.className='spacer'; row.appendChild(spacer);
+    var del=document.createElement('button');
+    del.type='button'; del.className='noise-btn'; del.textContent='삭제'; del.dataset.remove=s.articleId;
+    row.appendChild(del);
+    art.appendChild(row);
+
+    var titleEl=document.createElement('p'); titleEl.className='title';
+    var safe=safeUrlOrNull(s.url);
+    if(safe){
+      var a=document.createElement('a'); a.href=safe; a.textContent=s.title||'';
+      titleEl.appendChild(a);
+    }else{
+      titleEl.textContent=s.title||'';
+    }
+    art.appendChild(titleEl);
+    return art;
+  }
+
+  function render(){
+    var list=loadScraps();
+    if(list.length===0){
+      listEl.innerHTML='';
+      if(emptyEl) emptyEl.hidden=false;
+      return;
+    }
+    if(emptyEl) emptyEl.hidden=true;
+
+    var cats={}, srcs={};
+    list.forEach(function(s){
+      (s.category||'').split(' ').filter(Boolean).forEach(function(c){ cats[c]=true; });
+      if(s.source) srcs[s.source]=true;
+    });
+    fillOptions(catSel, Object.keys(cats).sort());
+    fillOptions(srcSel, Object.keys(srcs).sort());
+
+    var catFilter=catSel?catSel.value:'all';
+    var srcFilter=srcSel?srcSel.value:'all';
+    var filtered=list.filter(function(s){
+      var okCat=catFilter==='all'||(s.category||'').split(' ').indexOf(catFilter)>-1;
+      var okSrc=srcFilter==='all'||s.source===srcFilter;
+      return okCat&&okSrc;
+    });
+
+    listEl.innerHTML='';
+    if(filtered.length===0){
+      var msg=document.createElement('p'); msg.className='summary'; msg.textContent='조건에 맞는 스크랩이 없습니다.';
+      listEl.appendChild(msg);
+      return;
+    }
+    filtered.forEach(function(s){ listEl.appendChild(buildScrapCard(s)); });
+  }
+
+  listEl.addEventListener('click', function(e){
+    var id=e.target && e.target.dataset ? e.target.dataset.remove : null;
+    if(!id) return;
+    saveScraps(loadScraps().filter(function(s){ return s.articleId!==id; }));
+    render();
+  });
+  if(clearBtn) clearBtn.addEventListener('click', function(){
+    if(confirm('스크랩한 기사를 모두 삭제할까요?')){ saveScraps([]); render(); }
+  });
+  if(catSel) catSel.addEventListener('change', render);
+  if(srcSel) srcSel.addEventListener('change', render);
+
+  render();
+})();
+</script>
+"""
+
+
+def build_scraps_html() -> str:
+    """로그인 없는 브라우저 localStorage 기반 "내 스크랩" 페이지를 만든다.
+
+    기사 데이터는 서버에서 전달하지 않는다 — 각 대시보드 페이지의 "☆ 스크랩" 버튼이
+    _DASHBOARD_SCRIPT를 통해 localStorage에 저장한 항목을, 이 페이지의 _SCRAPS_SCRIPT가
+    읽어 렌더링한다. 그래서 날짜와 무관한 고정 페이지이며 run()이 매 실행마다 새로 쓴다.
+
+    Returns:
+        단일 HTML 문서 문자열
+    """
+    parts = [
+        "<!doctype html>",
+        '<html lang="ko"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        "<title>내 스크랩 - 반도체 뉴스 브리핑</title>",
+        '<link rel="stylesheet" href="style.css">',
+        "</head><body>",
+        _build_appbar(),
+        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>',
+        '<div class="row scrap-toolbar">',
+        '<h2 class="sec" style="margin:0">내 스크랩</h2>',
+        '<span class="spacer"></span>',
+        '<select id="scrap-filter-category" aria-label="카테고리 필터"><option value="all">전체 카테고리</option></select>',
+        '<select id="scrap-filter-source" aria-label="소스 필터"><option value="all">전체 소스</option></select>',
+        '<button type="button" id="scrap-clear-all" class="noise-btn">전체 삭제</button>',
+        "</div>",
+        '<div id="scrap-list"></div>',
+        '<div id="scrap-empty" class="card" hidden>'
+        '<p class="summary">아직 스크랩한 기사가 없습니다.</p>'
+        '<p><a href="index.html">최신 리포트로 돌아가기</a></p>'
+        "</div>",
+        '<p class="scrap-disclaimer">이 기능은 현재 브라우저에만 저장되며, 캐시 삭제 시 사라질 수 있습니다.</p>',
+        _SITE_FOOTER,
+        _DASHBOARD_SCRIPT,
+        _SCRAPS_SCRIPT,
+        "</body></html>",
+    ]
+    return "\n".join(parts)
+
+
 def build_index_html(
     dashboard_dir: Path,
     state_path: Path,
@@ -1047,7 +1373,7 @@ def build_index_html(
     del latest_core_count, latest_headlines  # v2 히어로는 상태 문구만 표시 (§4-7)
 
     dates = sorted(
-        (p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"),
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in _NON_DATE_PAGE_STEMS),
         reverse=True,
     )
 
@@ -1071,6 +1397,7 @@ def build_index_html(
         "</head><body>",
         _build_appbar(),
         _build_search_bar(),
+        '<p class="row"><a href="scraps.html">★ 스크랩</a></p>',
     ]
 
     if radar_data:
@@ -1127,6 +1454,7 @@ _DASHBOARD_CSS = """\
   --paper:#F5F6F8; --surface:#FFF; --ink:#1A1D24; --ink-soft:#8A909C; --line:#ECEEF2;
   --brand:#6C5CE7; --brand-2:#8E7DF5; --action:#3D6FE6; --pill-active:#14161B;
   --confirmed:#2E9E5B; --observed:#C9821A; --muted:#6B7280; --warn-bg:#FFF6E5; --warn-line:#F0C36D;
+  --up:#2E9E5B; --down:#C23B3B;
   --font-sans:"Pretendard",-apple-system,"Segoe UI","Apple SD Gothic Neo",sans-serif;
 }
 *{box-sizing:border-box}
@@ -1259,6 +1587,29 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .tbar .fill{display:block;height:100%;border-radius:999px}
 .tbar .p{flex:0 0 42px;text-align:right;font-size:.8rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 @media(max-width:480px){.trend-body{flex-direction:column;align-items:stretch}.trend-donut{align-self:center}}
+
+/* 오늘의 시장 현황 */
+.snapshot{margin:0 0 4px}
+.snapshot-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.chip.warn{background:var(--warn-bg);border-color:var(--warn-line);color:#8A5A10}
+.stock-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 0 14px}
+.stock-card{flex:0 0 160px;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:12px 14px}
+.stock-name{font-size:.82rem;font-weight:600;color:var(--ink)}
+.stock-price{font-size:.86rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stock-spark{display:block;margin:6px 0}
+.stock-change{margin:0;font-size:.82rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stock-change.up{color:var(--up)}
+.stock-change.down{color:var(--down)}
+
+/* 스크랩 (로그인 없는 localStorage 즐겨찾기) */
+.scrap-btn{font-family:inherit;font-size:.76rem;color:var(--ink-soft);background:transparent;
+  border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+.scrap-btn[aria-pressed="true"]{color:#8A6A00;border-color:#E8C766;background:#FFF8E6}
+.scrap-toolbar{flex-wrap:wrap;gap:8px;margin:.6rem 0 1rem}
+.scrap-toolbar select{font-family:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+.scrap-disclaimer{margin:1.4rem 0 0;font-size:.78rem;color:var(--ink-soft)}
 """
 
 
@@ -1273,6 +1624,7 @@ def run(
     issues_path: str | None = None,
     radar_data: dict | None = None,
     repo_url: str | None = None,
+    stock_prices_path: str | None = None,
 ) -> str:
     """Step 5 진입점. 마크다운 아카이브와 HTML 대시보드를 함께 생성한다.
 
@@ -1287,10 +1639,17 @@ def run(
         issues_path: data/state/issues.json 경로 (진행 중 이슈 타임라인·속보 배너용, Phase 3, 선택)
         radar_data: 경쟁 구도 레이더 주간 데이터 (Phase 4, 선택). index.html 상단 섹션에 포함된다.
         repo_url: GitHub 리포지토리 URL (노이즈 신고 버튼용, 선택)
+        stock_prices_path: data/state/stock_prices.json 경로 (오늘의 시장 현황 주가 카드용, 선택).
+            stock_fetch.py가 미리 저장해 둔 데이터만 읽으며 여기서 네트워크 호출은 하지 않는다.
 
     Returns:
         생성된 브리핑 마크다운 문서 문자열 (archive_path에도 저장)
     """
+    stock_data = None
+    if stock_prices_path is not None and Path(stock_prices_path).exists():
+        with Path(stock_prices_path).open(encoding="utf-8") as f:
+            stock_data = json.load(f)
+
     active_issues = []
     if issues_path is not None:
         active_issues = [
@@ -1319,6 +1678,7 @@ def run(
         all_dates=all_dates,
         active_issues=active_issues,
         repo_url=repo_url,
+        stock_data=stock_data,
     )
     (dashboard_dir / f"{today}.html").write_text(dashboard_html, encoding="utf-8")
 
@@ -1334,5 +1694,7 @@ def run(
 
     archive_html = build_archive_html(dashboard_dir)
     (dashboard_dir / "archive.html").write_text(archive_html, encoding="utf-8")
+
+    (dashboard_dir / "scraps.html").write_text(build_scraps_html(), encoding="utf-8")
 
     return briefing

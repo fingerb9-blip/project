@@ -1037,3 +1037,267 @@ def test_run_writes_archive_html(tmp_path):
     archive_html_path = dashboard_dir / "archive.html"
     assert archive_html_path.exists()
     assert "2026년 7월" in archive_html_path.read_text(encoding="utf-8")
+
+
+# --- 오늘의 시장 현황 패널 ---
+
+
+def test_build_market_snapshot_html_shows_core_and_pending_counts():
+    core = _sample_article()
+    pending = _sample_article(id="p1", title="확인 필요 기사")
+    html_out = step5_assemble._build_market_snapshot_html([core], [pending], {}, None, None)
+    assert "핵심 1" in html_out
+    assert "확인 필요 1" in html_out
+
+
+def test_build_market_snapshot_html_shows_confirmed_and_observed_counts():
+    confirmed = _sample_article(id="a1", confirmation_tag="[확정]")
+    observed = _sample_article(id="a2", confirmation_tag="[관측]")
+    html_out = step5_assemble._build_market_snapshot_html([confirmed, observed], [], {}, None, None)
+    assert "확정 1" in html_out
+    assert "관측 1" in html_out
+
+
+def test_build_market_snapshot_html_shows_category_counts():
+    articles = [
+        _sample_article(id="a1", category=["메모리"]),
+        _sample_article(id="a2", category=["메모리"]),
+        _sample_article(id="a3", category=["파운드리"]),
+    ]
+    html_out = step5_assemble._build_market_snapshot_html(articles, [], {}, None, None)
+    assert "메모리 2" in html_out
+    assert "파운드리 1" in html_out
+
+
+def test_build_market_snapshot_html_shows_issue_count_when_present():
+    issue = _sample_issue()
+    html_out = step5_assemble._build_market_snapshot_html([], [], {}, [issue], None)
+    assert "진행 중 이슈 1" in html_out
+
+
+def test_build_market_snapshot_html_omits_issue_chip_when_no_active_issues():
+    html_out = step5_assemble._build_market_snapshot_html([], [], {}, [], None)
+    assert "진행 중 이슈" not in html_out
+
+
+def test_build_market_snapshot_html_flags_warn_source_count():
+    stats = {"디일렉": {"today": 1, "avg7d": 10.0}, "EE Times": {"today": 5, "avg7d": 5.0}}
+    html_out = step5_assemble._build_market_snapshot_html([], [], stats, None, None)
+    assert "수집 경고 1" in html_out
+    assert 'class="chip warn"' in html_out
+
+
+def test_build_market_snapshot_html_omits_warn_chip_when_no_low_sources():
+    stats = {"디일렉": {"today": 10, "avg7d": 10.0}}
+    html_out = step5_assemble._build_market_snapshot_html([], [], stats, None, None)
+    assert "수집 경고" not in html_out
+
+
+def test_build_dashboard_html_includes_market_snapshot_before_filter_bar():
+    article = _sample_article(category=["메모리"])
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    snapshot_pos = html_out.index("오늘의 시장 현황")
+    filter_pos = html_out.index('class="filter"')
+    assert snapshot_pos < filter_pos
+
+
+def test_stock_chart_svg_returns_polyline_for_multiple_points():
+    svg = step5_assemble._stock_chart_svg([100.0, 105.0, 98.0, 110.0], up=True)
+    assert "<polyline" in svg
+    assert "<svg" in svg
+
+
+def test_stock_chart_svg_empty_for_insufficient_data():
+    assert step5_assemble._stock_chart_svg([100.0], up=True) == ""
+    assert step5_assemble._stock_chart_svg([], up=True) == ""
+
+
+def test_build_stock_card_shows_name_price_and_change():
+    history = [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]
+    html_out = step5_assemble._build_stock_card("삼성전자", history)
+    assert "삼성전자" in html_out
+    assert "72,000" in html_out
+    assert "+2.9%" in html_out
+
+
+def test_build_stock_card_up_and_down_classes():
+    up_history = [{"date": "2026-07-01", "close": 100.0}, {"date": "2026-07-09", "close": 110.0}]
+    down_history = [{"date": "2026-07-01", "close": 100.0}, {"date": "2026-07-09", "close": 90.0}]
+    up_html = step5_assemble._build_stock_card("삼성전자", up_history)
+    down_html = step5_assemble._build_stock_card("SK하이닉스", down_history)
+    assert 'class="stock-change up"' in up_html
+    assert 'class="stock-change down"' in down_html
+
+
+def test_build_stock_card_empty_when_no_history():
+    assert step5_assemble._build_stock_card("삼성전자", []) == ""
+
+
+def test_build_market_snapshot_html_includes_stock_cards_when_data_present():
+    stock_data = {"삼성전자": [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]}
+    html_out = step5_assemble._build_market_snapshot_html([], [], {}, None, stock_data)
+    assert "삼성전자" in html_out
+    assert 'class="stock-card"' in html_out
+
+
+def test_build_market_snapshot_html_omits_stock_section_when_no_data():
+    html_out = step5_assemble._build_market_snapshot_html([], [], {}, None, None)
+    assert 'class="stock-card"' not in html_out
+
+
+def test_build_dashboard_html_passes_stock_data_through():
+    stock_data = {"삼성전자": [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]}
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08", stock_data=stock_data)
+    assert 'class="stock-card"' in html_out
+
+
+def test_run_loads_stock_prices_from_state_path(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+    stock_path = tmp_path / "stock_prices.json"
+    stock_path.write_text(
+        json.dumps({"삼성전자": [{"date": "2026-07-01", "close": 70000.0}, {"date": "2026-07-09", "close": 72000.0}]}),
+        encoding="utf-8",
+    )
+
+    step5_assemble.run(
+        [_sample_article()],
+        [],
+        {},
+        str(archive_path),
+        str(dashboard_dir),
+        "2026-07-08",
+        str(state_path),
+        stock_prices_path=str(stock_path),
+    )
+
+    dashboard_html = (dashboard_dir / "2026-07-08.html").read_text(encoding="utf-8")
+    assert 'class="stock-card"' in dashboard_html
+
+
+# --- 로그인 없는 스크랩 기능 ---
+
+
+def test_build_article_card_includes_scrap_button_with_article_data():
+    article = _sample_article(
+        id="art1", title="삼성전자 HBM4 공개", url="https://example.com/a",
+        source="디일렉", category=["메모리"],
+    )
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert 'class="scrap-btn"' in html_out
+    assert 'data-article-id="art1"' in html_out
+    assert 'data-title="삼성전자 HBM4 공개"' in html_out
+    assert 'data-url="https://example.com/a"' in html_out
+    assert 'data-source="디일렉"' in html_out
+    assert 'data-category="메모리"' in html_out
+    assert "☆ 스크랩" in html_out
+
+
+def test_build_article_card_scrap_button_escapes_title():
+    article = _sample_article(id="art1", title="<script>alert(1)</script>")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert "<script>alert(1)</script>" not in html_out
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html_out
+
+
+def test_build_article_card_scrap_button_present_without_repo_url():
+    """노이즈 신고 버튼은 repo_url이 없으면 안 뜨지만, 스크랩 버튼은 항상 뜬다."""
+    article = _sample_article(id="art1")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert "노이즈로 표시" not in html_out
+    assert 'class="scrap-btn"' in html_out
+
+
+def test_build_dashboard_html_includes_scrap_nav_link():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert 'href="scraps.html"' in html_out
+
+
+def test_build_index_html_includes_scrap_nav_link(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+    assert 'href="scraps.html"' in html_out
+
+
+def test_build_archive_html_includes_scrap_nav_link(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+    assert 'href="scraps.html"' in html_out
+
+
+def test_build_alert_detail_html_includes_scrap_nav_link():
+    issue = _sample_issue()
+    html_out = step5_assemble.build_alert_detail_html(issue)
+    assert 'href="../scraps.html"' in html_out
+
+
+def test_build_scraps_html_includes_appbar_search_and_footer_disclaimer():
+    html_out = step5_assemble.build_scraps_html()
+    assert 'class="brand"' in html_out
+    assert "이 기능은 현재 브라우저에만 저장되며, 캐시 삭제 시 사라질 수 있습니다" in html_out
+
+
+def test_build_scraps_html_includes_filter_controls_and_clear_all():
+    html_out = step5_assemble.build_scraps_html()
+    assert 'id="scrap-filter-category"' in html_out
+    assert 'id="scrap-filter-source"' in html_out
+    assert 'id="scrap-clear-all"' in html_out
+
+
+def test_build_scraps_html_includes_list_container_and_empty_state():
+    html_out = step5_assemble.build_scraps_html()
+    assert 'id="scrap-list"' in html_out
+    assert 'id="scrap-empty"' in html_out
+    assert "아직 스크랩한 기사가 없습니다" in html_out
+    assert 'href="index.html"' in html_out
+
+
+def test_run_writes_scraps_html(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    step5_assemble.run(
+        [_sample_article()], [], {}, str(archive_path), str(dashboard_dir), "2026-07-08", str(state_path),
+    )
+
+    assert (dashboard_dir / "scraps.html").exists()
+
+
+def test_build_index_html_ignores_archive_and_scraps_as_dates(tmp_path):
+    """archive.html/scraps.html은 날짜별 페이지가 아니다 — dates 목록에 끼어들면
+    _korean_date_title()이 "archive"/"scraps"를 날짜로 파싱하다 크래시한다."""
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "archive.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "scraps.html").write_text("<html></html>", encoding="utf-8")
+
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+
+    assert "2026-07-08" in html_out
+    assert "2026년 7월 8일" in html_out
+
+
+def test_build_dashboard_html_date_select_excludes_archive_and_scraps(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "archive.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "scraps.html").write_text("<html></html>", encoding="utf-8")
+
+    dates = step5_assemble._list_dashboard_dates(dashboard_dir)
+
+    assert dates == ["2026-07-08"]
+
+
+def test_dashboard_script_defines_scrap_storage_key_and_cap():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert "localStorage" in html_out
+    assert "SCRAP_MAX" in html_out
+    assert "200" in html_out

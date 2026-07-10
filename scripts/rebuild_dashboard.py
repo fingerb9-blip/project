@@ -57,6 +57,7 @@ def _reconstruct_from_classified(classified: list[dict]) -> list[dict]:
     """
     return [
         {
+            "id": article["id"],
             "title": article["title"],
             "url": article["url"],
             "source": article["source"],
@@ -206,7 +207,8 @@ def rebuild_style_and_index(base_dir: Path) -> None:
     (dashboard_dir / "style.css").write_text(step5_assemble._DASHBOARD_CSS, encoding="utf-8")
 
     dates = sorted(
-        (p.stem for p in dashboard_dir.glob("*.html") if p.stem != "index"), reverse=True
+        (p.stem for p in dashboard_dir.glob("*.html") if p.stem not in step5_assemble._NON_DATE_PAGE_STEMS),
+        reverse=True,
     )
     latest_core_count = None
     latest_headlines = None
@@ -224,6 +226,7 @@ def rebuild_style_and_index(base_dir: Path) -> None:
         latest_headlines=latest_headlines,
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
+    (dashboard_dir / "scraps.html").write_text(step5_assemble.build_scraps_html(), encoding="utf-8")
 
 
 def main() -> None:
