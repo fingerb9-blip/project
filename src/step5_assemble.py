@@ -283,6 +283,7 @@ def _build_filter_bar(categories: list[str]) -> str:
 
 _DASHBOARD_SCRIPT = """\
 <script>
+function isNoised(id){return !!(id&&localStorage.getItem('noise:'+id));}
 function applyFilters(){
   var q=(document.getElementById('q')||{}).value||'';
   q=q.trim().toLowerCase();
@@ -294,7 +295,14 @@ function applyFilters(){
     var okQ=!q||((c.dataset.text||'').indexOf(q)>-1);
     var t=c.dataset.sourceType;
     var okDeep=!deepOnly||(t==='학회');
-    c.style.display=(okCat&&okQ&&okDeep)?'':'none';
+    var okNoise=!isNoised(c.dataset.articleId);
+    c.style.display=(okCat&&okQ&&okDeep&&okNoise)?'':'none';
+  });
+}
+function applyNoise(){
+  // '오늘의 핵심' 하이라이트 카드는 #feed 밖이라 applyFilters가 건드리지 않으므로 따로 숨긴다.
+  document.querySelectorAll('.highlight-card').forEach(function(c){
+    if(isNoised(c.dataset.articleId)) c.style.display='none';
   });
 }
 document.querySelectorAll('.filter button').forEach(function(b){
@@ -306,14 +314,15 @@ document.querySelectorAll('.filter button').forEach(function(b){
 var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
 var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
 document.querySelectorAll('.noise-btn').forEach(function(b){
-  var id=b.dataset.articleId;
-  if(id&&localStorage.getItem('noise:'+id)){b.hidden=true;return;}
   b.addEventListener('click',function(){
+    var id=b.dataset.articleId;
     if(id) localStorage.setItem('noise:'+id,'1');
-    b.hidden=true;
-    if(b.nextElementSibling) b.nextElementSibling.hidden=false;
+    applyFilters();
+    applyNoise();
   });
 });
+applyFilters();
+applyNoise();
 </script>
 """
 
@@ -352,7 +361,8 @@ def _build_article_card(article: dict) -> str:
     ).lower()
 
     parts = [
-        f'<article class="card" data-categories="{cats_attr}" data-text="{_esc(search_text)}" '
+        f'<article class="card" data-article-id="{_esc(article.get("id", ""))}" '
+        f'data-categories="{cats_attr}" data-text="{_esc(search_text)}" '
         f'data-source-type="{_esc(source_type)}">'
     ]
     parts.append('<div class="row">')
@@ -387,8 +397,7 @@ def _build_article_card(article: dict) -> str:
         parts.append(f'<a href="{safe_url}">원문 보기 ↗</a>')
     parts.append(
         f'<button type="button" class="noise-btn" data-article-id="{_esc(article.get("id", ""))}">'
-        "노이즈로 표시</button> "
-        '<span class="toast" hidden>제외 대상으로 표시했습니다</span>'
+        "노이즈로 표시</button>"
     )
     parts.append("</div>")
     parts.append("</article>")
@@ -485,7 +494,7 @@ def _build_highlight_card(article: dict) -> str:
     else:
         confirm_class = "mut"
 
-    parts = ['<article class="highlight-card">']
+    parts = [f'<article class="highlight-card" data-article-id="{_esc(article.get("id", ""))}">']
     parts.append('<div class="row">')
     if tag:
         icon = _BADGE_CONFIRM_ICONS[confirm_class]

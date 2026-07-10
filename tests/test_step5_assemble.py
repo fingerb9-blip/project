@@ -648,6 +648,33 @@ def test_build_dashboard_html_noise_button_escapes_article_id():
     assert "<script>x</script>" not in html_out
 
 
+def test_article_card_carries_article_id_for_local_hiding():
+    # 카드 숨김은 카드 요소의 data-article-id를 보고 판단하므로 카드에 id가 있어야 한다.
+    article = _sample_article(id="art1")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert '<article class="card" data-article-id="art1"' in html_out
+
+
+def test_highlight_card_carries_article_id_for_local_hiding():
+    # 같은 기사가 '오늘의 핵심'에도 있으면 거기서도 숨겨야 하므로 하이라이트 카드에도 id가 필요.
+    article = _sample_article(id="art1")
+    html_out = step5_assemble.build_dashboard_html([article], [], {}, "2026-07-08")
+    assert '<article class="highlight-card" data-article-id="art1"' in html_out
+
+
+def test_dashboard_script_hides_noised_cards_locally_on_load():
+    """노이즈로 표시하면 버튼만 감추던 예전 동작 대신, 카드 자체를 숨기고 새로고침 후에도
+    유지한다(순수 로컬). 필터/검색과 충돌하지 않도록 applyFilters가 노이즈를 반영하고
+    로드 시 한 번 실행돼야 한다."""
+    html_out = step5_assemble.build_dashboard_html([_sample_article(id="art1")], [], {}, "2026-07-08")
+    # 노이즈 플래그가 카드 표시 여부에 반영된다.
+    assert "noise:" in html_out
+    # 예전의 토스트 노출(형제 요소 표시) 동작은 사라졌다.
+    assert "nextElementSibling" not in html_out
+    # 로드 시 필터/노이즈 상태를 즉시 적용한다.
+    assert "applyNoise" in html_out
+
+
 def test_load_pending_keywords_returns_empty_when_missing(tmp_path):
     assert step5_assemble.load_pending_keywords(tmp_path / "missing.yaml") == []
 
