@@ -21,6 +21,83 @@ def _summarized_article(**overrides):
     return article
 
 
+def _issue(**overrides):
+    issue = {
+        "issue_id": "id1", "entity": "SK하이닉스", "title": "SK하이닉스 나스닥 ADR 상장",
+        "first_seen": "2026-07-10", "last_updated": "2026-07-10", "status": "진행중",
+        "related_article_ids": ["a1"],
+    }
+    issue.update(overrides)
+    return issue
+
+
+def test_consolidate_merges_same_event_fragments():
+    # 같은 사건(같은 기업 + 제목 유사)이 여러 이슈로 쪼개진 것을 하나로 합친다.
+    issues = [
+        _issue(issue_id="i1", title="SK하이닉스 나스닥 ADR 상장…40조 실탄 확보",
+               first_seen="2026-07-09", last_updated="2026-07-09", related_article_ids=["a1", "a2"]),
+        _issue(issue_id="i2", title="SK하이닉스 나스닥 ADR 상장 흥행", related_article_ids=["a3"]),
+        _issue(issue_id="i3", title="SK하이닉스 나스닥 ADR 공모가 확정", related_article_ids=["a4"]),
+    ]
+
+    result = issue_match.consolidate_issues(issues, "2026-07-10")
+
+    assert len(result) == 1
+    merged = result[0]
+    assert set(merged["related_article_ids"]) == {"a1", "a2", "a3", "a4"}
+    assert merged["first_seen"] == "2026-07-09"  # 최초 감지일 보존
+    assert merged["last_updated"] == "2026-07-10"
+
+
+def test_consolidate_keeps_distinct_events_separate():
+    # 같은 기업이라도 다른 사건(제목 유사도 낮음)은 합치지 않는다.
+    issues = [
+        _issue(issue_id="i1", title="SK하이닉스 나스닥 ADR 상장 40조"),
+        _issue(issue_id="i2", title="SK하이닉스 충북 SR 포럼 고령화 AI 논의"),
+    ]
+
+    result = issue_match.consolidate_issues(issues, "2026-07-10")
+
+    assert len(result) == 2
+
+
+def test_consolidate_does_not_merge_across_different_entities():
+    issues = [
+        _issue(issue_id="i1", entity="SK하이닉스", title="나스닥 ADR 상장 40조 실탄"),
+        _issue(issue_id="i2", entity="삼성전자", title="나스닥 ADR 상장 40조 실탄"),
+    ]
+
+    result = issue_match.consolidate_issues(issues, "2026-07-10")
+
+    assert len(result) == 2
+
+
+def test_consolidate_leaves_unknown_entity_issues_unmerged():
+    # entity가 '미상'이면 보수적으로 합치지 않는다(오병합 방지).
+    issues = [
+        _issue(issue_id="i1", entity="미상", title="반도체 클러스터 부지 투기 우려 확산"),
+        _issue(issue_id="i2", entity="미상", title="반도체 클러스터 부지 투기 우려 단속"),
+    ]
+
+    result = issue_match.consolidate_issues(issues, "2026-07-10")
+
+    assert len(result) == 2
+
+
+def test_consolidate_preserves_closed_issues():
+    issues = [
+        _issue(issue_id="i1", status="종료", title="옛 이슈"),
+        _issue(issue_id="i2", title="SK하이닉스 나스닥 ADR 상장"),
+        _issue(issue_id="i3", title="SK하이닉스 나스닥 ADR 상장 흥행"),
+    ]
+
+    result = issue_match.consolidate_issues(issues, "2026-07-10")
+
+    ids = {i["issue_id"] for i in result}
+    assert "i1" in ids  # 종료 이슈는 건드리지 않음
+    assert len(result) == 2  # 종료 1 + 병합된 진행중 1
+
+
 def test_progress_summary_model_uses_lite_tier_for_quota():
     # 무료 할당량이 넉넉하지 않아 LITE_MODEL을 쓴다 (할당량이 더 큰 티어).
     assert issue_match._PROGRESS_SUMMARY_MODEL == issue_match.gemini_client.LITE_MODEL

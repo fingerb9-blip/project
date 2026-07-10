@@ -32,28 +32,8 @@
     "related_article_ids": [
       "600bc74f9f0cce52520f5427c7ada9ddbb31b50b",
       "db3288c503003335fea47c73f32db4247d50a076",
-      "990f72a16c13d99e6ada5bccd603fe30c76dc237"
-    ]
-  },
-  {
-    "issue_id": "d1a3ce5be8ea",
-    "entity": "SK하이닉스",
-    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "f635fdfd9106e063d8c7f49a1a4546c745d20346"
-    ]
-  },
-  {
-    "issue_id": "d1a3ce5be8ea",
-    "entity": "SK하이닉스",
-    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
+      "990f72a16c13d99e6ada5bccd603fe30c76dc237",
+      "f635fdfd9106e063d8c7f49a1a4546c745d20346",
       "57b33a5c349d22f1eecd881ab2c612557e6c738f"
     ]
   },
@@ -62,7 +42,7 @@
     "entity": "삼성전자",
     "title": "네오셈, 삼성전자에 차세대 메모리 장비 첫 대규모 공급...86억",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "f86ff7dc1bd9254dcc871988575c2fac09e4c2c2"
@@ -590,14 +570,41 @@
     ]
   },
   {
-    "issue_id": "7688f5ba70eb",
+    "issue_id": "762149ecb888",
     "entity": "SK하이닉스",
-    "title": "37조 조달 SK하이닉스, 나스닥 입성…최태원 AI 세일즈 나선다",
+    "title": "SK하이닉스, 10일 나스닥 ADR 상장",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "5975c930ac2951db2ae15f8c7ca1d2765de3ffef"
+      "5975c930ac2951db2ae15f8c7ca1d2765de3ffef",
+      "86c3f530ed83303b59cb93816ae5c8633d9859f3",
+      "1dcc41924b3825dd34a0039a6e136da288821fbf",
+      "c96d7d8b8e9d21aaf9e15bfc43389f16498b6e19",
+      "a846467b8ae3d40e5e3224669533be7c55687cf9",
+      "30bb16dfaf491b2b8dd054a219b4bcf9fbb1d442",
+      "5ed313d698a96309473f982ce5b59616947ca2bf",
+      "74f7545b5e6e866d88ea5803e6aeaf0e98640372",
+      "e2fddfd01a5671a217a57dbb56bc84546800c5a7",
+      "cafe223377012664fe19e0e4a0b42006875bdde7",
+      "4e5a0007516aca4d12f794d3dc21ac7d6ec00884",
+      "2800a7596bb6df7138019a2decfb5e36b81f8bf5",
+      "17a3469b12dde9954830e99e9e64e759e7b917f9",
+      "11076ff4de5e209273b8cf0a6045a83f06fbc14a",
+      "e3e62d87e17b6e05ec091c65dc4232fdd0b223d6",
+      "b08a701f8ce52bbac26231fbe4193c649d14ce9c",
+      "50885fd6c6158bd3ffedd60582da569185a0ce88",
+      "4b7dffae5d614f6032798670b504789f6162476f",
+      "c41aa8885a0c5a29251b56db7cb1c2ab3b05687e",
+      "c2d9159f4eaa6cfb0a9f952dd37d7a9aa57a04b9",
+      "9f5912d40e39801691352ff0c50ec46d88651f9f",
+      "5840ea115ad4828f901575d93b430cf59b0d3603",
+      "6f1214cd862c3bb580e96ed98b654c1abfa71789",
+      "e9414ae9b3792d7595d36b162f5be3526fbf76f7",
+      "be8894399d7c6f9881f9e99bfcb69e2c653696b0",
+      "8d3447f67e7b1bec516633fdc5d83ae8e6f4d6bb",
+      "08eb741b88b465a2b0da884b57865dc77b4ef89e",
+      "20f6ec04ed3d90c3a3d411890a866d5cbc8a4dba"
     ]
   },
   {
@@ -620,17 +627,6 @@
     "status": "진행중",
     "related_article_ids": [
       "8a830ddf94890026f610562126df25ed46dd9047"
-    ]
-  },
-  {
-    "issue_id": "4c714b52e08d",
-    "entity": "SK하이닉스",
-    "title": "최태원 SK그룹 회장, 글로벌 투자자 직접 만난다... SK하이닉스 나스닥...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "86c3f530ed83303b59cb93816ae5c8633d9859f3"
     ]
   },
   {
@@ -873,17 +869,6 @@
     ]
   },
   {
-    "issue_id": "aa997f6c1f7b",
-    "entity": "SK하이닉스",
-    "title": "최태원, 미국서 SK하이닉스 나스닥 상장 직접 챙긴다",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "1dcc41924b3825dd34a0039a6e136da288821fbf"
-    ]
-  },
-  {
     "issue_id": "9be772f1a315",
     "entity": "미상",
     "title": "SK 최태원 방미에 쏠린 눈...빅테크와 AI 협력 가속화 주목",
@@ -906,29 +891,6 @@
     ]
   },
   {
-    "issue_id": "9d26075f9164",
-    "entity": "SK하이닉스",
-    "title": "최태원, 美서 SK하이닉스 나스닥 상장 직접 챙긴다… 37조원 조달 본격...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "c96d7d8b8e9d21aaf9e15bfc43389f16498b6e19"
-    ]
-  },
-  {
-    "issue_id": "303d064e7a66",
-    "entity": "SK하이닉스",
-    "title": "[특징주] SK하이닉스, ADR 상장 기대감에 강세",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "a846467b8ae3d40e5e3224669533be7c55687cf9",
-      "30bb16dfaf491b2b8dd054a219b4bcf9fbb1d442"
-    ]
-  },
-  {
     "issue_id": "af82a796c956",
     "entity": "SK하이닉스",
     "title": "나스닥 공모 7배 초과 흥행 SK하이닉스…40조 안팎 실탄 어디에 쓰나",
@@ -937,53 +899,6 @@
     "status": "진행중",
     "related_article_ids": [
       "2d0f5e661eb1dbfd06f18bfadc6a8fc3f21d2351"
-    ]
-  },
-  {
-    "issue_id": "762149ecb888",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 10일 나스닥 ADR 상장",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "5ed313d698a96309473f982ce5b59616947ca2bf",
-      "74f7545b5e6e866d88ea5803e6aeaf0e98640372",
-      "e2fddfd01a5671a217a57dbb56bc84546800c5a7",
-      "cafe223377012664fe19e0e4a0b42006875bdde7"
-    ]
-  },
-  {
-    "issue_id": "b5983e720d48",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 데뷔 이끈다…AI 반도체 '글로벌 세일즈'",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "4e5a0007516aca4d12f794d3dc21ac7d6ec00884"
-    ]
-  },
-  {
-    "issue_id": "a186193a99ee",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 10일 나스닥 상장…최태원·곽노정 등 수뇌부 '총출동'",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "2800a7596bb6df7138019a2decfb5e36b81f8bf5"
-    ]
-  },
-  {
-    "issue_id": "1d7fec4a8dfd",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 나스닥 상륙...최태원의 AI 속도전, 글로벌 AI 영토 확장",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "17a3469b12dde9954830e99e9e64e759e7b917f9"
     ]
   },
   {
@@ -1046,7 +961,7 @@
     "entity": "삼성전자",
     "title": "정부, 삼성·LG 스마트TV 방송에 AI 더빙 지원",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "5f9964a2cd43d2000e6623e1c4e84497f5529274"
@@ -1196,7 +1111,7 @@
     "entity": "삼성전자",
     "title": "삼양사, 반도체 초순수 핵심 이온교환수지…\"매출 1200억원 정조준\"",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "b74598d4142ad69c450cfcb340bbb91c7609488b"
@@ -1385,7 +1300,7 @@
     "entity": "삼성전자",
     "title": "CXMT IPO leaves HBM off the funding list, tempering China AI memory hype",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "d2db6df37d0799e9fad87dba6714fca803086386"
@@ -1396,7 +1311,7 @@
     "entity": "삼성전자",
     "title": "Samsung eyes broader Exynos 2700 use in Galaxy S27",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "603948909dcff311bfe21e31961917f452276441"
@@ -1407,7 +1322,7 @@
     "entity": "SK하이닉스",
     "title": "SK Hynix targets AI infrastructure role with Nasdaq ADR listing",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "be07aa71db1fd18fe0cc9aa84abdd317c3333553"
@@ -1418,7 +1333,7 @@
     "entity": "삼성전자",
     "title": "AI demand pushes TSMC, Samsung to raise foundry prices &mdash; Rapidus aims to undercut 2nm",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "7d1a62988f174536b48773cf7f2da427e3809550"
@@ -1487,7 +1402,8 @@
     "last_updated": "2026-07-09",
     "status": "진행중",
     "related_article_ids": [
-      "bb86461923162cfd6d84b1e27e4ff675b52f8764"
+      "bb86461923162cfd6d84b1e27e4ff675b52f8764",
+      "9ce89346a1e88de2f27ae863fc13c42221b7a99e"
     ]
   },
   {
@@ -1645,17 +1561,6 @@
     ]
   },
   {
-    "issue_id": "5c70d6fa0407",
-    "entity": "삼성전자",
-    "title": "삼성전자, AI PC용 만든다…이르면 내년 양산",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "9ce89346a1e88de2f27ae863fc13c42221b7a99e"
-    ]
-  },
-  {
     "issue_id": "aa0a41bce7cf",
     "entity": "엔비디아",
     "title": "권석준 교수 \"메모리 파운드리 시대에 대비해야\"",
@@ -1755,39 +1660,6 @@
     ]
   },
   {
-    "issue_id": "eb08350efb95",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 상장 맞아 미국行…\"AI 메모리 영토 확장\"",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "11076ff4de5e209273b8cf0a6045a83f06fbc14a"
-    ]
-  },
-  {
-    "issue_id": "65238aea1f8a",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 상장 직접 챙긴다…AI 투자자 잡기 '승부수'",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "e3e62d87e17b6e05ec091c65dc4232fdd0b223d6"
-    ]
-  },
-  {
-    "issue_id": "5459ec1c2642",
-    "entity": "SK하이닉스",
-    "title": "최태원 회장, SK하이닉스 미국 나스닥 상장 '오프닝 벨' 직접 울린다",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "b08a701f8ce52bbac26231fbe4193c649d14ce9c"
-    ]
-  },
-  {
     "issue_id": "6e17bb287aa4",
     "entity": "SK하이닉스",
     "title": "[오늘의 DT인] 美서 나스닥 상장식 직접 챙긴다… “기업가치 높이고 AI...",
@@ -1829,17 +1701,6 @@
     "status": "진행중",
     "related_article_ids": [
       "f71126238c8b339f193d1524932dcac4a2795ec2"
-    ]
-  },
-  {
-    "issue_id": "5bc5f1987f3b",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 입성 지원…글로벌 AI 세일즈 나선다",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "50885fd6c6158bd3ffedd60582da569185a0ce88"
     ]
   },
   {
@@ -1946,7 +1807,7 @@
     "entity": "삼성전자",
     "title": "“전자칠판으로 교실을 연결하다”… 삼성전자, ISTE서 교육용 디스플레이 솔루션으로 디지털 교육의 미래 제시",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "48eee3ed80b6e98b812989a379f5dbe88fe8a20d"
@@ -1957,54 +1818,10 @@
     "entity": "SK하이닉스",
     "title": "SK하이닉스, 충북 SR 포럼서 고령화 시대 AI 활용 방안 논의",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
       "a6ff8af2c941c640d511f2d029e6b4abb4c4906c"
-    ]
-  },
-  {
-    "issue_id": "b9be3cb0559b",
-    "entity": "삼성전자",
-    "title": "삼양사, 반도체 초순수 핵심 이온교환수지…\"매출 1200억원 정조준\"",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "b74598d4142ad69c450cfcb340bbb91c7609488b"
-    ]
-  },
-  {
-    "issue_id": "c7b940ad35b7",
-    "entity": "삼성전자",
-    "title": "정부, 삼성·LG 스마트TV 방송에 AI 더빙 지원",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "5f9964a2cd43d2000e6623e1c4e84497f5529274"
-    ]
-  },
-  {
-    "issue_id": "1746836e222e",
-    "entity": "SK하이닉스",
-    "title": "최태원, 10일 뉴욕 SK하이닉스 ADR 나스닥 상장 기념식 참석",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "4b7dffae5d614f6032798670b504789f6162476f"
-    ]
-  },
-  {
-    "issue_id": "5f2445f89623",
-    "entity": "삼성전자",
-    "title": "네오셈, 삼성전자에 차세대 메모리 장비 첫 대규모 공급...86억",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "f86ff7dc1bd9254dcc871988575c2fac09e4c2c2"
     ]
   },
   {
@@ -2019,72 +1836,6 @@
     ]
   },
   {
-    "issue_id": "891a0020108b",
-    "entity": "SK하이닉스",
-    "title": "SK Hynix targets AI infrastructure role with Nasdaq ADR listing",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "be07aa71db1fd18fe0cc9aa84abdd317c3333553"
-    ]
-  },
-  {
-    "issue_id": "42cda521d022",
-    "entity": "삼성전자",
-    "title": "AI demand pushes TSMC, Samsung to raise foundry prices &mdash; Rapidus aims to undercut 2nm",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "7d1a62988f174536b48773cf7f2da427e3809550"
-    ]
-  },
-  {
-    "issue_id": "4d51e60f9e9a",
-    "entity": "엔비디아",
-    "title": "Nvidia expands alliance strategy as AI chip ecosystem shifts toward collaboration",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "7219c99b08eddd8d41e18975fc99ac26e6d0bcb4"
-    ]
-  },
-  {
-    "issue_id": "d3a6126eb409",
-    "entity": "삼성전자",
-    "title": "Samsung, SK Hynix rethink hybrid bonding timeline for next-gen HBM",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "260e10a0b515cc5bd66895924fc2a48257ecb48a"
-    ]
-  },
-  {
-    "issue_id": "72321fd6f669",
-    "entity": "엔비디아",
-    "title": "Commentary: China's AI chip race leaves 15 chipmakers chasing SMIC's 7nm capacity",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "763e5cb2ad532c52eade04ac0a8fb613568b70f1"
-    ]
-  },
-  {
-    "issue_id": "7981865a361f",
-    "entity": "엔비디아",
-    "title": "What China's rumored limited reopening to Nvidia's H200 implies for US-China chip contest and Beijing's drive for self-reliance",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "67a006a290153a67859758904ed844b447ab765f"
-    ]
-  },
-  {
     "issue_id": "c99c3a7b3742",
     "entity": "삼성전자",
     "title": "Samsung weighs first AI glasses launch as it prepares July 22 Unpacked event",
@@ -2093,17 +1844,6 @@
     "status": "진행중",
     "related_article_ids": [
       "046534fd5571964b29141c9319f5c1fe94852ea1"
-    ]
-  },
-  {
-    "issue_id": "b4d63809690b",
-    "entity": "엔비디아",
-    "title": "China's AI chip buyers turn from Nvidia to local suppliers in H20 squeeze",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "f64ae99921a45e717d899fd3a91608bcfbe83b63"
     ]
   },
   {
@@ -2206,39 +1946,6 @@
     ]
   },
   {
-    "issue_id": "0c9cf0d8095c",
-    "entity": "SK하이닉스",
-    "title": "[Market Focus] SK하이닉스 나스닥 ADR 데뷔...가장 큰 의미는?",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "c41aa8885a0c5a29251b56db7cb1c2ab3b05687e"
-    ]
-  },
-  {
-    "issue_id": "e0d5d842df88",
-    "entity": "SK하이닉스",
-    "title": "[종목분석] SK하이닉스, 185만~430만원 목표주가 충돌",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "61728a42e1a7b89e4f9bf64b6a08480e1831d1de"
-    ]
-  },
-  {
-    "issue_id": "c9b4972eb297",
-    "entity": "TSMC",
-    "title": "185만닉스 vs 420만닉스…목표가 전망 ‘극과 극’",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "542842aa293de7d015f19c687ce1ddb400911c9c"
-    ]
-  },
-  {
     "issue_id": "76a0fc69e809",
     "entity": "미상",
     "title": "몸값 높아진 SK실트론… 매각가 다시 줄다리기",
@@ -2250,17 +1957,6 @@
     ]
   },
   {
-    "issue_id": "d2c14d1c92a4",
-    "entity": "TSMC",
-    "title": "구미, AI 반도체 생산기지 최적지…세계가 선택한 조건 모두 갖췄다",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "aea36b5b1873aac7f277b46de5a7bf2b4fe88ddf"
-    ]
-  },
-  {
     "issue_id": "0b34c821b20d",
     "entity": "미상",
     "title": "마이크론(MU), 매출 414억달러 '잭팟'...4분기 매출 목표 '500억 달러'",
@@ -2269,28 +1965,6 @@
     "status": "진행중",
     "related_article_ids": [
       "ecb7c6dcb92a9317e4025047bedf38092bf10de5"
-    ]
-  },
-  {
-    "issue_id": "2d894dfe425d",
-    "entity": "삼성전자",
-    "title": "[촉석루] 영원한 1등은 없다- 오세란(창조경영파트너스 대표)",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "a64eba33796ca8701254ed4e39887956a101308d"
-    ]
-  },
-  {
-    "issue_id": "da4d0392c25b",
-    "entity": "삼성전자",
-    "title": "SK하닉, 목표가 185만원 보고서 나와…\"더 좋은 기회 기다리자\"",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "efe3aa53521035c2b80010afde0f566bfabeb070"
     ]
   },
   {
@@ -2338,28 +2012,6 @@
     ]
   },
   {
-    "issue_id": "5c70d6fa0407",
-    "entity": "삼성전자",
-    "title": "삼성전자, AI PC용 만든다…이르면 내년 양산",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "9ce89346a1e88de2f27ae863fc13c42221b7a99e"
-    ]
-  },
-  {
-    "issue_id": "aa0a41bce7cf",
-    "entity": "엔비디아",
-    "title": "권석준 교수 \"메모리 파운드리 시대에 대비해야\"",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "d3ff790855176bc0ba49811dc723a8ff1b0108d7"
-    ]
-  },
-  {
     "issue_id": "7736c69142c3",
     "entity": "삼성전자",
     "title": "미래에셋운용 \"中 반도체 자립, 실적으로 증명\"…관련 ETF 수익률 200% 돌...",
@@ -2404,17 +2056,6 @@
     ]
   },
   {
-    "issue_id": "315fa1410ad3",
-    "entity": "삼성전자",
-    "title": "삼성전자, 앤트로픽 AI 칩 생산 후보로 부상",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "e1bea5bd1e6e3be520a0ab80e1ed66440cf95cdd"
-    ]
-  },
-  {
     "issue_id": "fdddaf94a15e",
     "entity": "삼성전자",
     "title": "삼성전자, 상반기 성과급 지급…반도체 최대 100%·스마트폰 50%",
@@ -2423,72 +2064,6 @@
     "status": "진행중",
     "related_article_ids": [
       "f6b5d4b5897e754aac600657858b12140a4aef7f"
-    ]
-  },
-  {
-    "issue_id": "f8b84426b6b2",
-    "entity": "삼성전자",
-    "title": "분산 투자 '밸류체인 ETF' 美빅테크 본주 수익률 압도",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "c0c6fd0c6bf9a2363482e7eb4597c05b807f6d12"
-    ]
-  },
-  {
-    "issue_id": "3330705b8032",
-    "entity": "엔비디아",
-    "title": "[나노코리아2026] 엔비디아 GPU 시대 가고, 메모리 반도체 XPU 시대 온다",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "236c01a083451e270082a34489da02aba7b20750"
-    ]
-  },
-  {
-    "issue_id": "9838529160ff",
-    "entity": "삼성전자",
-    "title": "[데스크리포트 7월] '1600조 메가프로젝트' 특정 지역·산업 쏠림과 조급...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "f8458dc26eb0cc0b4e494bd601d03a650bb2abc4"
-    ]
-  },
-  {
-    "issue_id": "3f66375bf06f",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스 나스닥 상장 'D-1'…증권가 \"가치 할인 해소 기대\"",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "c2d9159f4eaa6cfb0a9f952dd37d7a9aa57a04b9"
-    ]
-  },
-  {
-    "issue_id": "11b072cfe5b3",
-    "entity": "SK하이닉스",
-    "title": "최태원 '슈퍼모멘텀' 확보...나스닥100 편입·美 AI 데이터센터까지 추진",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "aab3eae459ec9538641891e76f5beb19575cef04"
-    ]
-  },
-  {
-    "issue_id": "19e10d0c0ab3",
-    "entity": "SK하이닉스",
-    "title": "'빅테크 안방' 진격하는 SK… 메모리 넘어 AI인프라 기업으로",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "0792d390b2ed17582a1d829e45416f89619ffb17"
     ]
   },
   {
@@ -2525,72 +2100,6 @@
     ]
   },
   {
-    "issue_id": "1152f73fa082",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, ADR 흥행에 5% 반등…재평가 분수령은 나스닥 첫 거래",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "9f5912d40e39801691352ff0c50ec46d88651f9f"
-    ]
-  },
-  {
-    "issue_id": "d12e9b76e5cc",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스 ADR 공모가 10일 오전 나올 듯… 최태원 회장 오프닝벨 울린...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "91f6f97cd044d04ce39361347c23755a56e43334"
-    ]
-  },
-  {
-    "issue_id": "eb08350efb95",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 상장 맞아 미국行…\"AI 메모리 영토 확장\"",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "11076ff4de5e209273b8cf0a6045a83f06fbc14a"
-    ]
-  },
-  {
-    "issue_id": "6e17bb287aa4",
-    "entity": "SK하이닉스",
-    "title": "[오늘의 DT인] 美서 나스닥 상장식 직접 챙긴다… “기업가치 높이고 AI...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "30aeee963ab088fa4f3e2c1803f5adee022d36da"
-    ]
-  },
-  {
-    "issue_id": "29c0b2de0387",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 무대 오른다…머스크 회동 가능성도",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "b40b5a9d5872ff9570953c77377879d5dc279dab"
-    ]
-  },
-  {
-    "issue_id": "b2c78edf4ac0",
-    "entity": "SK하이닉스",
-    "title": "최태원, 나스닥 승부수 띄운다…SK하이닉스 ADR 상장 D-1 [재계 레이더]",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "940633d04417ad0aa36124de9dbc493942a3b860"
-    ]
-  },
-  {
     "issue_id": "42e1eba38b9a",
     "entity": "미상",
     "title": "[이슈] 서남권 메모리 팹 4기 전력 수요 6.3GW…\"안정적인 전력 공급부터...",
@@ -2610,17 +2119,6 @@
     "status": "진행중",
     "related_article_ids": [
       "66697819644e596ab5c8e81527a4f7da1e6cbfa8"
-    ]
-  },
-  {
-    "issue_id": "5bc5f1987f3b",
-    "entity": "SK하이닉스",
-    "title": "최태원, SK하이닉스 나스닥 입성 지원…글로벌 AI 세일즈 나선다",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
-    "status": "진행중",
-    "related_article_ids": [
-      "50885fd6c6158bd3ffedd60582da569185a0ce88"
     ]
   },
   {
@@ -2668,28 +2166,6 @@
     ]
   },
   {
-    "issue_id": "f77f330fd55a",
-    "entity": "삼성전자",
-    "title": "“전자칠판으로 교실을 연결하다”… 삼성전자, ISTE서 교육용 디스플레이 솔루션으로 디지털 교육의 미래 제시",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "48eee3ed80b6e98b812989a379f5dbe88fe8a20d"
-    ]
-  },
-  {
-    "issue_id": "f9c2e8297fc6",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 충북 SR 포럼서 고령화 시대 AI 활용 방안 논의",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "a6ff8af2c941c640d511f2d029e6b4abb4c4906c"
-    ]
-  },
-  {
     "issue_id": "2720ac65ee4a",
     "entity": "SK하이닉스",
     "title": "[차이나 브리프] SK하이닉스의 웨이퍼 캐파 확대…공급과잉 우려 없다",
@@ -2698,50 +2174,6 @@
     "status": "진행중",
     "related_article_ids": [
       "c7f48f4efdda115286088d9427934c08bcd67c1d"
-    ]
-  },
-  {
-    "issue_id": "944297332636",
-    "entity": "삼성전자",
-    "title": "삼양사, 반도체 초순수 핵심 이온교환수지…\"매출 1200억원 정조준\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "b74598d4142ad69c450cfcb340bbb91c7609488b"
-    ]
-  },
-  {
-    "issue_id": "905877830b08",
-    "entity": "삼성전자",
-    "title": "정부, 삼성·LG 스마트TV 방송에 AI 더빙 지원",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "5f9964a2cd43d2000e6623e1c4e84497f5529274"
-    ]
-  },
-  {
-    "issue_id": "8c91b14052ed",
-    "entity": "SK하이닉스",
-    "title": "최태원, 10일 뉴욕 SK하이닉스 ADR 나스닥 상장 기념식 참석",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "4b7dffae5d614f6032798670b504789f6162476f"
-    ]
-  },
-  {
-    "issue_id": "38fe67b2ac86",
-    "entity": "삼성전자",
-    "title": "네오셈, 삼성전자에 차세대 메모리 장비 첫 대규모 공급...86억",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "f86ff7dc1bd9254dcc871988575c2fac09e4c2c2"
     ]
   },
   {
@@ -2775,50 +2207,6 @@
     "status": "진행중",
     "related_article_ids": [
       "ed295bf6dd7c055a2563718dd22f0da89da55f3a"
-    ]
-  },
-  {
-    "issue_id": "0e145649b9d1",
-    "entity": "삼성전자",
-    "title": "CXMT IPO leaves HBM off the funding list, tempering China AI memory hype",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d2db6df37d0799e9fad87dba6714fca803086386"
-    ]
-  },
-  {
-    "issue_id": "594becd50141",
-    "entity": "삼성전자",
-    "title": "Samsung eyes broader Exynos 2700 use in Galaxy S27",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "603948909dcff311bfe21e31961917f452276441"
-    ]
-  },
-  {
-    "issue_id": "ca74001d1958",
-    "entity": "SK하이닉스",
-    "title": "SK Hynix targets AI infrastructure role with Nasdaq ADR listing",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "be07aa71db1fd18fe0cc9aa84abdd317c3333553"
-    ]
-  },
-  {
-    "issue_id": "03a33931462d",
-    "entity": "삼성전자",
-    "title": "AI demand pushes TSMC, Samsung to raise foundry prices &mdash; Rapidus aims to undercut 2nm",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "7d1a62988f174536b48773cf7f2da427e3809550"
     ]
   },
   {
@@ -2866,17 +2254,6 @@
     ]
   },
   {
-    "issue_id": "28208a6d2977",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스 ADR 상장 하루 전 375조 투자계획 발표한 마이크론...업계 캐...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "5840ea115ad4828f901575d93b430cf59b0d3603"
-    ]
-  },
-  {
     "issue_id": "c134346da280",
     "entity": "SK하이닉스",
     "title": "[종합] SK하이닉스, 나스닥서 40조원 '실탄' 확보… 中 알리바바 넘었다",
@@ -2884,7 +2261,8 @@
     "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "516f7db3a80f7ff3a958541edfc377d4df839ace"
+      "516f7db3a80f7ff3a958541edfc377d4df839ace",
+      "0ec486fd649c881d9af3900d2495e0d521080fa5"
     ]
   },
   {
@@ -2896,17 +2274,6 @@
     "status": "진행중",
     "related_article_ids": [
       "1f53756405beff4492a8825bf1dc0f37b4e7eb0f"
-    ]
-  },
-  {
-    "issue_id": "ce88507e9237",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 10일 나스닥 상장…40조원 시설투자에 활용",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "6f1214cd862c3bb580e96ed98b654c1abfa71789"
     ]
   },
   {
@@ -2929,17 +2296,6 @@
     "status": "진행중",
     "related_article_ids": [
       "fb22f45858811f77b3165b00b85347b19bb013ae"
-    ]
-  },
-  {
-    "issue_id": "4984fdcb0cd1",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 오늘 나스닥 ADR 상장…'40조' 시설투자 재원 확보",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "e9414ae9b3792d7595d36b162f5be3526fbf76f7"
     ]
   },
   {
@@ -2995,17 +2351,6 @@
     "status": "진행중",
     "related_article_ids": [
       "0a2ac9c31260c4eeafba3a897ecccbba8beb4e91"
-    ]
-  },
-  {
-    "issue_id": "72a8edde011a",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 오늘 나스닥 입성 '사상최대'…최태원, AI 경쟁력 알린다",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "be8894399d7c6f9881f9e99bfcb69e2c653696b0"
     ]
   },
   {
@@ -3053,105 +2398,6 @@
     ]
   },
   {
-    "issue_id": "f77f330fd55a",
-    "entity": "삼성전자",
-    "title": "“전자칠판으로 교실을 연결하다”… 삼성전자, ISTE서 교육용 디스플레이 솔루션으로 디지털 교육의 미래 제시",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "48eee3ed80b6e98b812989a379f5dbe88fe8a20d"
-    ]
-  },
-  {
-    "issue_id": "f9c2e8297fc6",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 충북 SR 포럼서 고령화 시대 AI 활용 방안 논의",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "a6ff8af2c941c640d511f2d029e6b4abb4c4906c"
-    ]
-  },
-  {
-    "issue_id": "2720ac65ee4a",
-    "entity": "SK하이닉스",
-    "title": "[차이나 브리프] SK하이닉스의 웨이퍼 캐파 확대…공급과잉 우려 없다",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "c7f48f4efdda115286088d9427934c08bcd67c1d"
-    ]
-  },
-  {
-    "issue_id": "944297332636",
-    "entity": "삼성전자",
-    "title": "삼양사, 반도체 초순수 핵심 이온교환수지…\"매출 1200억원 정조준\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "b74598d4142ad69c450cfcb340bbb91c7609488b"
-    ]
-  },
-  {
-    "issue_id": "905877830b08",
-    "entity": "삼성전자",
-    "title": "정부, 삼성·LG 스마트TV 방송에 AI 더빙 지원",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "5f9964a2cd43d2000e6623e1c4e84497f5529274"
-    ]
-  },
-  {
-    "issue_id": "8c91b14052ed",
-    "entity": "SK하이닉스",
-    "title": "최태원, 10일 뉴욕 SK하이닉스 ADR 나스닥 상장 기념식 참석",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "4b7dffae5d614f6032798670b504789f6162476f"
-    ]
-  },
-  {
-    "issue_id": "38fe67b2ac86",
-    "entity": "삼성전자",
-    "title": "네오셈, 삼성전자에 차세대 메모리 장비 첫 대규모 공급...86억",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "f86ff7dc1bd9254dcc871988575c2fac09e4c2c2"
-    ]
-  },
-  {
-    "issue_id": "bf55b1ffc347",
-    "entity": "인텔",
-    "title": "Simplifying Intelligent Wireless Design and Security Certification for Healthcare Devices",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d131265958e349834537edd81ddafbacb866520d"
-    ]
-  },
-  {
-    "issue_id": "cc0119036dcf",
-    "entity": "TSMC",
-    "title": "TSMC, ASML, and Imec target 2D chip mass production in Taiwan within five years",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "cfa3d37bcfd8da6cb5102e4a5c0ec8546b7fa13b"
-    ]
-  },
-  {
     "issue_id": "9c2fcffc4d31",
     "entity": "미상",
     "title": "CXMT seeks US$4.1bn in China's biggest 2026 IPO for DDR5, HBM",
@@ -3163,50 +2409,6 @@
     ]
   },
   {
-    "issue_id": "0e145649b9d1",
-    "entity": "삼성전자",
-    "title": "CXMT IPO leaves HBM off the funding list, tempering China AI memory hype",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d2db6df37d0799e9fad87dba6714fca803086386"
-    ]
-  },
-  {
-    "issue_id": "594becd50141",
-    "entity": "삼성전자",
-    "title": "Samsung eyes broader Exynos 2700 use in Galaxy S27",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "603948909dcff311bfe21e31961917f452276441"
-    ]
-  },
-  {
-    "issue_id": "ca74001d1958",
-    "entity": "SK하이닉스",
-    "title": "SK Hynix targets AI infrastructure role with Nasdaq ADR listing",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "be07aa71db1fd18fe0cc9aa84abdd317c3333553"
-    ]
-  },
-  {
-    "issue_id": "03a33931462d",
-    "entity": "삼성전자",
-    "title": "AI demand pushes TSMC, Samsung to raise foundry prices &mdash; Rapidus aims to undercut 2nm",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "7d1a62988f174536b48773cf7f2da427e3809550"
-    ]
-  },
-  {
     "issue_id": "98955df7ac26",
     "entity": "SK하이닉스",
     "title": "SK하이닉스, 美나스닥 ADR 공모가 149달러 최종 확정…IPO 규모 中알리바...",
@@ -3214,7 +2416,8 @@
     "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "00aa690510c9fe2b982c7f82817e3bd47babab3c"
+      "00aa690510c9fe2b982c7f82817e3bd47babab3c",
+      "d82b2acd7923a540b27362c35752753467b4c22c"
     ]
   },
   {
@@ -3251,105 +2454,6 @@
     ]
   },
   {
-    "issue_id": "4106e1d4ffc0",
-    "entity": "TSMC",
-    "title": "메타, 9월 자체 AI 칩 양산…내년 컴퓨팅 용량 2배로",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "b9d66a738307af022bc6f624f0748c5c474bf8b3"
-    ]
-  },
-  {
-    "issue_id": "f1cb6c05a414",
-    "entity": "SK하이닉스",
-    "title": "나스닥 입성 초읽기 들어간 SK하이닉스..시총 규모 ‘깜짝’",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "2d852f2e2ab3b33ba0797ea63bafd975833ab981"
-    ]
-  },
-  {
-    "issue_id": "13b70ca21b8b",
-    "entity": "삼성전자",
-    "title": "美 상무장관, 삼성·SK에 투자 압박…\"미국 내 메모리 공장 지어야\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "bacf39ee3bc9e857177e98db946941beca3eb378"
-    ]
-  },
-  {
-    "issue_id": "159d3b7b63ae",
-    "entity": "SK하이닉스",
-    "title": "[모닝 리포트] \"美·이란 협상·AI·반도체 훈풍…코스피 반등 기대\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "95cbee069627440ec9d67922997447e29e9a07fd"
-    ]
-  },
-  {
-    "issue_id": "7a5f47caf112",
-    "entity": "SK하이닉스",
-    "title": "[더벨][외국계 IB의 귀환] '윤기희호' 노무라, 일본 훈풍 타고 존재감 키...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "0a2ac9c31260c4eeafba3a897ecccbba8beb4e91"
-    ]
-  },
-  {
-    "issue_id": "c134346da280",
-    "entity": "SK하이닉스",
-    "title": "[종합] SK하이닉스, 나스닥서 40조원 '실탄' 확보… 中 알리바바 넘었다",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "516f7db3a80f7ff3a958541edfc377d4df839ace"
-    ]
-  },
-  {
-    "issue_id": "19d85d9189cc",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 오늘 나스닥 상장…40조 실탄으로 시장 지배력 확대",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "04407760d538200bb767b7eac29ac5bbd203799e"
-    ]
-  },
-  {
-    "issue_id": "d038969bbfbd",
-    "entity": "SK하이닉스",
-    "title": "[특징주] SK하이닉스, 나스닥 ADR 흥행 성공에도 강보합",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "8d3447f67e7b1bec516633fdc5d83ae8e6f4d6bb"
-    ]
-  },
-  {
-    "issue_id": "4984fdcb0cd1",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 오늘 나스닥 ADR 상장…'40조' 시설투자 재원 확보",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "e9414ae9b3792d7595d36b162f5be3526fbf76f7"
-    ]
-  },
-  {
     "issue_id": "d5ea2abef027",
     "entity": "SK하이닉스",
     "title": "SK하이닉스, 美 IPO 새 역사 썼다…265억달러 조달 ‘외국기업 역대 최대...",
@@ -3358,28 +2462,6 @@
     "status": "진행중",
     "related_article_ids": [
       "80ea4575c9f7fa1a2e7ddaaca11f4b6678e513c4"
-    ]
-  },
-  {
-    "issue_id": "156620aa71a1",
-    "entity": "SK하이닉스",
-    "title": "[오늘의 ABC 뉴스룸] \"역대급 89조를 벌었는데 왜 폭락합니까?\" 사상 최...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "db32a2c2d3ddbdf7572bdf53000d42d640a90f3f"
-    ]
-  },
-  {
-    "issue_id": "542189b0d1dd",
-    "entity": "인텔",
-    "title": "[Tech & Now] 선익시스템, 인도 투자협의회 참석·SK인텔릭스, DDP에 '나무...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "a243076c59fe7832593cf93af53fa9f9bb7dbc9f"
     ]
   },
   {
@@ -3394,105 +2476,6 @@
     ]
   },
   {
-    "issue_id": "f77f330fd55a",
-    "entity": "삼성전자",
-    "title": "“전자칠판으로 교실을 연결하다”… 삼성전자, ISTE서 교육용 디스플레이 솔루션으로 디지털 교육의 미래 제시",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "48eee3ed80b6e98b812989a379f5dbe88fe8a20d"
-    ]
-  },
-  {
-    "issue_id": "f9c2e8297fc6",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 충북 SR 포럼서 고령화 시대 AI 활용 방안 논의",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "a6ff8af2c941c640d511f2d029e6b4abb4c4906c"
-    ]
-  },
-  {
-    "issue_id": "2720ac65ee4a",
-    "entity": "SK하이닉스",
-    "title": "[차이나 브리프] SK하이닉스의 웨이퍼 캐파 확대…공급과잉 우려 없다",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "c7f48f4efdda115286088d9427934c08bcd67c1d"
-    ]
-  },
-  {
-    "issue_id": "944297332636",
-    "entity": "삼성전자",
-    "title": "삼양사, 반도체 초순수 핵심 이온교환수지…\"매출 1200억원 정조준\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "b74598d4142ad69c450cfcb340bbb91c7609488b"
-    ]
-  },
-  {
-    "issue_id": "905877830b08",
-    "entity": "삼성전자",
-    "title": "정부, 삼성·LG 스마트TV 방송에 AI 더빙 지원",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "5f9964a2cd43d2000e6623e1c4e84497f5529274"
-    ]
-  },
-  {
-    "issue_id": "8c91b14052ed",
-    "entity": "SK하이닉스",
-    "title": "최태원, 10일 뉴욕 SK하이닉스 ADR 나스닥 상장 기념식 참석",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "4b7dffae5d614f6032798670b504789f6162476f"
-    ]
-  },
-  {
-    "issue_id": "38fe67b2ac86",
-    "entity": "삼성전자",
-    "title": "네오셈, 삼성전자에 차세대 메모리 장비 첫 대규모 공급...86억",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "f86ff7dc1bd9254dcc871988575c2fac09e4c2c2"
-    ]
-  },
-  {
-    "issue_id": "bf55b1ffc347",
-    "entity": "인텔",
-    "title": "Simplifying Intelligent Wireless Design and Security Certification for Healthcare Devices",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d131265958e349834537edd81ddafbacb866520d"
-    ]
-  },
-  {
-    "issue_id": "cc0119036dcf",
-    "entity": "TSMC",
-    "title": "TSMC, ASML, and Imec target 2D chip mass production in Taiwan within five years",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "cfa3d37bcfd8da6cb5102e4a5c0ec8546b7fa13b"
-    ]
-  },
-  {
     "issue_id": "9c2fcffc4d31",
     "entity": "미상",
     "title": "CXMT seeks US$4.1bn in China's biggest 2026 IPO for DDR5, HBM",
@@ -3501,50 +2484,6 @@
     "status": "진행중",
     "related_article_ids": [
       "ed295bf6dd7c055a2563718dd22f0da89da55f3a"
-    ]
-  },
-  {
-    "issue_id": "0e145649b9d1",
-    "entity": "삼성전자",
-    "title": "CXMT IPO leaves HBM off the funding list, tempering China AI memory hype",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d2db6df37d0799e9fad87dba6714fca803086386"
-    ]
-  },
-  {
-    "issue_id": "594becd50141",
-    "entity": "삼성전자",
-    "title": "Samsung eyes broader Exynos 2700 use in Galaxy S27",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "603948909dcff311bfe21e31961917f452276441"
-    ]
-  },
-  {
-    "issue_id": "ca74001d1958",
-    "entity": "SK하이닉스",
-    "title": "SK Hynix targets AI infrastructure role with Nasdaq ADR listing",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "be07aa71db1fd18fe0cc9aa84abdd317c3333553"
-    ]
-  },
-  {
-    "issue_id": "03a33931462d",
-    "entity": "삼성전자",
-    "title": "AI demand pushes TSMC, Samsung to raise foundry prices &mdash; Rapidus aims to undercut 2nm",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "7d1a62988f174536b48773cf7f2da427e3809550"
     ]
   },
   {
@@ -3559,39 +2498,6 @@
     ]
   },
   {
-    "issue_id": "0844fa969a0d",
-    "entity": "SK하이닉스",
-    "title": "[특징주] SK하이닉스, 美 ADR 상장 흥행 성공에도 '약세'",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "08eb741b88b465a2b0da884b57865dc77b4ef89e"
-    ]
-  },
-  {
-    "issue_id": "87a6fcfdd0ad",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 美 ADR 역대 최대 공모… 40조원 실탄 확보",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "0ec486fd649c881d9af3900d2495e0d521080fa5"
-    ]
-  },
-  {
-    "issue_id": "3731ce92a336",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 美 ADR 공모가 149달러 확정…외국기업 IPO 최대",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d82b2acd7923a540b27362c35752753467b4c22c"
-    ]
-  },
-  {
     "issue_id": "85732b8db9d1",
     "entity": "SK하이닉스",
     "title": "392조원 충청권 투자 본격화...첨단산업 호재에 세종 부동산 '주목'",
@@ -3600,17 +2506,6 @@
     "status": "진행중",
     "related_article_ids": [
       "ba3b93376d21fe9ce365f368b3e6d66a58f0648d"
-    ]
-  },
-  {
-    "issue_id": "8e6f697978d2",
-    "entity": "SK하이닉스",
-    "title": "[핫스톡 현미경] SK하이닉스 ADR 나스닥 상장, 본주 반등 신호탄 될까",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "20f6ec04ed3d90c3a3d411890a866d5cbc8a4dba"
     ]
   },
   {
@@ -3625,72 +2520,6 @@
     ]
   },
   {
-    "issue_id": "ef9162dcfcfc",
-    "entity": "삼성전자",
-    "title": "이재용, 젠슨 황 만난다…'광주 팹·AI 데이터센터' 협력 논의하나",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "2a39aed412fae1bbc18dd0bfd5d13d89f3316019"
-    ]
-  },
-  {
-    "issue_id": "4106e1d4ffc0",
-    "entity": "TSMC",
-    "title": "메타, 9월 자체 AI 칩 양산…내년 컴퓨팅 용량 2배로",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "b9d66a738307af022bc6f624f0748c5c474bf8b3"
-    ]
-  },
-  {
-    "issue_id": "f1cb6c05a414",
-    "entity": "SK하이닉스",
-    "title": "나스닥 입성 초읽기 들어간 SK하이닉스..시총 규모 ‘깜짝’",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "2d852f2e2ab3b33ba0797ea63bafd975833ab981"
-    ]
-  },
-  {
-    "issue_id": "13b70ca21b8b",
-    "entity": "삼성전자",
-    "title": "美 상무장관, 삼성·SK에 투자 압박…\"미국 내 메모리 공장 지어야\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "bacf39ee3bc9e857177e98db946941beca3eb378"
-    ]
-  },
-  {
-    "issue_id": "159d3b7b63ae",
-    "entity": "SK하이닉스",
-    "title": "[모닝 리포트] \"美·이란 협상·AI·반도체 훈풍…코스피 반등 기대\"",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "95cbee069627440ec9d67922997447e29e9a07fd"
-    ]
-  },
-  {
-    "issue_id": "7a5f47caf112",
-    "entity": "SK하이닉스",
-    "title": "[더벨][외국계 IB의 귀환] '윤기희호' 노무라, 일본 훈풍 타고 존재감 키...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "0a2ac9c31260c4eeafba3a897ecccbba8beb4e91"
-    ]
-  },
-  {
     "issue_id": "646610b8f38c",
     "entity": "SK하이닉스",
     "title": "SK하이닉스, 한국보다 비싸게 팔렸다…40조원 들고 AI 투자전",
@@ -3702,17 +2531,6 @@
     ]
   },
   {
-    "issue_id": "da44b1322eae",
-    "entity": "SK하이닉스",
-    "title": "‘전 세계로 나간다’ SK하이닉스, 오늘 나스닥 상장 ‘40조 실탄’ 장착",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "607e6520d32351eb08ed1383b33cb7c937a90ffc"
-    ]
-  },
-  {
     "issue_id": "86a2e6d0fae7",
     "entity": "엔비디아",
     "title": "‘반값 AI’ 전쟁 불붙었다…머스크·저커버그, 에이전트 시장 가격 공...",
@@ -3721,28 +2539,6 @@
     "status": "진행중",
     "related_article_ids": [
       "63aa54290c5002a792e7e0772eb5349b8b0b2cc5"
-    ]
-  },
-  {
-    "issue_id": "156620aa71a1",
-    "entity": "SK하이닉스",
-    "title": "[오늘의 ABC 뉴스룸] \"역대급 89조를 벌었는데 왜 폭락합니까?\" 사상 최...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "db32a2c2d3ddbdf7572bdf53000d42d640a90f3f"
-    ]
-  },
-  {
-    "issue_id": "542189b0d1dd",
-    "entity": "인텔",
-    "title": "[Tech & Now] 선익시스템, 인도 투자협의회 참석·SK인텔릭스, DDP에 '나무...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "a243076c59fe7832593cf93af53fa9f9bb7dbc9f"
     ]
   },
   {

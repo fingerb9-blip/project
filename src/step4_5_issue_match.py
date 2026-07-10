@@ -12,12 +12,16 @@ from datetime import date
 from pathlib import Path
 
 from src import gemini_client, issue_tracking
+from src.step2_dedup import _token_jaccard
 
 logger = logging.getLogger(__name__)
 
 _PROGRESS_SUMMARY_MIN_DAYS = 3
 _CLOSE_AFTER_DAYS = 7
 _SNIPPET_LEN = 300
+# 같은 사건이 여러 이슈로 쪼개졌을 때 병합 판정 임계값(제목 토큰 자카드). step2 근접중복
+# 임계값과 동일하게 두어 "동일 사건" 기준을 일관되게 맞춘다.
+_ISSUE_MERGE_JACCARD = 0.3
 # 무료 티어 할당량이 넉넉하지 않아 LITE_MODEL로 전환했다. 품질이 부족하면
 # 이 한 줄만 DEFAULT_MODEL로 되돌리면 된다.
 _PROGRESS_SUMMARY_MODEL = gemini_client.LITE_MODEL
@@ -172,6 +176,75 @@ def generate_progress_summary(issue: dict, new_articles: list[dict]) -> str:
         return issue.get("progress_summary") or ""
 
 
+def consolidate_issues(issues: list[dict], today: str) -> list[dict]:
+    """같은 사건이 여러 진행 중 이슈로 쪼개진 것을 하나로 병합한다.
+
+    Gemini 매칭이 실패(무료 티어 503/429)하면 오늘 기사가 전부 개별 신규 이슈로 만들어져
+    같은 사건(예: 'SK하이닉스 나스닥 ADR 상장')이 수십 개 이슈로 파편화된다. 진행 중 이슈
+    중 같은 entity이고 제목 토큰 유사도가 임계 이상인 것끼리 union-find로 묶어, 관련 기사
+    ID를 합치고 first_seen은 가장 이르게·last_updated는 가장 늦게 보존한다.
+
+    entity가 '미상'인 이슈는 오병합 위험이 커 병합 대상에서 제외한다. 종료 이슈는 건드리지
+    않는다.
+
+    Args:
+        issues: 전체 이슈 리스트 (진행중 + 종료)
+        today: YYYY-MM-DD (시그니처 일관성용, 현재 로직에선 미사용)
+
+    Returns:
+        병합이 적용된 이슈 리스트 (종료 이슈는 원래대로 유지)
+    """
+    del today  # 병합 판정에 현재 날짜는 쓰지 않는다(시그니처 일관성용).
+    active = [i for i in issues if i.get("status") == "진행중"]
+    closed = [i for i in issues if i.get("status") != "진행중"]
+
+    parent = list(range(len(active)))
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: int, b: int) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[max(ra, rb)] = min(ra, rb)  # 더 앞선(=먼저 등장한) 이슈를 대표로 둔다
+
+    for a in range(len(active)):
+        for b in range(a + 1, len(active)):
+            entity = active[a].get("entity", "")
+            if entity == "미상" or entity != active[b].get("entity", ""):
+                continue
+            if _token_jaccard(active[a].get("title", ""), active[b].get("title", "")) >= _ISSUE_MERGE_JACCARD:
+                union(a, b)
+
+    groups: dict[int, list[int]] = {}
+    for idx in range(len(active)):
+        groups.setdefault(find(idx), []).append(idx)
+
+    merged: list[dict] = []
+    for root, members in groups.items():
+        if len(members) == 1:
+            merged.append(active[members[0]])
+            continue
+        # 대표 이슈: 관련 기사 많은 것 우선, 동률이면 first_seen 이른 것
+        members_sorted = sorted(
+            members,
+            key=lambda m: (-len(active[m].get("related_article_ids") or []), active[m].get("first_seen", "")),
+        )
+        base = active[members_sorted[0]]
+        all_ids: list[str] = []
+        for m in members:
+            all_ids.extend(active[m].get("related_article_ids") or [])
+        base["related_article_ids"] = list(dict.fromkeys(all_ids))
+        base["first_seen"] = min(active[m].get("first_seen", "") for m in members)
+        base["last_updated"] = max(active[m].get("last_updated", "") for m in members)
+        merged.append(base)
+
+    return closed + merged
+
+
 def run(
     summarized_articles: list[dict],
     aliases_config: dict,
@@ -204,6 +277,9 @@ def run(
         else:
             apply_match(issue, article, today)
         updated_articles_by_issue.setdefault(issue["issue_id"], []).append(article)
+
+    # 같은 사건이 여러 신규 이슈로 쪼개진 것을 병합한다(Gemini 매칭 실패 시 파편화 방지).
+    issues = consolidate_issues(issues, today)
 
     for issue in issues:
         new_articles = updated_articles_by_issue.get(issue["issue_id"])
