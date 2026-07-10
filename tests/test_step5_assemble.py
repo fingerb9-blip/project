@@ -1516,13 +1516,14 @@ def test_run_writes_scraps_html(tmp_path):
 
 
 def test_build_index_html_ignores_archive_and_scraps_as_dates(tmp_path):
-    """archive.html/scraps.html은 날짜별 페이지가 아니다 — dates 목록에 끼어들면
-    _korean_date_title()이 "archive"/"scraps"를 날짜로 파싱하다 크래시한다."""
+    """archive.html/scraps.html/dashboard.html은 날짜별 페이지가 아니다 — dates 목록에
+    끼어들면 _korean_date_title()이 이 이름들을 날짜로 파싱하다 크래시한다."""
     dashboard_dir = tmp_path / "dashboard"
     dashboard_dir.mkdir()
     (dashboard_dir / "2026-07-08.html").write_text("<html></html>", encoding="utf-8")
     (dashboard_dir / "archive.html").write_text("<html></html>", encoding="utf-8")
     (dashboard_dir / "scraps.html").write_text("<html></html>", encoding="utf-8")
+    (dashboard_dir / "dashboard.html").write_text("<html></html>", encoding="utf-8")
 
     html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
 
@@ -1792,3 +1793,99 @@ def test_run_passes_comment_counts_to_index(tmp_path):
 
     index_html = (dashboard_dir / "index.html").read_text(encoding="utf-8")
     assert "💬 댓글 4개" in index_html
+
+
+# --- 통계 대시보드 (dashboard.html) ---
+
+
+def test_build_stats_dashboard_html_includes_chartjs_cdn_script():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert "cdnjs.cloudflare.com" in html_out
+    assert "Chart.js" in html_out or "chart.umd" in html_out
+
+
+def test_build_stats_dashboard_html_canvases_have_accessibility_attrs():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert html_out.count('role="img"') >= 3
+    assert html_out.count("aria-label=") >= 3
+
+
+def test_build_stats_dashboard_html_shows_loading_skeleton():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert "통계를 불러오는 중입니다" in html_out
+
+
+def test_build_stats_dashboard_html_includes_error_placeholder():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert "통계 데이터를 불러올 수 없습니다" in html_out
+    assert 'id="stats-error"' in html_out
+
+
+def test_build_stats_dashboard_html_includes_period_buttons():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert 'data-days="7"' in html_out
+    assert 'data-days="30"' in html_out
+    assert 'data-days="all"' in html_out
+
+
+def test_build_stats_dashboard_html_includes_summary_card_slots():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert 'id="stat-total"' in html_out
+    assert 'id="stat-confirmed-pct"' in html_out
+    assert 'id="stat-noise"' in html_out
+    assert 'id="stat-top-source"' in html_out
+
+
+def test_build_stats_dashboard_html_includes_keyword_bars_container():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert 'id="keyword-bars"' in html_out
+    assert "radar-bars" in html_out
+
+
+def test_build_stats_dashboard_html_fetches_stats_all_json():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert "stats/stats_all.json" in html_out
+
+
+def test_build_stats_dashboard_html_includes_nav_links():
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert 'href="index.html"' in html_out
+    assert 'href="scraps.html"' in html_out
+
+
+def test_build_dashboard_html_includes_stats_nav_link():
+    html_out = step5_assemble.build_dashboard_html([], [], {}, "2026-07-08")
+    assert 'href="dashboard.html"' in html_out
+
+
+def test_build_index_html_includes_stats_nav_link(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    html_out = step5_assemble.build_index_html(dashboard_dir, tmp_path / "run_status.json")
+    assert 'href="dashboard.html"' in html_out
+
+
+def test_build_archive_html_includes_stats_nav_link(tmp_path):
+    dashboard_dir = tmp_path / "dashboard"
+    dashboard_dir.mkdir()
+    html_out = step5_assemble.build_archive_html(dashboard_dir)
+    assert 'href="dashboard.html"' in html_out
+
+
+def test_build_alert_detail_html_includes_stats_nav_link():
+    issue = _sample_issue()
+    html_out = step5_assemble.build_alert_detail_html(issue)
+    assert 'href="../dashboard.html"' in html_out
+
+
+def test_run_writes_stats_dashboard_html(tmp_path):
+    archive_path = tmp_path / "archive" / "2026-07-08.md"
+    dashboard_dir = tmp_path / "dashboard"
+    state_path = tmp_path / "run_status.json"
+    state_path.write_text('{"last_run_status": "success"}', encoding="utf-8")
+
+    step5_assemble.run(
+        [_sample_article()], [], {}, str(archive_path), str(dashboard_dir), "2026-07-08", str(state_path),
+    )
+
+    assert (dashboard_dir / "dashboard.html").exists()

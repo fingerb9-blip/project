@@ -243,6 +243,7 @@ def rebuild_style_and_index(base_dir: Path) -> None:
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
     (dashboard_dir / "scraps.html").write_text(step5_assemble.build_scraps_html(), encoding="utf-8")
+    (dashboard_dir / "dashboard.html").write_text(step5_assemble.build_stats_dashboard_html(), encoding="utf-8")
 
 
 def main() -> None:

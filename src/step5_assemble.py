@@ -21,7 +21,7 @@ import yaml
 from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
-_NON_DATE_PAGE_STEMS = {"index", "archive", "scraps", "subscribe"}
+_NON_DATE_PAGE_STEMS = {"index", "archive", "scraps", "subscribe", "dashboard"}
 _CATEGORY_ORDER = ["메모리", "파운드리", "장비·소재", "팹리스·설계", "규제·정책"]
 _HIGHLIGHT_MAX_COUNT = 5
 _BADGE_CONFIRM_ICONS = {"ok": "✓", "obs": "○", "mut": "–"}
@@ -783,6 +783,7 @@ def build_dashboard_html(
         _build_search_bar(),
         '<p class="row"><a href="index.html">&larr; 전체 목록</a>'
         '<a href="scraps.html">★ 스크랩</a>'
+        '<a href="dashboard.html">📊 통계</a>'
         '<span class="spacer"></span>'
         + _build_date_select(all_dates, target_date)
         + "</p>",
@@ -902,7 +903,8 @@ def build_alert_detail_html(issue: dict) -> str:
         "</head><body>",
         _build_appbar(),
         '<p class="row"><a href="../index.html">&larr; 전체 목록</a>'
-        '<span class="spacer"></span><a href="../scraps.html">★ 스크랩</a></p>',
+        '<span class="spacer"></span><a href="../scraps.html">★ 스크랩</a>'
+        '<a href="../dashboard.html">📊 통계</a></p>',
         '<article class="card">',
         f'<div class="row"><span class="chip">{_esc(issue.get("entity", ""))}</span></div>',
         f"<p class=\"title\">🚨 {_esc(issue.get('tag', ''))} {_esc(title)}</p>",
@@ -983,7 +985,8 @@ def build_archive_html(dashboard_dir: Path) -> str:
         _build_appbar(),
         _build_search_bar(),
         '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a>'
-        '<span class="spacer"></span><a href="scraps.html">★ 스크랩</a></p>',
+        '<span class="spacer"></span><a href="scraps.html">★ 스크랩</a>'
+        '<a href="dashboard.html">📊 통계</a></p>',
     ]
 
     if not by_month:
@@ -1566,7 +1569,8 @@ def build_scraps_html() -> str:
         '<link rel="stylesheet" href="style.css">',
         "</head><body>",
         _build_appbar(),
-        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>',
+        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a>'
+        '<span class="spacer"></span><a href="dashboard.html">📊 통계</a></p>',
         '<div class="row scrap-toolbar">',
         '<h2 class="sec" style="margin:0">내 스크랩</h2>',
         '<span class="spacer"></span>',
@@ -1583,6 +1587,250 @@ def build_scraps_html() -> str:
         _SITE_FOOTER,
         _DASHBOARD_SCRIPT,
         _SCRAPS_SCRIPT,
+        "</body></html>",
+    ]
+    return "\n".join(parts)
+
+
+_CHARTJS_CDN_URL = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js"
+
+_STATS_DASHBOARD_SCRIPT = """\
+<script>
+(function(){
+  var loadingEl = document.getElementById('stats-loading');
+  var errorEl = document.getElementById('stats-error');
+  var contentEl = document.getElementById('stats-content');
+  if (!contentEl) return;
+
+  var CATEGORY_ORDER = ['메모리', '파운드리', '장비·소재', '팹리스·설계', '규제·정책'];
+  var CATEGORY_COLORS = {
+    '메모리': '#6C5CE7', '파운드리': '#3D6FE6', '장비·소재': '#1F7A6B',
+    '팹리스·설계': '#C2652A', '규제·정책': '#A9790B'
+  };
+  var CONFIDENCE_LABELS = ['확정', '관측', '요약없음'];
+  var CONFIDENCE_COLORS = { '확정': '#2E9E5B', '관측': '#C9821A', '요약없음': '#6B7280' };
+
+  var allStats = [];
+  var currentDays = 'all';
+  var charts = {};
+
+  function filterByDays(days){
+    if (days === 'all' || !allStats.length) return allStats;
+    var cutoff = new Date(allStats[allStats.length - 1].date + 'T00:00:00Z');
+    cutoff.setUTCDate(cutoff.getUTCDate() - (days - 1));
+    var cutoffStr = cutoff.toISOString().slice(0, 10);
+    return allStats.filter(function(s){ return s.date >= cutoffStr; });
+  }
+
+  function sumField(rows, field){
+    var totals = {};
+    rows.forEach(function(row){
+      var obj = row[field] || {};
+      Object.keys(obj).forEach(function(k){ totals[k] = (totals[k] || 0) + obj[k]; });
+    });
+    return totals;
+  }
+
+  function destroyChart(key){
+    if (charts[key]) { charts[key].destroy(); charts[key] = null; }
+  }
+
+  function renderSummaryCards(rows){
+    var totalArticles = rows.reduce(function(sum, r){ return sum + (r.total_articles || 0); }, 0);
+    var confidence = sumField(rows, 'by_confidence');
+    var confirmedTotal = confidence['확정'] || 0;
+    var confidenceTotal = Object.keys(confidence).reduce(function(s, k){ return s + confidence[k]; }, 0);
+    var confirmedPct = confidenceTotal ? Math.round(confirmedTotal / confidenceTotal * 100) : 0;
+    var noiseTotal = rows.reduce(function(sum, r){ return sum + (r.noise_reported || 0); }, 0);
+    var sources = sumField(rows, 'by_source');
+    var topSource = Object.keys(sources).sort(function(a, b){ return sources[b] - sources[a]; })[0] || '-';
+
+    document.getElementById('stat-total').textContent = totalArticles;
+    document.getElementById('stat-confirmed-pct').textContent = confirmedPct + '%';
+    document.getElementById('stat-noise').textContent = noiseTotal;
+    document.getElementById('stat-top-source').textContent = topSource;
+  }
+
+  function renderCategoryChart(rows){
+    if (typeof Chart === 'undefined') return;
+    destroyChart('category');
+    var labels = rows.map(function(r){ return r.date; });
+    var datasets = CATEGORY_ORDER.map(function(cat){
+      return {
+        label: cat,
+        data: rows.map(function(r){ return (r.by_category || {})[cat] || 0; }),
+        borderColor: CATEGORY_COLORS[cat],
+        backgroundColor: CATEGORY_COLORS[cat],
+        tension: 0.25,
+        fill: false
+      };
+    });
+    var ctx = document.getElementById('chart-category');
+    if (!ctx) return;
+    charts.category = new Chart(ctx, {
+      type: 'line',
+      data: { labels: labels, datasets: datasets },
+      options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+    });
+  }
+
+  function renderSourceChart(rows){
+    if (typeof Chart === 'undefined') return;
+    destroyChart('source');
+    var sources = sumField(rows, 'by_source');
+    var labels = Object.keys(sources);
+    var data = labels.map(function(k){ return sources[k]; });
+    var ctx = document.getElementById('chart-source');
+    if (!ctx) return;
+    charts.source = new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels: labels, datasets: [{ data: data }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  function renderConfidenceChart(rows){
+    if (typeof Chart === 'undefined') return;
+    destroyChart('confidence');
+    var confidence = sumField(rows, 'by_confidence');
+    var data = CONFIDENCE_LABELS.map(function(k){ return confidence[k] || 0; });
+    var colors = CONFIDENCE_LABELS.map(function(k){ return CONFIDENCE_COLORS[k]; });
+    var ctx = document.getElementById('chart-confidence');
+    if (!ctx) return;
+    charts.confidence = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: CONFIDENCE_LABELS, datasets: [{ data: data, backgroundColor: colors }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  function renderKeywordBars(rows){
+    var counts = {};
+    rows.forEach(function(r){
+      (r.top_keywords || []).forEach(function(k){ counts[k.keyword] = (counts[k.keyword] || 0) + k.count; });
+    });
+    var ranked = Object.keys(counts)
+      .map(function(k){ return { keyword: k, count: counts[k] }; })
+      .sort(function(a, b){ return b.count - a.count; })
+      .slice(0, 10);
+    var max = ranked.length ? ranked[0].count : 0;
+    var container = document.getElementById('keyword-bars');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!ranked.length) {
+      var empty = document.createElement('p');
+      empty.className = 'summary';
+      empty.textContent = '집계된 키워드가 없습니다.';
+      container.appendChild(empty);
+      return;
+    }
+    ranked.forEach(function(item){
+      var width = max ? Math.round(item.count / max * 100) : 0;
+      var row = document.createElement('div'); row.className = 'radar-row';
+      var label = document.createElement('span'); label.className = 'radar-label'; label.textContent = item.keyword;
+      var bar = document.createElement('span'); bar.className = 'radar-bar'; bar.style.width = width + '%';
+      var count = document.createElement('span'); count.className = 'radar-count'; count.textContent = item.count;
+      row.appendChild(label); row.appendChild(bar); row.appendChild(count);
+      container.appendChild(row);
+    });
+  }
+
+  function render(){
+    var rows = filterByDays(currentDays);
+    renderSummaryCards(rows);
+    renderCategoryChart(rows);
+    renderSourceChart(rows);
+    renderConfidenceChart(rows);
+    renderKeywordBars(rows);
+  }
+
+  document.querySelectorAll('.period-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.period-btn').forEach(function(b){ b.setAttribute('aria-pressed', 'false'); });
+      btn.setAttribute('aria-pressed', 'true');
+      currentDays = btn.dataset.days === 'all' ? 'all' : parseInt(btn.dataset.days, 10);
+      render();
+    });
+  });
+
+  fetch('stats/stats_all.json')
+    .then(function(res){ if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(data){
+      allStats = (data || []).slice().sort(function(a, b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+      if (!allStats.length) throw new Error('empty');
+      loadingEl.hidden = true;
+      contentEl.hidden = false;
+      render();
+    })
+    .catch(function(){
+      loadingEl.hidden = true;
+      errorEl.hidden = false;
+    });
+})();
+</script>
+"""
+
+
+def build_stats_dashboard_html() -> str:
+    """통계 대시보드 페이지(data/dashboard/dashboard.html)를 만든다.
+
+    stats/stats_all.json 하나만 fetch해서 클라이언트에서 필터링·렌더링한다 — 서버
+    계산이나 재요청 없이 완전히 정적으로 동작한다. 카테고리별 추이(라인)·소스 비중
+    (도넛)·신뢰도 분포(바)는 Chart.js(CDN)로 그리고, 키워드 Top 10은 기존 실시간
+    트렌드 섹션이 쓰는 .radar-bars 스타일을 그대로 재사용한다.
+
+    Returns:
+        단일 HTML 문서 문자열
+    """
+    parts = [
+        "<!doctype html>",
+        '<html lang="ko"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        "<title>통계 - 반도체 뉴스 브리핑</title>",
+        '<link rel="stylesheet" href="style.css">',
+        "</head><body>",
+        _build_appbar(),
+        _build_search_bar(),
+        '<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a>'
+        '<span class="spacer"></span><a href="scraps.html">★ 스크랩</a></p>',
+        '<h2 class="sec" style="margin-top:0">통계 대시보드</h2>',
+        '<div id="stats-loading" class="giscus-skeleton">통계를 불러오는 중입니다…</div>',
+        '<p id="stats-error" class="giscus-skeleton" hidden>통계 데이터를 불러올 수 없습니다.</p>',
+        '<div id="stats-content" hidden>',
+        '<div class="row period-tabs" role="group" aria-label="기간 선택">'
+        '<button type="button" class="period-btn" data-days="7" aria-pressed="false">7일</button>'
+        '<button type="button" class="period-btn" data-days="30" aria-pressed="false">30일</button>'
+        '<button type="button" class="period-btn" data-days="all" aria-pressed="true">전체</button>'
+        "</div>",
+        '<div class="stat-cards">'
+        '<div class="stat-card"><span class="stat-label">총 기사 수</span>'
+        '<span class="stat-value" id="stat-total">-</span></div>'
+        '<div class="stat-card"><span class="stat-label">확정 비율</span>'
+        '<span class="stat-value" id="stat-confirmed-pct">-</span></div>'
+        '<div class="stat-card"><span class="stat-label">노이즈 신고</span>'
+        '<span class="stat-value" id="stat-noise">-</span></div>'
+        '<div class="stat-card"><span class="stat-label">최다 소스</span>'
+        '<span class="stat-value" id="stat-top-source">-</span></div>'
+        "</div>",
+        '<h3 class="sec">카테고리별 추이</h3>'
+        '<div class="chart-wrap"><canvas id="chart-category" role="img" '
+        'aria-label="카테고리별 기사 수 추이 라인 차트"></canvas></div>',
+        '<h3 class="sec">소스별 비중</h3>'
+        '<div class="chart-wrap"><canvas id="chart-source" role="img" '
+        'aria-label="소스별 기사 비중 도넛 차트"></canvas></div>',
+        '<h3 class="sec">신뢰도 분포</h3>'
+        '<div class="chart-wrap"><canvas id="chart-confidence" role="img" '
+        'aria-label="확정, 관측, 요약없음 신뢰도 분포 바 차트"></canvas></div>',
+        '<h3 class="sec">키워드 Top 10</h3>'
+        '<div id="keyword-bars" class="radar-bars"></div>',
+        "</div>",
+        _SITE_FOOTER,
+        f'<script src="{_CHARTJS_CDN_URL}" crossorigin="anonymous" referrerpolicy="no-referrer"></script>',
+        _STATS_DASHBOARD_SCRIPT,
         "</body></html>",
     ]
     return "\n".join(parts)
@@ -1658,7 +1906,8 @@ def build_index_html(
         "</head><body>",
         _build_appbar(),
         _build_search_bar(),
-        '<p class="row"><a href="scraps.html">★ 스크랩</a></p>',
+        '<p class="row"><a href="scraps.html">★ 스크랩</a>'
+        '<a href="dashboard.html">📊 통계</a></p>',
     ]
 
     if radar_data:
@@ -1896,6 +2145,23 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .sub-btn:hover{filter:brightness(1.05)}
 .sub-msg{margin:14px 0 0;font-size:.9rem;font-weight:600}
 .sub-msg.ok{color:var(--confirmed)}
+
+/* 통계 대시보드(dashboard.html) */
+.period-tabs{gap:8px;margin:0 0 14px}
+.period-btn{flex:0 0 auto;font-family:inherit;font-size:.85rem;color:var(--ink-soft);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;cursor:pointer}
+.period-btn[aria-pressed="true"]{background:var(--pill-active);color:#fff;border-color:var(--pill-active)}
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 1.6rem}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:12px 10px;text-align:center}
+.stat-card .stat-label{display:block;font-size:.74rem;color:var(--ink-soft);margin:0 0 4px}
+.stat-card .stat-value{display:block;font-size:1.15rem;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.chart-wrap{position:relative;height:240px;margin:0 0 1.8rem}
+@media(max-width:480px){
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .chart-wrap{height:200px}
+}
 """
 
 _MAX_ACTIVE_ISSUES = 5
@@ -2011,6 +2277,8 @@ def run(
     (dashboard_dir / "archive.html").write_text(archive_html, encoding="utf-8")
 
     (dashboard_dir / "scraps.html").write_text(build_scraps_html(), encoding="utf-8")
+
+    (dashboard_dir / "dashboard.html").write_text(build_stats_dashboard_html(), encoding="utf-8")
 
     # 구독 폼 URL이 있으면 대시보드 톤에 맞춘 전용 구독 페이지를 생성한다.
     if subscribe_form_url:

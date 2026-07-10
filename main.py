@@ -21,6 +21,7 @@ from src import (
     step6_send,
     step7_subscriber_email,
     step_mention_trend,
+    step_stats,
     step_stock_price,
 )
 
@@ -78,6 +79,16 @@ def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str, weekday: i
         )
     except Exception as exc:
         notify.notify_warning("경쟁 구도 레이더 갱신 실패", f"{type(exc).__name__}: {exc}")
+
+
+def _update_stats(
+    dashboard_dir: Path, classified_articles: list[dict], summarized_articles: list[dict], today: str
+) -> None:
+    """통계 대시보드(dashboard.html)용 일별/전체 통계를 갱신한다. 실패해도 파이프라인에 영향 없음."""
+    try:
+        step_stats.run(classified_articles, summarized_articles, today, str(dashboard_dir / "stats"))
+    except Exception as exc:  # noqa: BLE001 - 통계 집계 실패가 파이프라인을 막지 않도록 흡수
+        notify.notify_warning("통계 집계 실패", f"{type(exc).__name__}: {exc}")
 
 
 _DEFAULT_DASHBOARD_URL = "https://fingerb9-blip.github.io/project/"
@@ -184,6 +195,8 @@ def main() -> None:
             ),
         )
         steps_completed.append("assemble")
+
+        _update_stats(paths["dashboard_dir"], classified_articles, summarized_articles, today)
 
         if not step6_send.run(paths["dashboard_dir"], today):
             raise RuntimeError("Step 6 검증 실패 (08:30까지 대시보드 미갱신)")
