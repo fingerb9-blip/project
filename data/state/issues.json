@@ -2279,7 +2279,8 @@
     "status": "진행중",
     "related_article_ids": [
       "04407760d538200bb767b7eac29ac5bbd203799e",
-      "d25c617bf785b72cdd5bbe480aa3ab593a06a165"
+      "d25c617bf785b72cdd5bbe480aa3ab593a06a165",
+      "a2da5cb34949c9d8c17b72a8d8cac8d3c81d9671"
     ]
   },
   {
@@ -2446,7 +2447,9 @@
     "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "80ea4575c9f7fa1a2e7ddaaca11f4b6678e513c4"
+      "80ea4575c9f7fa1a2e7ddaaca11f4b6678e513c4",
+      "37f3e1724e3a1f43e6f1dfaf0f9534d47c36489d",
+      "0eb00db7cef5a97468cf8dce0d253f7be0a1cc77"
     ]
   },
   {
@@ -2611,7 +2614,9 @@
     "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "826ca952a8148f00cd085159abe68864608cd68b"
+      "826ca952a8148f00cd085159abe68864608cd68b",
+      "4b1a97c3c23e18cb33750528a63b645222c9b1ea",
+      "a2471948e5194d89efc6293e1f7d06fb13a9e0e7"
     ]
   },
   {
@@ -2634,17 +2639,6 @@
     "status": "진행중",
     "related_article_ids": [
       "1d034f1e6add22c26aef918fa12fc92544cb390b"
-    ]
-  },
-  {
-    "issue_id": "cdb54fbff8b0",
-    "entity": "삼성전자",
-    "title": "삼성의 아산 46조원 '투자 프로젝트', 인허가 실행단계 돌입",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "4b1a97c3c23e18cb33750528a63b645222c9b1ea"
     ]
   },
   {
@@ -2766,17 +2760,6 @@
     "status": "진행중",
     "related_article_ids": [
       "c229bcf067fd77eccc23ed42f7a4de1788642509"
-    ]
-  },
-  {
-    "issue_id": "07b25a9d7edb",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 美 IPO 공모가 149달러…알리바바 제치고 외국 기업 '역대 ...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "37f3e1724e3a1f43e6f1dfaf0f9534d47c36489d"
     ]
   },
   {
@@ -2985,7 +2968,184 @@
     "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "2c5737200edcd4ae9b03a644e67e5e777365f4a2"
+      "2c5737200edcd4ae9b03a644e67e5e777365f4a2",
+      "540c643c6e6223f04377fe368ba94b0283f468c3"
+    ]
+  },
+  {
+    "issue_id": "ea56b1105f44",
+    "entity": "삼성전자",
+    "title": "[카드뉴스] 문화와 혁신의 만남, 갤럭시 언팩(Galaxy Unpacked)의 세계 도시 여정",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "fe3c92c60ec7e64da114f8f0f2244d8edf9db70a"
+    ]
+  },
+  {
+    "issue_id": "81be2f3d66b7",
+    "entity": "삼성전자",
+    "title": "삼성 TV 플러스로 뮤지컬 콘텐츠 즐기세요",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "f0769163695f83f24b52c4fbfc9e8918a9951316"
+    ]
+  },
+  {
+    "issue_id": "0b694fa083c0",
+    "entity": "삼성전자",
+    "title": "반도체 강세에 코스피 장중 7600 탈환…코스닥 5%대 폭등",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "182a945f2adb8e4f7543181f5a64674dfd224207"
+    ]
+  },
+  {
+    "issue_id": "faaf2c90b656",
+    "entity": "삼성전자",
+    "title": "SK하이닉스 ADR 상장 기대 타고 오르는 반도체…랠리 지속될까?",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "bf0392286bbe211788f5fc26f507df22af2d7203"
+    ]
+  },
+  {
+    "issue_id": "87029634c28c",
+    "entity": "SK하이닉스",
+    "title": "SK스퀘어, 하이닉스 美 상장 효과는?…AI 투자·주주환원 ‘탄력’",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "07142393ddaf20dd3da2b7b95887e525def804a3"
+    ]
+  },
+  {
+    "issue_id": "3900f829d49a",
+    "entity": "SK하이닉스",
+    "title": "뉴욕 심장부 초대형 태극기…'하닉' 나스닥 입성에 韓 위상 '쑥쑥'",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "c3d890befe2850ac1f8a75a91add9fe96bbb30dd"
+    ]
+  },
+  {
+    "issue_id": "344e23dbb4e4",
+    "entity": "SK하이닉스",
+    "title": "마이크론, SK하이닉스 상장 전날 375조 베팅…美 메모리 전쟁 불붙나",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "731749d6c3dd414ce94b8471558d71018fc8a98b"
+    ]
+  },
+  {
+    "issue_id": "bbbebadc0660",
+    "entity": "SK하이닉스",
+    "title": "美상무장관, 마이크론 행사서 “삼성·하이닉스도 결국 따라올 것”…미...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "d6d82b7c634549df666218d5d9e4a7c597645cbc"
+    ]
+  },
+  {
+    "issue_id": "8d1d4fd5af0c",
+    "entity": "삼성전자",
+    "title": "이재용·최태원, AI 반도체 최전선 진두지휘…사업 수장 美 대동",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "05c91735287b043122660d84d2ffde0e53fd9877"
+    ]
+  },
+  {
+    "issue_id": "c1f0a46ed3a6",
+    "entity": "삼성전자",
+    "title": "애플도 눈독…中 CXMT, 6조 실탄으로 삼성·SK 추격",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "bd31ca6b7288aded4292799ebe74ff045e6ee443"
+    ]
+  },
+  {
+    "issue_id": "a8e71f445116",
+    "entity": "삼성전자",
+    "title": "HBM·첨단공정 수혜 기대…반도체 장비 테마 매수세 폭발",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "01e0b92452f28295b720de4c0c10060b68226ce0"
+    ]
+  },
+  {
+    "issue_id": "d499b74d831e",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 美ADR로 역대급 '실탄 장전'…호남·美 팹 투자에도 쓰일까",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "5516b7d60b18558c1cc619f95f0f36cb0513cf83"
+    ]
+  },
+  {
+    "issue_id": "5845aa9eb9de",
+    "entity": "삼성전자",
+    "title": "삼성전자, 미 반도체주 훈풍 타고 5%대 강세[특징주]",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "e50fca0df6039b4a912b8e36268339182cf136d6"
+    ]
+  },
+  {
+    "issue_id": "64dd0092cca0",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 주당 149달러 미 증시 상장…45조원 조달, 어디 쓰나",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "d851b19c27af5d1a53081c574dd99ebf95fa131e"
+    ]
+  },
+  {
+    "issue_id": "ccd14168ba92",
+    "entity": "삼성전자",
+    "title": "'40조 실탄' 확보한 SK하이닉스…삼성전자 행보 '촉각'",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "948b9aac99424a2af618d7cb1190657c995187f0"
+    ]
+  },
+  {
+    "issue_id": "6dc1b77b4d5e",
+    "entity": "SK하이닉스",
+    "title": "[김대호 진단] SK하닉 ADR 상장과 최태원 진짜 승부",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "0d21b07a814245caa51a7098f5c21b277c40cf5d"
     ]
   }
 ]

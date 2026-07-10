@@ -3,12 +3,12 @@
   "companies": [
     {
       "name": "SK하이닉스",
-      "count": 17,
+      "count": 19,
       "is_spike": true
     },
     {
       "name": "삼성전자",
-      "count": 12,
+      "count": 15,
       "is_spike": true
     },
     {
@@ -17,31 +17,31 @@
       "is_spike": true
     },
     {
-      "name": "엔비디아",
-      "count": 3,
-      "is_spike": true
-    },
-    {
       "name": "TSMC",
       "count": 2,
       "is_spike": true
+    },
+    {
+      "name": "엔비디아",
+      "count": 1,
+      "is_spike": false
     }
   ],
   "keywords": [
     {
       "name": "HBM",
-      "count": 8,
-      "is_spike": true
-    },
-    {
-      "name": "EUV",
-      "count": 4,
+      "count": 12,
       "is_spike": true
     },
     {
       "name": "첨단 패키징",
-      "count": 2,
-      "is_spike": false
+      "count": 3,
+      "is_spike": true
+    },
+    {
+      "name": "EUV",
+      "count": 3,
+      "is_spike": true
     }
   ]
 }
