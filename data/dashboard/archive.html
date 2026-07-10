@@ -6,12 +6,12 @@
 </head><body>
 <div class="appbar"><span class="brand">반도체브리핑</span></div>
 <div class="search"><input id="q" type="search" placeholder="뉴스 태그·제목·내용을 검색해 주세요" aria-label="뉴스 검색"><span class="i">🔍</span></div>
-<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a></p>
+<p class="row"><a href="index.html">&larr; 최신 브리핑으로</a><span class="spacer"></span><a href="scraps.html">★ 스크랩</a></p>
 <div id="feed">
 <h2 class="sec">2026년 7월</h2>
-<div class="card report" data-text="2026-07-10"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">12:13 갱신</span></div><p class="datetitle">2026년 7월 10일 (금)</p><div class="actions"><a href="2026-07-10.html">📄 리포트 읽기</a></div></div>
-<div class="card report" data-text="2026-07-09"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">12:12 갱신</span></div><p class="datetitle">2026년 7월 9일 (목)</p><div class="actions"><a href="2026-07-09.html">📄 리포트 읽기</a></div></div>
-<div class="card report" data-text="2026-07-08"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">12:12 갱신</span></div><p class="datetitle">2026년 7월 8일 (수)</p><div class="actions"><a href="2026-07-08.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-10"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">12:45 갱신</span></div><p class="datetitle">2026년 7월 10일 (금)</p><div class="actions"><a href="2026-07-10.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-09"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">12:43 갱신</span></div><p class="datetitle">2026년 7월 9일 (목)</p><div class="actions"><a href="2026-07-09.html">📄 리포트 읽기</a></div></div>
+<div class="card report" data-text="2026-07-08"><div class="row"><span class="chip">리포트</span><span class="spacer"></span><span class="time">12:43 갱신</span></div><p class="datetitle">2026년 7월 8일 (수)</p><div class="actions"><a href="2026-07-08.html">📄 리포트 읽기</a></div></div>
 </div>
 <p class="site-footer">자동 생성 · 소스: 삼성전자 뉴스룸 · SK하이닉스 · 디일렉 · EE Times · DigiTimes · Semiconductor Engineering</p>
 <script>
@@ -45,6 +45,49 @@ document.querySelectorAll('.filter button').forEach(function(b){
 });
 var qi=document.getElementById('q'); if(qi) qi.addEventListener('input',applyFilters);
 var dtf=document.getElementById('deep-tech-filter'); if(dtf) dtf.addEventListener('change',applyFilters);
+
+var SCRAP_KEY='sb-scraps-v1', SCRAP_MAX=200;
+function loadScraps(){
+  try{ return JSON.parse(localStorage.getItem(SCRAP_KEY)||'[]'); }catch(e){ return []; }
+}
+function saveScraps(list){
+  try{ localStorage.setItem(SCRAP_KEY, JSON.stringify(list)); }catch(e){}
+}
+function toggleScrap(btn){
+  var id=btn.dataset.articleId;
+  var list=loadScraps();
+  var idx=list.findIndex(function(s){ return s.articleId===id; });
+  if(idx>-1){
+    list.splice(idx,1);
+    btn.textContent='☆ 스크랩';
+    btn.setAttribute('aria-pressed','false');
+  }else{
+    list.unshift({
+      articleId:id,
+      title:btn.dataset.title,
+      url:btn.dataset.url,
+      source:btn.dataset.source,
+      category:btn.dataset.category,
+      savedAt:new Date().toISOString()
+    });
+    if(list.length>SCRAP_MAX) list=list.slice(0,SCRAP_MAX);
+    btn.textContent='★ 스크랩';
+    btn.setAttribute('aria-pressed','true');
+  }
+  saveScraps(list);
+}
+(function(){
+  var saved=loadScraps();
+  var savedIds={};
+  saved.forEach(function(s){ savedIds[s.articleId]=true; });
+  document.querySelectorAll('.scrap-btn').forEach(function(btn){
+    if(savedIds[btn.dataset.articleId]){
+      btn.textContent='★ 스크랩';
+      btn.setAttribute('aria-pressed','true');
+    }
+    btn.addEventListener('click', function(){ toggleScrap(btn); });
+  });
+})();
 document.querySelectorAll('.noise-btn').forEach(function(b){
   b.addEventListener('click',function(){
     var id=b.dataset.articleId;

@@ -178,6 +178,10 @@ def main() -> None:
             cold_start_stage=cold_start_stage,
             giscus_config=giscus_config,
             comment_counts=comment_counts,
+            subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
+            subscribe_email_entry=os.environ.get(
+                "SUBSCRIBE_EMAIL_ENTRY", step5_assemble._SUBSCRIBE_EMAIL_ENTRY
+            ),
         )
         steps_completed.append("assemble")
 

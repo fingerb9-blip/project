@@ -609,7 +609,9 @@
       "607e6520d32351eb08ed1383b33cb7c937a90ffc",
       "4f5aba92280514ca41596d8b7bae54634286b04d",
       "1d61d5fada220fdfcc8a8285568c26342f6b5f9c",
-      "020b75dd9cad75693fd8388e9650348d5d045e64"
+      "020b75dd9cad75693fd8388e9650348d5d045e64",
+      "1d034f1e6add22c26aef918fa12fc92544cb390b",
+      "9b8b7980a1899f7f48023067758e49b512708457"
     ]
   },
   {
@@ -1922,10 +1924,11 @@
     "entity": "SK하이닉스",
     "title": "SK하이닉스 목표가 185만원 vs 420만원…“팔아, 말아” 극과 극 전망, 왜...",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "63908706a368957127a0c8796b2fdcd813075d78"
+      "63908706a368957127a0c8796b2fdcd813075d78",
+      "a161fd5fb3c54b7ffee3e837fde35c0c6fed564c"
     ]
   },
   {
@@ -2267,7 +2270,9 @@
     "last_updated": "2026-07-10",
     "status": "진행중",
     "related_article_ids": [
-      "1f53756405beff4492a8825bf1dc0f37b4e7eb0f"
+      "1f53756405beff4492a8825bf1dc0f37b4e7eb0f",
+      "d6d82b7c634549df666218d5d9e4a7c597645cbc",
+      "e446f1b5fbeed5ad8c1faf9393c90d53a8567bcd"
     ]
   },
   {
@@ -2628,17 +2633,6 @@
     "status": "진행중",
     "related_article_ids": [
       "fe2ed1f5f5e6b43d2efb6cf059eaf0c6e22762d1"
-    ]
-  },
-  {
-    "issue_id": "ec55afd928df",
-    "entity": "SK하이닉스",
-    "title": "'40조 잭팟' 터진 SK하이닉스, 나스닥 상장으로 '만년 저평가' 꼬리표 뗄...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "1d034f1e6add22c26aef918fa12fc92544cb390b"
     ]
   },
   {
@@ -3050,17 +3044,6 @@
     ]
   },
   {
-    "issue_id": "bbbebadc0660",
-    "entity": "SK하이닉스",
-    "title": "美상무장관, 마이크론 행사서 “삼성·하이닉스도 결국 따라올 것”…미...",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
-    "status": "진행중",
-    "related_article_ids": [
-      "d6d82b7c634549df666218d5d9e4a7c597645cbc"
-    ]
-  },
-  {
     "issue_id": "8d1d4fd5af0c",
     "entity": "삼성전자",
     "title": "이재용·최태원, AI 반도체 최전선 진두지휘…사업 수장 美 대동",
@@ -3245,6 +3228,160 @@
     "status": "진행중",
     "related_article_ids": [
       "d533163be431ee88da2a292e0588b0cab2624d2f"
+    ]
+  },
+  {
+    "issue_id": "6b4d06f4babc",
+    "entity": "삼성전자",
+    "title": "삼성전자·에스케이하이닉스, AI 투자 확산에 주가 상승세",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "675a231eeb8386cd160dbe5958b8c07f7c74a6c6"
+    ]
+  },
+  {
+    "issue_id": "0f39b17d8a3a",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 나스닥 상장 하루 전 뉴욕 밝힌 태극기…공모 흥행에 월가...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "508e92099c78a88cf2174f5f5c9fa06699e3c07f"
+    ]
+  },
+  {
+    "issue_id": "5aebeae679e4",
+    "entity": "SK하이닉스",
+    "title": "SK Hynix Raises 37 Trillion Won in Nasdaq Debut",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "bea42a047f944480b3f2c376282e51f5068e75d1"
+    ]
+  },
+  {
+    "issue_id": "ba736f92e769",
+    "entity": "삼성전자",
+    "title": "삼성전자 파운드리를 주목해야 하는 이유는?",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "7c03a3ff6d7616725cf586fc845473a99d3b97fd"
+    ]
+  },
+  {
+    "issue_id": "20f91a9480a7",
+    "entity": "SK하이닉스",
+    "title": "러트닉 장관 \"삼성·하이닉스 미국으로 오라\"···메모리 패권 다툼 노...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "662d402625dc0b7b20760de0bff8f4a35a37d8fb"
+    ]
+  },
+  {
+    "issue_id": "12cba946277b",
+    "entity": "삼성전자",
+    "title": "'40조 조달' SK하이닉스, 외국 기업 사상 최대 규모로 미국 증시 입성",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "581660ce2568781c2214ff7b1fced28e77d60136"
+    ]
+  },
+  {
+    "issue_id": "4eca2551afee",
+    "entity": "미상",
+    "title": "\"우유에 물 많으니 물과 같다고?\" TC본더 특허전 '논리 비약' 공방",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "f772e586948cbbb5808fd0378668f6ca586dc4b0"
+    ]
+  },
+  {
+    "issue_id": "2ffe8a7d8350",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 나스닥 상장 '40조 잭팟'…美, 외국기업 IPO 사상 최대 기록",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "9b8b7980a1899f7f48023067758e49b512708457"
+    ]
+  },
+  {
+    "issue_id": "9b456cd5f87d",
+    "entity": "삼성전자",
+    "title": "[막전막후] 그래서 \"스타벅스 가야지\"는 사라졌을까?",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "e25ef19bcd59897bde594dec5a2e24e40de0351b"
+    ]
+  },
+  {
+    "issue_id": "6d6ae9d67c76",
+    "entity": "SK하이닉스",
+    "title": "최태원 회장, SK하이닉스 나스닥 상장 기념 뉴욕행… 외국 기업 美 IPO 역...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "a759e5c7c7e87d8285de71186d6c68c8560ca72c"
+    ]
+  },
+  {
+    "issue_id": "f5f9bc62ec21",
+    "entity": "미상",
+    "title": "‘오프닝 벨’ 울리는 최태원 회장…AI 시대 ‘슈퍼모멘텀’ 이끈다",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "267b7bb8a94aff4fd90970d63582fd05b6982edf"
+    ]
+  },
+  {
+    "issue_id": "bfbc429047fb",
+    "entity": "미상",
+    "title": "최태원 SK회장, 하이닉스 나스닥 상장 기념행사 참석..'오프닝 벨' 울린...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "da9330a75fd94de2852a3a3c47b7e67c925413bd"
+    ]
+  },
+  {
+    "issue_id": "86a86a781c5b",
+    "entity": "미상",
+    "title": "애플도 눈독…中 CXMT, 6조 실탄으로 삼성·SK 추격",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "bd31ca6b7288aded4292799ebe74ff045e6ee443"
+    ]
+  },
+  {
+    "issue_id": "9190468437d3",
+    "entity": "미상",
+    "title": "폴란드 프로세서·컨트롤러 관련 시스템 반도체 시장동향",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "7b8232945315bbc05ec2a349661a5bee2b0c1456"
     ]
   }
 ]
