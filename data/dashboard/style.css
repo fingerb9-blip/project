@@ -139,3 +139,17 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .tbar .fill{display:block;height:100%;border-radius:999px}
 .tbar .p{flex:0 0 42px;text-align:right;font-size:.8rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 @media(max-width:480px){.trend-body{flex-direction:column;align-items:stretch}.trend-donut{align-self:center}}
+
+/* 오늘의 시장 현황 */
+.snapshot{margin:0 0 4px}
+.snapshot-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.chip.warn{background:var(--warn-bg);border-color:var(--warn-line);color:#8A5A10}
+
+/* 스크랩 (로그인 없는 localStorage 즐겨찾기) */
+.scrap-btn{font-family:inherit;font-size:.76rem;color:var(--ink-soft);background:transparent;
+  border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+.scrap-btn[aria-pressed="true"]{color:#8A6A00;border-color:#E8C766;background:#FFF8E6}
+.scrap-toolbar{flex-wrap:wrap;gap:8px;margin:.6rem 0 1rem}
+.scrap-toolbar select{font-family:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+.scrap-disclaimer{margin:1.4rem 0 0;font-size:.78rem;color:var(--ink-soft)}
