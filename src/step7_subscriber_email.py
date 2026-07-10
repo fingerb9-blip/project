@@ -4,6 +4,9 @@ import html
 import json
 import logging
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from pathlib import Path
 
 from src import step5_assemble
@@ -89,3 +92,98 @@ def build_email_body(summarized_path: Path, today: str, dashboard_url: str) -> s
         "구독을 원치 않으시면 이 메일에 회신해 주세요.</p>"
     )
     return "".join(parts)
+
+
+def _send_html_email(
+    to_addr: str, subject: str, html_body: str, attachment_name: str, attachment_html: str
+) -> None:
+    """HTML 본문 + HTML 첨부 1개를 SMTP로 발송한다. 실패 시 예외를 던진다."""
+    host = os.environ.get("SMTP_HOST")
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASSWORD")
+    if not all([host, user, password]):
+        raise RuntimeError("SMTP 설정(SMTP_HOST/USER/PASSWORD)이 없습니다")
+
+    msg = MIMEMultipart()
+    msg["Subject"] = subject
+    msg["From"] = user
+    msg["To"] = to_addr
+    msg.attach(MIMEText(html_body, "html", _charset="utf-8"))
+
+    attachment = MIMEText(attachment_html, "html", _charset="utf-8")
+    attachment.add_header("Content-Disposition", "attachment", filename=attachment_name)
+    msg.attach(attachment)
+
+    with smtplib.SMTP(host, port) as server:
+        server.starttls()
+        server.login(user, password)
+        server.send_message(msg)
+
+
+def load_send_state(state_path: Path) -> dict:
+    """발송 상태를 로드한다."""
+    path = Path(state_path)
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return {}
+
+
+def save_send_state(state_path: Path, today: str, sent_count: int) -> None:
+    """발송 상태를 저장한다."""
+    path = Path(state_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"last_sent_date": today, "sent_count": sent_count}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def run(
+    dashboard_dir,
+    summarized_path,
+    state_path,
+    today: str,
+    dashboard_url: str,
+    subscribers: list[str] | None = None,
+) -> dict:
+    """Step 7 진입점. 명단 구독자에게 그날 브리핑을 발송한다. 예외를 밖으로 던지지 않는다.
+
+    Returns:
+        {"sent": 성공 건수, "failed": 실패 건수, "skipped": 이번에 발송을 건너뛰었는지}
+    """
+    result = {"sent": 0, "failed": 0, "skipped": False}
+    try:
+        force = os.environ.get("FORCE_RESEND", "").strip().lower() == "true"
+        if not force and load_send_state(state_path).get("last_sent_date") == today:
+            logger.info("오늘(%s) 이미 발송함, 스킵", today)
+            result["skipped"] = True
+            return result
+
+        if subscribers is None:
+            subscribers = load_subscribers()
+        if not subscribers:
+            logger.info("구독자 명단이 비어 있어 발송하지 않습니다")
+            return result
+
+        subject = f"[반도체 브리핑] {today} 오늘의 핵심"
+        body = build_email_body(Path(summarized_path), today, dashboard_url)
+        attachment_html = build_standalone_html(Path(dashboard_dir), today)
+        attachment_name = f"반도체브리핑_{today}.html"
+
+        for addr in subscribers:
+            try:
+                _send_html_email(addr, subject, body, attachment_name, attachment_html)
+                result["sent"] += 1
+            except Exception as exc:  # noqa: BLE001 - 건별 실패는 로그 후 계속
+                logger.error("구독자 %s 발송 실패: %s", addr, exc)
+                result["failed"] += 1
+
+        if result["sent"] > 0:
+            save_send_state(state_path, today, result["sent"])
+    except Exception as exc:  # noqa: BLE001 - Step 7 실패가 파이프라인을 막지 않도록 흡수
+        logger.error("뉴스레터 발송 중 예기치 못한 오류(무시하고 계속): %s", exc)
+    return result
