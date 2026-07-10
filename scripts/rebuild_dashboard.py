@@ -19,6 +19,7 @@ Usage:
 import argparse
 import difflib
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -238,6 +239,7 @@ def rebuild_style_and_index(base_dir: Path) -> None:
         latest_core_count=latest_core_count,
         latest_headlines=latest_headlines,
         comment_counts=comment_counts,
+        subscribe_form_url=os.environ.get("SUBSCRIBE_FORM_URL"),
     )
     (dashboard_dir / "index.html").write_text(index_html, encoding="utf-8")
     (dashboard_dir / "scraps.html").write_text(step5_assemble.build_scraps_html(), encoding="utf-8")

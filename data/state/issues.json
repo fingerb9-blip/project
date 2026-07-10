@@ -3383,5 +3383,93 @@
     "related_article_ids": [
       "7b8232945315bbc05ec2a349661a5bee2b0c1456"
     ]
+  },
+  {
+    "issue_id": "0b139f2cd912",
+    "entity": "삼성전자",
+    "title": "중국 창신메모리, 글로벌 D램 판 흔든다",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "ddbf6983b96b227b1367d22d22fcc2368604e639"
+    ]
+  },
+  {
+    "issue_id": "7da76e6145ea",
+    "entity": "삼성전자",
+    "title": "미, 삼성·하이닉스에도 “미국에서 더 만들라”",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "ed68b629243e448aaca627606b0ad808d1d656fa"
+    ]
+  },
+  {
+    "issue_id": "a3ac49b5aa68",
+    "entity": "미상",
+    "title": "마이크론, 2500억달러 투자 확대",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "4dcc4e11735e8b2c000660c4b33325347e526a78"
+    ]
+  },
+  {
+    "issue_id": "ac410e99e2b7",
+    "entity": "SK하이닉스",
+    "title": "[SK 재평가]⑦최태원 회장의 뉴욕행, 하이닉스 몸값 SK로 번질까",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "4c77ed0e16ca7aa01de69d2997f6390351377ec3"
+    ]
+  },
+  {
+    "issue_id": "34115e4b0328",
+    "entity": "SK하이닉스",
+    "title": "[Market Focus] 글로벌 자본시장 뒤흔든 SK하이닉스의 '나스닥 대공습'…...",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "b53a5409c0fe0d14e78d1c293297e2f8aecb2d6c"
+    ]
+  },
+  {
+    "issue_id": "e06192d1cdf3",
+    "entity": "엔비디아",
+    "title": "삼성, 4나노 AI PC 칩 '가이아' 개발 중…퀄컴·엔비디아 정조준",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "17919ac57d0aadba05c1f2eafc174902b99043cf"
+    ]
+  },
+  {
+    "issue_id": "302641ec124d",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 목표가 185만 vs 400만, 누가 맞나?",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "b6eaaec800e910169cff00980e76347b9377b08f"
+    ]
+  },
+  {
+    "issue_id": "c4eda67c47b8",
+    "entity": "SK하이닉스",
+    "title": "“SK하이닉스, ADR 공모가 주당 149달러 확정”",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-10",
+    "status": "진행중",
+    "related_article_ids": [
+      "fe0a321f18a492970f33d19d72fdf40c8559bf60"
+    ]
   }
 ]
