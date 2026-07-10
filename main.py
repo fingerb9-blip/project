@@ -1,6 +1,7 @@
 """Step 0~6 순차 실행 진입점."""
 
 import json
+import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -18,6 +19,7 @@ from src import (
     step4_summarize,
     step5_assemble,
     step6_send,
+    step7_subscriber_email,
     step_mention_trend,
     step_stock_price,
 )
@@ -76,6 +78,23 @@ def _maybe_run_weekly_radar(base_dir: Path, config: dict, today: str, weekday: i
         )
     except Exception as exc:
         notify.notify_warning("경쟁 구도 레이더 갱신 실패", f"{type(exc).__name__}: {exc}")
+
+
+_DEFAULT_DASHBOARD_URL = "https://fingerb9-blip.github.io/project/"
+
+
+def _maybe_send_newsletter(base_dir, paths, today: str) -> None:
+    """Step 6 성공 후 구독자에게 뉴스레터를 발송한다. 실패해도 파이프라인에 영향 없음."""
+    try:
+        dashboard_url = os.environ.get("DASHBOARD_URL", _DEFAULT_DASHBOARD_URL)
+        summarized_path = base_dir / "data" / "summarized" / f"{today}.json"
+        state_path = base_dir / "data" / "state" / "newsletter_state.json"
+        result = step7_subscriber_email.run(
+            paths["dashboard_dir"], summarized_path, state_path, today, dashboard_url
+        )
+        print(f"[NEWSLETTER] {result}")
+    except Exception as exc:  # noqa: BLE001 - 발송 실패가 파이프라인을 막지 않도록 흡수
+        print(f"[NEWSLETTER] 발송 래퍼 오류(무시): {exc}")
 
 
 def main() -> None:
@@ -201,6 +220,7 @@ def main() -> None:
             "failed_sources": [],
         },
     )
+    _maybe_send_newsletter(base_dir, paths, today)
     index_html = step5_assemble.build_index_html(
         paths["dashboard_dir"],
         paths["state"],
