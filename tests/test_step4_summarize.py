@@ -177,6 +177,41 @@ def test_extractive_summary_empty_for_blank_raw_text():
     assert step4_summarize._extractive_summary("   ") == ""
 
 
+def test_backfill_extractive_fills_missing_summary_from_raw_text():
+    # 과거 폴백 기사(summary=None)를 원문 발췌로 소급 채운다.
+    articles = [
+        {"id": "a1", "summary": None, "summary_fallback": True,
+         "raw_text": "첫 문장이다. 둘째 문장이다. 셋째 문장이다. 넷째 문장이다."},
+    ]
+
+    step4_summarize.backfill_extractive(articles)
+
+    assert articles[0]["summary_fallback"] is False
+    assert articles[0]["summary_extractive"] is True
+    assert articles[0]["confirmation_tag"] == "[관측]"
+    assert "첫 문장이다." in articles[0]["summary"]
+    assert "넷째 문장이다." not in articles[0]["summary"]
+
+
+def test_backfill_extractive_keeps_existing_summary():
+    articles = [{"id": "a1", "summary": "이미 있는 AI 요약", "summary_fallback": False}]
+
+    step4_summarize.backfill_extractive(articles)
+
+    assert articles[0]["summary"] == "이미 있는 AI 요약"
+    assert articles[0]["summary_extractive"] is False
+
+
+def test_backfill_extractive_true_fallback_when_no_raw_text():
+    articles = [{"id": "a1", "summary": None, "summary_fallback": True, "raw_text": ""}]
+
+    step4_summarize.backfill_extractive(articles)
+
+    assert articles[0]["summary"] is None
+    assert articles[0]["summary_fallback"] is True
+    assert articles[0]["summary_extractive"] is False
+
+
 @patch("src.step4_summarize.generate_summaries")
 def test_run_ignores_non_core_tier_articles(mock_generate, tmp_path):
     mock_generate.return_value = {"art1": "요약1"}

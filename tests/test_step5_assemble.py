@@ -397,6 +397,22 @@ def test_build_dashboard_html_no_issue_section_when_no_active_issues():
     assert "진행 중 이슈" not in html_out
 
 
+def test_build_briefing_marks_extractive_summary():
+    extractive = _sample_article(
+        summary="원문에서 가져온 문장.", confirmation_tag="[관측]",
+        summary_fallback=False, summary_extractive=True,
+    )
+    md = step5_assemble.build_briefing([extractive], [], {})
+    assert "(발췌)" in md
+    assert "원문에서 가져온 문장." in md
+
+
+def test_build_briefing_no_extract_mark_for_ai_summary():
+    ai = _sample_article(summary="AI 요약", summary_fallback=False, summary_extractive=False)
+    md = step5_assemble.build_briefing([ai], [], {})
+    assert "(발췌)" not in md
+
+
 def test_build_briefing_renders_active_issue_timeline():
     issue = _sample_issue()
     md = step5_assemble.build_briefing([], [], {}, active_issues=[issue])

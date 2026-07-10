@@ -80,7 +80,8 @@ def build_briefing(
             lines.append(f"- [{article['title']}]({article['url']}) ({article['source']})")
         else:
             tag = article.get("confirmation_tag", "")
-            lines.append(f"- {tag} **{article['title']}**")
+            mark = " (발췌)" if article.get("summary_extractive") else ""
+            lines.append(f"- {tag}{mark} **{article['title']}**")
             lines.append(f"  {article['summary']}")
             lines.append(f"  ({article['source']}, {article['url']})")
     lines.append("")

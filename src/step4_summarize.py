@@ -85,6 +85,46 @@ def generate_summaries(articles: list[dict]) -> dict[str, str]:
     return {item["id"]: item["summary"] for item in result.get("summaries", [])}
 
 
+def _fill_extractive(article: dict) -> None:
+    """요약이 없는 기사에 발췌 요약(원문 앞 문장)을 채운다. 원문도 없으면 진짜 폴백으로 둔다.
+
+    발췌는 원문 그대로라 항상 [관측]으로 태깅하고 summary_extractive=True로 표시한다
+    (대시보드가 '발췌' 배지를 붙일 근거). 원문이 없으면 헤드라인+링크만 남는 폴백.
+    """
+    extractive = _extractive_summary(article.get("raw_text", ""))
+    if extractive:
+        article["summary"] = extractive
+        article["confirmation_tag"] = "[관측]"
+        article["summary_fallback"] = False
+        article["summary_extractive"] = True
+    else:
+        article["summary"] = None
+        article["confirmation_tag"] = None
+        article["summary_fallback"] = True
+        article["summary_extractive"] = False
+
+
+def backfill_extractive(articles: list[dict]) -> list[dict]:
+    """저장된 summarized 데이터에서 요약이 빠진(과거 폴백) 기사에 발췌 요약을 소급 적용한다.
+
+    이미 요약이 있는 기사는 그대로 두고, summary가 없는 기사만 원문 앞 문장으로 채운다.
+    rebuild_dashboard가 과거 페이지를 최신 형식으로 재생성할 때, Gemini 요약이 실패했던
+    날의 '요약 준비 중' 자리를 발췌로 대체하기 위한 진입점이다(원본 재요약 없이 소급).
+
+    Args:
+        articles: 저장된 summarized 기사 리스트 (raw_text 포함)
+
+    Returns:
+        발췌가 채워진 동일 리스트
+    """
+    for article in articles:
+        if article.get("summary") is None:
+            _fill_extractive(article)
+        else:
+            article.setdefault("summary_extractive", False)
+    return articles
+
+
 def tag_confirmation_level(summary: str, source: str, source_tiers_config: dict) -> str:
     """소스 등급 기준으로 [확정]/[관측] 태그를 부여한다.
 
@@ -146,19 +186,7 @@ def run(
         if summary is None:
             if summaries:
                 logger.error("%s 요약 응답 누락, 발췌 요약으로 폴백", article["id"])
-            extractive = _extractive_summary(article.get("raw_text", ""))
-            if extractive:
-                # 원문 앞 문장을 발췌해 채운다. 원문 그대로라 항상 [관측]으로 태깅한다.
-                article["summary"] = extractive
-                article["confirmation_tag"] = "[관측]"
-                article["summary_fallback"] = False
-                article["summary_extractive"] = True
-            else:
-                # 발췌할 원문조차 없을 때만 진짜 폴백(헤드라인+링크).
-                article["summary"] = None
-                article["confirmation_tag"] = None
-                article["summary_fallback"] = True
-                article["summary_extractive"] = False
+            _fill_extractive(article)
         else:
             article["summary"] = summary
             article["confirmation_tag"] = tag_confirmation_level(summary, article["source"], source_tiers_config)
