@@ -51,6 +51,8 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.force_run || 'false' }}
+          SUBSCRIBERS: ${{ secrets.SUBSCRIBERS }}
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://fingerb9-blip.github.io/project/' }}
         run: python main.py
 
       - name: Commit state & archive
