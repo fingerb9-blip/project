@@ -1592,7 +1592,9 @@ def build_scraps_html() -> str:
     return "\n".join(parts)
 
 
-_CHARTJS_CDN_URL = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js"
+# cdnjs의 기본 chart.min.js는 ESM(import/export) 빌드라 <script src>로 그냥 불러오면
+# 전역 Chart가 생기지 않는다(원인: 4.5.0 배포 후 확인된 실제 버그). UMD 빌드를 써야 한다.
+_CHARTJS_CDN_URL = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"
 
 _STATS_DASHBOARD_SCRIPT = """\
 <script>
@@ -1739,12 +1741,26 @@ _STATS_DASHBOARD_SCRIPT = """\
     });
   }
 
+  function markChartsUnavailable(){
+    document.querySelectorAll('.chart-wrap').forEach(function(wrap){
+      if (wrap.querySelector('.chart-unavailable')) return;
+      var msg = document.createElement('p');
+      msg.className = 'chart-unavailable summary';
+      msg.textContent = '차트 라이브러리를 불러오지 못해 차트를 표시할 수 없습니다.';
+      wrap.appendChild(msg);
+    });
+  }
+
   function render(){
     var rows = filterByDays(currentDays);
     renderSummaryCards(rows);
-    renderCategoryChart(rows);
-    renderSourceChart(rows);
-    renderConfidenceChart(rows);
+    if (typeof Chart === 'undefined') {
+      markChartsUnavailable();
+    } else {
+      renderCategoryChart(rows);
+      renderSourceChart(rows);
+      renderConfidenceChart(rows);
+    }
     renderKeywordBars(rows);
   }
 
@@ -2158,6 +2174,8 @@ h2.sec{font-size:1.05rem;font-weight:700;margin:1.6rem 0 .7rem}
 .stat-card .stat-value{display:block;font-size:1.15rem;font-weight:700;color:var(--ink);
   font-variant-numeric:tabular-nums}
 .chart-wrap{position:relative;height:240px;margin:0 0 1.8rem}
+.chart-wrap .chart-unavailable{position:absolute;top:50%;left:0;right:0;margin:0;
+  transform:translateY(-50%);text-align:center}
 @media(max-width:480px){
   .stat-cards{grid-template-columns:repeat(2,1fr)}
   .chart-wrap{height:200px}

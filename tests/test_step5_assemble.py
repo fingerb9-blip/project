@@ -1801,7 +1801,21 @@ def test_run_passes_comment_counts_to_index(tmp_path):
 def test_build_stats_dashboard_html_includes_chartjs_cdn_script():
     html_out = step5_assemble.build_stats_dashboard_html()
     assert "cdnjs.cloudflare.com" in html_out
-    assert "Chart.js" in html_out or "chart.umd" in html_out
+    assert "Chart.js" in html_out
+
+
+def test_build_stats_dashboard_html_uses_umd_chartjs_build():
+    """cdnjs의 기본 chart.min.js는 ESM(import/export) 빌드라 평범한 <script src> 태그로
+    불러오면 전역 Chart가 안 만들어진다. UMD 빌드(chart.umd.min.js)를 써야 한다."""
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert "chart.umd.min.js" in html_out
+
+
+def test_dashboard_script_shows_fallback_when_chartjs_unavailable():
+    """Chart.js 로드 자체가 실패하면(CDN 차단 등) 빈 칸을 남기지 않고 안내 문구를 보여준다."""
+    html_out = step5_assemble.build_stats_dashboard_html()
+    assert "차트 라이브러리를 불러오지 못해" in html_out
+    assert "markChartsUnavailable" in html_out
 
 
 def test_build_stats_dashboard_html_canvases_have_accessibility_attrs():
