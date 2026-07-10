@@ -233,3 +233,41 @@ def test_build_standalone_html_missing_style_link_returns_unchanged(tmp_path, ca
 
     assert out == original
     assert "style" in caplog.text.lower()
+
+
+# Tests for fetch_csv_subscribers
+from unittest.mock import patch
+
+_CSV = (
+    "타임스탬프,이메일 주소,수신 동의\n"
+    "2026-07-10 09:00:00,alice@x.com,예\n"
+    "2026-07-10 09:01:00,bob@y.com,예\n"
+    "2026-07-10 09:02:00,alice@x.com,예\n"      # 중복
+    "2026-07-10 09:03:00,notanemail,예\n"        # @ 없음
+)
+
+
+def test_fetch_csv_subscribers_extracts_emails_only(monkeypatch):
+    monkeypatch.setattr(news, "_http_get_text", lambda url: _CSV)
+    assert news.fetch_csv_subscribers("https://sheet/pub.csv") == ["alice@x.com", "bob@y.com"]
+
+
+def test_fetch_csv_subscribers_empty_url_returns_empty(monkeypatch):
+    called = []
+    monkeypatch.setattr(news, "_http_get_text", lambda url: called.append(url) or "")
+    assert news.fetch_csv_subscribers("") == []
+    assert news.fetch_csv_subscribers("   ") == []
+    assert called == []  # 빈 URL이면 HTTP 호출조차 안 함
+
+
+def test_fetch_csv_subscribers_reads_env_when_no_arg(monkeypatch):
+    monkeypatch.setenv("SUBSCRIBERS_CSV_URL", "https://sheet/pub.csv")
+    monkeypatch.setattr(news, "_http_get_text", lambda url: "이메일\nc@z.com\n")
+    assert news.fetch_csv_subscribers() == ["c@z.com"]
+
+
+def test_fetch_csv_subscribers_returns_empty_on_fetch_error(monkeypatch):
+    def boom(url):
+        raise OSError("network down")
+    monkeypatch.setattr(news, "_http_get_text", boom)
+    assert news.fetch_csv_subscribers("https://sheet/pub.csv") == []

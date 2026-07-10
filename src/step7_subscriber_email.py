@@ -1,10 +1,13 @@
 """Step 7. 이메일 뉴스레터 — 명단 구독자에게 그날 브리핑을 발송한다 (무료, 지인 대상)."""
 
+import csv
 import html
+import io
 import json
 import logging
 import os
 import smtplib
+import urllib.request
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -12,6 +15,45 @@ from pathlib import Path
 from src import step5_assemble
 
 logger = logging.getLogger(__name__)
+
+_HTTP_TIMEOUT = 10
+
+
+def _http_get_text(url: str) -> str:
+    """URL 본문을 utf-8 텍스트로 가져온다 (테스트에서 mock되는 경계)."""
+    with urllib.request.urlopen(url, timeout=_HTTP_TIMEOUT) as resp:  # noqa: S310 - 신뢰된 시트 URL
+        return resp.read().decode("utf-8")
+
+
+def _looks_like_email(value: str) -> bool:
+    """셀 값이 이메일 형태인지 판정한다 (@ 있고 도메인에 . 있음)."""
+    v = value.strip()
+    local, sep, domain = v.partition("@")
+    return bool(sep) and bool(local) and "." in domain
+
+
+def fetch_csv_subscribers(csv_url: str | None = None) -> list[str]:
+    """게시된 구글 시트 CSV에서 구독자 이메일을 읽는다.
+
+    열 위치에 의존하지 않고 모든 셀을 훑어 이메일처럼 보이는 값만 수집한다(타임스탬프·동의
+    열 자연 배제). 실패(네트워크·파싱) 시 [] 반환(폴백). 빈 URL이면 [].
+    """
+    if csv_url is None:
+        csv_url = os.environ.get("SUBSCRIBERS_CSV_URL", "")
+    if not csv_url.strip():
+        return []
+    try:
+        text = _http_get_text(csv_url)
+        seen: dict[str, None] = {}
+        for row in csv.reader(io.StringIO(text)):
+            for cell in row:
+                email = cell.strip()
+                if _looks_like_email(email) and email not in seen:
+                    seen[email] = None
+        return list(seen)
+    except Exception as exc:  # noqa: BLE001 - CSV 읽기 실패는 폴백(빈 목록)
+        logger.error("구독자 CSV 읽기 실패, 무시하고 계속: %s", exc)
+        return []
 
 
 def load_subscribers(raw: str | None = None) -> list[str]:
