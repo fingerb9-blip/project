@@ -1568,6 +1568,17 @@ def test_build_index_shows_subscribe_cta_when_url_set(tmp_path):
     assert "<iframe" not in out  # 폼 iframe을 메인에 심지 않는다
 
 
+def test_build_index_ignores_non_date_pages(tmp_path):
+    # 회귀: subscribe.html/scraps.html이 dashboard 디렉토리에 있어도 날짜로 오인해
+    # _korean_date_title('subscribe')로 크래시하면 안 된다.
+    dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
+    for stem in ("subscribe", "scraps", "index", "archive", "2026-07-10"):
+        (dashboard_dir / f"{stem}.html").write_text("<html></html>", encoding="utf-8")
+    out = step5_assemble.build_index_html(dashboard_dir, _index_state(tmp_path))
+    assert "2026년 7월 10일" in out            # 실제 날짜 페이지는 리포트로 나옴
+    assert 'href="subscribe.html"' not in out  # subscribe URL 없으니 CTA도 없음
+
+
 def test_build_index_omits_subscribe_when_no_url(tmp_path):
     dashboard_dir = tmp_path / "dashboard"; dashboard_dir.mkdir()
     out = step5_assemble.build_index_html(dashboard_dir, _index_state(tmp_path))

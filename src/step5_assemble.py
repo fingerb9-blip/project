@@ -21,7 +21,7 @@ import yaml
 from src import issue_tracking, run_status
 
 _ALLOWED_URL_SCHEMES = {"http", "https"}
-_NON_DATE_PAGE_STEMS = {"index", "archive", "scraps"}
+_NON_DATE_PAGE_STEMS = {"index", "archive", "scraps", "subscribe"}
 _CATEGORY_ORDER = ["메모리", "파운드리", "장비·소재", "팹리스·설계", "규제·정책"]
 _HIGHLIGHT_MAX_COUNT = 5
 _BADGE_CONFIRM_ICONS = {"ok": "✓", "obs": "○", "mut": "–"}
@@ -292,7 +292,7 @@ def _refresh_date_selects(dashboard_dir: Path, all_dates: list[str]) -> None:
     없음). 페이지 본문은 그대로 두고 <select class="date-select"> 블록만 교체한다.
     """
     for path in dashboard_dir.glob("*.html"):
-        if path.stem in ("index", "archive"):
+        if path.stem in _NON_DATE_PAGE_STEMS:
             continue
         html_text = path.read_text(encoding="utf-8")
         new_select = _build_date_select(all_dates, path.stem)
