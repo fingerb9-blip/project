@@ -1,0 +1,66 @@
+{
+  "date": "2026-07-11",
+  "total_articles": 43,
+  "by_category": {
+    "메모리": 25,
+    "장비·소재": 4,
+    "파운드리": 8,
+    "팹리스·설계": 6,
+    "규제·정책": 1
+  },
+  "by_source": {
+    "SK하이닉스 뉴스룸": 3,
+    "디일렉": 7,
+    "EE Times": 1,
+    "DigiTimes": 6,
+    "네이버뉴스 재배포": 26
+  },
+  "by_confidence": {
+    "확정": 3,
+    "관측": 40,
+    "요약없음": 0
+  },
+  "top_keywords": [
+    {
+      "keyword": "SK하이닉스",
+      "count": 19
+    },
+    {
+      "keyword": "HBM",
+      "count": 13
+    },
+    {
+      "keyword": "파운드리",
+      "count": 9
+    },
+    {
+      "keyword": "TSMC",
+      "count": 6
+    },
+    {
+      "keyword": "EUV",
+      "count": 5
+    },
+    {
+      "keyword": "삼성전자",
+      "count": 5
+    },
+    {
+      "keyword": "증설",
+      "count": 5
+    },
+    {
+      "keyword": "엔비디아",
+      "count": 5
+    },
+    {
+      "keyword": "노광",
+      "count": 4
+    },
+    {
+      "keyword": "인텔",
+      "count": 3
+    }
+  ],
+  "noise_reported": 0
+}

@@ -27,14 +27,15 @@
     "entity": "SK하이닉스",
     "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-11",
     "status": "진행중",
     "related_article_ids": [
       "600bc74f9f0cce52520f5427c7ada9ddbb31b50b",
       "db3288c503003335fea47c73f32db4247d50a076",
       "990f72a16c13d99e6ada5bccd603fe30c76dc237",
       "f635fdfd9106e063d8c7f49a1a4546c745d20346",
-      "57b33a5c349d22f1eecd881ab2c612557e6c738f"
+      "57b33a5c349d22f1eecd881ab2c612557e6c738f",
+      "e8ea32817be65be38e3a70ba24025c8c7cb4c272"
     ]
   },
   {
@@ -478,7 +479,7 @@
     "entity": "SK하이닉스",
     "title": "최태원 SK 회장 방미, 하이닉스 ADR 나스닥 상장…빅테크와 AI 메모리 협...",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-11",
     "status": "진행중",
     "related_article_ids": [
       "3f5360a79e3bf3a9310273d1d3ef915e683e54c2",
@@ -493,7 +494,18 @@
       "569256e3a01e3627454059e0aedad97fb8dd19df",
       "96da900c7c022c5a04ca68923d5a2be4d24544b4",
       "af37e494f6c0be6636c14cca9f6a91981c9d8d05",
-      "b40b5a9d5872ff9570953c77377879d5dc279dab"
+      "b40b5a9d5872ff9570953c77377879d5dc279dab",
+      "69ffbf94cafdffbc2ef109ea41ef801ef6b31d2f",
+      "a0cca0509e5e90b5b7339ff669e0cc557c6ac73b",
+      "c670f8a5fdd540ad63a22fcd10da15901c9ddfc1",
+      "6b60181eccf528b3de2314ad491e498d7807c05a",
+      "c824323dde9270e48a7c24328b14f6de3c2d5db4",
+      "479b97554dc3c0e1e35d7632510bb2b8d4b31569",
+      "4213e01e157abaad80a12702df9b56de413bc759",
+      "41d47e7d118fb28913c5114b99b119b232d1b1b7",
+      "bf55cf89cbd62bfddabfe0612f582b8b94930533",
+      "7a86a4542ec8a2f6e1afa1e18a8c2ae5bd3e6bb2",
+      "156464412828665d0752c8c4a97cdf9e05992ed9"
     ]
   },
   {
@@ -2179,7 +2191,7 @@
     "entity": "SK하이닉스",
     "title": "[차이나 브리프] SK하이닉스의 웨이퍼 캐파 확대…공급과잉 우려 없다",
     "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
+    "last_updated": "2026-07-11",
     "status": "진행중",
     "related_article_ids": [
       "c7f48f4efdda115286088d9427934c08bcd67c1d"
@@ -2294,10 +2306,11 @@
     "entity": "SK하이닉스",
     "title": "미 상무장관, 삼성·SK하이닉스 美생산 확대 촉구…\"관련 논의 진행\"",
     "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
+    "last_updated": "2026-07-11",
     "status": "진행중",
     "related_article_ids": [
-      "fb22f45858811f77b3165b00b85347b19bb013ae"
+      "fb22f45858811f77b3165b00b85347b19bb013ae",
+      "c68fd920bfd27788f3074f7e4f6a5ab6cbb5608f"
     ]
   },
   {
@@ -3547,10 +3560,11 @@
     "entity": "미상",
     "title": "獨자이스, 용인에 반도체센터 신설…\"韓 장기 파트너 될 것\" [현장+]",
     "first_seen": "2026-07-10",
-    "last_updated": "2026-07-10",
+    "last_updated": "2026-07-11",
     "status": "진행중",
     "related_article_ids": [
-      "7693d36875c45a03de39ad6e7e19d23119c88d92"
+      "7693d36875c45a03de39ad6e7e19d23119c88d92",
+      "f851be36cd227a66512dffc0a67d265d3bc3b14c"
     ]
   },
   {
@@ -3837,6 +3851,314 @@
     "status": "진행중",
     "related_article_ids": [
       "8d698d9fe8425c1997ff7cf5456701fb78d1cfdd"
+    ]
+  },
+  {
+    "issue_id": "b43e872e4ef0",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 뉴욕 한복판에 새긴 브랜드 철학… “기술로 지켜낼 아름다운 기억”",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "4ab3ae5eb7c0e8847f33a1b2ba014ddce2223ab7"
+    ]
+  },
+  {
+    "issue_id": "c1c56f5fe5f3",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 美 나스닥 입성… 자본시장 심장부에서 ‘글로벌 컴퍼니’ 위상 드높인다",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "c333600915521b55dacffd43c234fb0f3576c892"
+    ]
+  },
+  {
+    "issue_id": "5c5a8fa693b2",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 美 나스닥 입성…\"AI 있는 곳엔 언제나 SK하이닉스\"",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "03b8320432e9c61be44c7c93202561b2bc4941c9"
+    ]
+  },
+  {
+    "issue_id": "97c122ddf0ae",
+    "entity": "삼성전자",
+    "title": "삼성전자-삼성D, 유리 인터포저 동맹 추진...대만에 도전장",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "fcadb2ce7d583caf629cb33aca7a091281c2f5d4"
+    ]
+  },
+  {
+    "issue_id": "49c0b137c621",
+    "entity": "미상",
+    "title": "롯데에너지머티리얼즈 \"AI용 회로박 추가 증설 검토\"",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "559c481f8c0c177c535c013bf667d43570f4d792"
+    ]
+  },
+  {
+    "issue_id": "2ce36601bd1b",
+    "entity": "미상",
+    "title": "KT클라우드, 자본시장 확대에 '금융 특화' 여의도 데이터센터 증설",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "309810f1f90ace6405ef20594829d1c09a32d39f"
+    ]
+  },
+  {
+    "issue_id": "cc672325cf73",
+    "entity": "인텔",
+    "title": "Apple’s $30B Broadcom Deal Signals Expansions in AI, U.S. Supply Chain",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "8884690ea77ffb52e1f00dd4f2d31c5365d1d9be"
+    ]
+  },
+  {
+    "issue_id": "1b606950b5b7",
+    "entity": "삼성전자",
+    "title": "Record chip profits mask a widening divide inside Samsung",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "b6892b00e0fe34dc37aaaa5fd65fa20ca245bcf2"
+    ]
+  },
+  {
+    "issue_id": "979cb3461f4c",
+    "entity": "삼성전자",
+    "title": "Samsung's CXL 3.1 memory delay lays bare Intel, AMD server platform lag",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "6e149f13add771f6194bcf38fc70107e80963506"
+    ]
+  },
+  {
+    "issue_id": "cf1c4bb1a755",
+    "entity": "인텔",
+    "title": "SunplusIT clears Intel and AMD eUSB hurdle, starts thermal imaging shipments ahead of July listing",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "2e418ef0aeea8e83069e137b3b536f0b15393c98"
+    ]
+  },
+  {
+    "issue_id": "8c620c516b3d",
+    "entity": "엔비디아",
+    "title": "Nvidia&rsquo;s Jensen Huang heads to Japan with RTX Spark as AI PC competition heats up",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "4083eb65e278db7117e3b0ab0d907aee2989666d"
+    ]
+  },
+  {
+    "issue_id": "90738d5e1985",
+    "entity": "삼성전자",
+    "title": "Samsung plans new PC chip in push beyond smartphones",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "b36216689f116348e510d6ce7cd94723180e4eaf"
+    ]
+  },
+  {
+    "issue_id": "77c41eee7246",
+    "entity": "미상",
+    "title": "SK 최태원 \"생산 2배 늘려도 부족\"…AI 메모리 공급난 장기화",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "3f4ec5b56afcb187ac7a63a6f1eeeff6ee3bd1c7"
+    ]
+  },
+  {
+    "issue_id": "a8184b527296",
+    "entity": "미상",
+    "title": "최태원 \"조건만 맞으면 미국 공장도 가능\"",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "fe79a771f824d5c5d5642a2260d477550d7cd190"
+    ]
+  },
+  {
+    "issue_id": "bd5670026cba",
+    "entity": "미상",
+    "title": "최태원 \"반도체, 옛날식 사이클 끝\"…액면분할도 검토 가능",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "ff6c12564734ed03c086bfa391ffa787851f4354"
+    ]
+  },
+  {
+    "issue_id": "030ea86b6552",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 나스닥 초대장에 동봉된 청구서",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "255a075b01b040311ea54eb40aaaaf626046402d"
+    ]
+  },
+  {
+    "issue_id": "cbcb3ed8539c",
+    "entity": "삼성전자",
+    "title": "이재용, 억만장자 모임서 포착…\"2028년까지 완판\" TSMC에 반격 [강경주...",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "d461c98c6ab5ff5334074ab9824790a047ef843e"
+    ]
+  },
+  {
+    "issue_id": "f8a2986f2567",
+    "entity": "미상",
+    "title": "\"삼전·하이닉스 아니었다\"…ETF 수익률 1~5위 싹쓸이한 중국 반도체",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "8a6ea7fdb6767ae721c60325ba50242a1eee0465"
+    ]
+  },
+  {
+    "issue_id": "c97088ebdea8",
+    "entity": "미상",
+    "title": "삼전닉스가 아니었다…한달 수익률 1~5위 '싹쓸이' 대반전 [이수의 ETF줌...",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "53c22297c42259916ff43c208e9214ecca2a76a5"
+    ]
+  },
+  {
+    "issue_id": "04bf882f1085",
+    "entity": "TSMC",
+    "title": "월드 뉴스 브리프 (기준일시: 2026년 07월 11일 토요일 10:00)",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "53d931e2f2571c929c323424f76f6f5065d8ad50"
+    ]
+  },
+  {
+    "issue_id": "afd1c98eb180",
+    "entity": "SK하이닉스",
+    "title": "[SK AI 반도체 시대] 왜 세계 최고의 기업들은 미국 증시를 선택하는가",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "3f08421bcc82d75c110701aae85cce93f5a316c1"
+    ]
+  },
+  {
+    "issue_id": "a92328102e1b",
+    "entity": "TSMC",
+    "title": "김형준 단장 \"HBM은 맞춤형 경쟁…엔비디아 공급망 확대 불가피\" [경제일...",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "7b9f349d5bf7432d636027493e4df7da70ffd134"
+    ]
+  },
+  {
+    "issue_id": "167b53ab980e",
+    "entity": "TSMC",
+    "title": "3.2조달러 몰렸다…글로벌 M&A·IPO 10년 만에 최대",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "c9e9d4c042d4bb6c7ff3c141412d6873da5b6d8b"
+    ]
+  },
+  {
+    "issue_id": "277b34eeb7f1",
+    "entity": "엔비디아",
+    "title": "월가 \"무조건 매수해라\"…'중국판 엔비디아' 떴다",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "8b30b99e455c31b8a7566ba6b8a5c2164c07cb61"
+    ]
+  },
+  {
+    "issue_id": "16d5e69afccc",
+    "entity": "미상",
+    "title": "'박정희 성장론' 그 서사의 소유권이 넘어가고 있다 [하헌기의 콘텍스트...",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "bcf0f9edc6f9cb1591da5d0e00fd19c78d73ba18"
+    ]
+  },
+  {
+    "issue_id": "fc8972392fde",
+    "entity": "미상",
+    "title": "[하이닉스 나스닥상장] 최태원 \"AI분야 수백억달러 투자…HBM 수요 기하...",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "fb67be9d1168545cea0d035372367b09c5cbe954"
+    ]
+  },
+  {
+    "issue_id": "4e7a2adbcba7",
+    "entity": "미상",
+    "title": "최태원 회장 \"수백억 달러 투자…AI 서비스 제공업체 지향\"",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "8db07dbabec936b02aa14f70625a02df5e07829a"
+    ]
+  },
+  {
+    "issue_id": "43bdada3c07d",
+    "entity": "엔비디아",
+    "title": "美 칩 막자 中 모델 잠근다…AI패권 '상호 봉쇄'",
+    "first_seen": "2026-07-11",
+    "last_updated": "2026-07-11",
+    "status": "진행중",
+    "related_article_ids": [
+      "4878606a7c2180cd2ccdd6013ce881aff55e3558"
     ]
   }
 ]
