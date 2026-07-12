@@ -27,7 +27,7 @@
     "entity": "SK하이닉스",
     "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-11",
+    "last_updated": "2026-07-12",
     "status": "진행중",
     "related_article_ids": [
       "600bc74f9f0cce52520f5427c7ada9ddbb31b50b",
@@ -35,8 +35,11 @@
       "990f72a16c13d99e6ada5bccd603fe30c76dc237",
       "f635fdfd9106e063d8c7f49a1a4546c745d20346",
       "57b33a5c349d22f1eecd881ab2c612557e6c738f",
-      "e8ea32817be65be38e3a70ba24025c8c7cb4c272"
-    ]
+      "e8ea32817be65be38e3a70ba24025c8c7cb4c272",
+      "a7e47f9494c5cc1960b4d7852a4a061bc7e3ae0f",
+      "e0300940e2680928fbe05c523ee6cce32d2a06e2"
+    ],
+    "progress_summary": "SK하이닉스는 14년간의 HBM 기술 개발을 통해 AI 시대의 핵심 기업으로 부상했으며, 최태원 회장은 메모리 산업의 지속적인 성장을 확신하고 있습니다. 회사는 조달된 자금을 반도체 클러스터, 첨단 패키징 공장 건설 및 EUV 노광장비 확보 등 시설 투자에 전액 투입할 계획이며, 추가 자금 조달 기반도 마련했습니다."
   },
   {
     "issue_id": "5f2445f89623",
@@ -479,7 +482,7 @@
     "entity": "SK하이닉스",
     "title": "최태원 SK 회장 방미, 하이닉스 ADR 나스닥 상장…빅테크와 AI 메모리 협...",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-11",
+    "last_updated": "2026-07-12",
     "status": "진행중",
     "related_article_ids": [
       "3f5360a79e3bf3a9310273d1d3ef915e683e54c2",
@@ -505,8 +508,12 @@
       "41d47e7d118fb28913c5114b99b119b232d1b1b7",
       "bf55cf89cbd62bfddabfe0612f582b8b94930533",
       "7a86a4542ec8a2f6e1afa1e18a8c2ae5bd3e6bb2",
-      "156464412828665d0752c8c4a97cdf9e05992ed9"
-    ]
+      "156464412828665d0752c8c4a97cdf9e05992ed9",
+      "ba6b8c47e2771078b8431e3effc33d5a939b51c1",
+      "9dae951ed42d14386679cb69d40df534807304ea",
+      "7dde9704a32efe91e45a1c1365c685e2dcf81ba6"
+    ],
+    "progress_summary": "SK하이닉스는 최태원 회장의 방미를 통해 나스닥 상장으로 265억 달러를 조달했으며, 이 자금은 용인 반도체 클러스터, 청주 P&T7 첨단 패키징 공장, EUV 노광장비 도입 등 국내 투자에 활용될 예정이다. 조달된 자금은 외환 시장에 달러 공급 효과를 가져오고, SK하이닉스는 이를 바탕으로 빅테크와의 AI 메모리 협력을 강화하며 고대역폭메모리(HBM) 전략과 AI 사업 비전을 공유하고 있다."
   },
   {
     "issue_id": "537fff0edf73",
@@ -575,18 +582,20 @@
     "entity": "삼성전자",
     "title": "호남에 또 밀리나…소부장 특화단지 지정 앞두고 충남 '촉각'",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-12",
     "status": "진행중",
     "related_article_ids": [
-      "43f22bff770984c9d8bec548e72041e6e1b42890"
-    ]
+      "43f22bff770984c9d8bec548e72041e6e1b42890",
+      "bc3558f4e743a21cb15bb758f23f809d8302397e"
+    ],
+    "progress_summary": "삼성전자는 2026-07-09부터 2026-07-12까지 '호남에 또 밀리나…소부장 특화단지 지정 앞두고 충남 '촉각'' 이슈가 이어지는 가운데, 용인 반도체 공장 가동을 최대 2년 앞당겨 글로벌 증설 경쟁에 본격적으로 참여하고 있다. SK하이닉스 또한 미국 주식예탁증서(ADR) 상장을 통해 대규모 투자 재원을 확보하고 글로벌 생산 거점 확대에 나설 준비를 하고 있다."
   },
   {
     "issue_id": "762149ecb888",
     "entity": "SK하이닉스",
     "title": "SK하이닉스, 10일 나스닥 ADR 상장",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-10",
+    "last_updated": "2026-07-12",
     "status": "진행중",
     "related_article_ids": [
       "5975c930ac2951db2ae15f8c7ca1d2765de3ffef",
@@ -624,7 +633,8 @@
       "020b75dd9cad75693fd8388e9650348d5d045e64",
       "1d034f1e6add22c26aef918fa12fc92544cb390b",
       "9b8b7980a1899f7f48023067758e49b512708457",
-      "aa927455cd3afa593b64e8fdd79f228b91c240d9"
+      "aa927455cd3afa593b64e8fdd79f228b91c240d9",
+      "af2ce226568d9134525462a55cede2a3bd36b066"
     ]
   },
   {
@@ -654,11 +664,13 @@
     "entity": "SK하이닉스",
     "title": "[이슈story] 43조 실탄 들고 나스닥 가는 SK하이닉스…'코리아 디스카운...",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-12",
     "status": "진행중",
     "related_article_ids": [
-      "ecb3a917be4699d2a813bf8d21663767818acbcb"
-    ]
+      "ecb3a917be4699d2a813bf8d21663767818acbcb",
+      "f92810b7cc918ca45f0bf1ffc505965f4ad24b0e"
+    ],
+    "progress_summary": "SK하이닉스의 나스닥 상장으로 약 40조 원의 자금이 확보되었으며, 이 자금은 용인 반도체 클러스터, 청주 첨단 패키징 시설, ASML EUV 장비 구매 등 국내 생산 능력 확대에 투입될 예정입니다. 이는 HBM 시장 지배력 강화에 기여하고 '코리아 디스카운트' 해소에 대한 기대감을 높이고 있습니다."
   },
   {
     "issue_id": "b22c8095d7e3",
@@ -676,11 +688,13 @@
     "entity": "SK하이닉스",
     "title": "충청권 시민사회 \"지역 희생하는 메가프로젝트 재검토하라\"",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-09",
+    "last_updated": "2026-07-12",
     "status": "진행중",
     "related_article_ids": [
-      "2b7c580d88b2c7aa08ae149b7c0ae308254b3886"
-    ]
+      "2b7c580d88b2c7aa08ae149b7c0ae308254b3886",
+      "8213cc359f62194a49f6ca485d211d8ee7734e96"
+    ],
+    "progress_summary": "SK하이닉스와 관련된 '충청권 시민사회 \"지역 희생하는 메가프로젝트 재검토하라\"' 이슈가 2026년 7월 9일부터 7월 12일까지 진행되었습니다. 새로운 기사에 따르면, SK하이닉스는 조달한 자금을 국내 투자에 집중할 계획이며, 이는 글로벌 메모리 증설 경쟁 속에서 주목할 만한 움직임입니다."
   },
   {
     "issue_id": "9f70101e3505",
@@ -4159,6 +4173,193 @@
     "status": "진행중",
     "related_article_ids": [
       "4878606a7c2180cd2ccdd6013ce881aff55e3558"
+    ]
+  },
+  {
+    "issue_id": "87bd71d36a20",
+    "entity": "삼성전자",
+    "title": "1년새 영업이익 4배 '껑충' 스페이스X 호재까지 대기",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "77f74f0c4b493fa57b052a998072006aec626295"
+    ]
+  },
+  {
+    "issue_id": "182043d3d6db",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 美 상장 성공…반도체주 투자심리 살릴까",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "14b5de602fe71ac59f8c784963c2d0277c912086"
+    ]
+  },
+  {
+    "issue_id": "d60c873df4ff",
+    "entity": "미상",
+    "title": "AI 수요가 만든 메모리 대전… 생산 주도권 경쟁 격화",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "3bbcbfdab4fc0be51aa9687f302a04ef4e3e185a"
+    ]
+  },
+  {
+    "issue_id": "a22378da005c",
+    "entity": "삼성전자",
+    "title": "삼성전자, 반도체가 다시 날았다…하반기 실적 기대감 확대",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "c07155c8399879540468bd351d0f0cbe80b0c1c2"
+    ]
+  },
+  {
+    "issue_id": "1526e0165e6b",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, ADR 흥행에 액면분할도 호재…13일 주가 뛸까",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "5c5bd9147b20437487dcf73c4999d08bbee58377"
+    ]
+  },
+  {
+    "issue_id": "65b57e226777",
+    "entity": "SK하이닉스",
+    "title": "SK, 실트론 매각 이달 중 결론···AI 시대 '전략자산' 놓고 마지막 저...",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "70ea5c7dea330aab077bef4bc32c73dfdfdfde5b"
+    ]
+  },
+  {
+    "issue_id": "3150f44f533a",
+    "entity": "미상",
+    "title": "'K보톡스 수출' 발목잡는 규제 풀어주세요",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "c3e9409afe221eb1dbf4db608f48bc4a293d10ce"
+    ]
+  },
+  {
+    "issue_id": "c7e0c4e63b62",
+    "entity": "삼성전자",
+    "title": "'K-반도체' 메모리 생산 늘리기 총력...'속도전'도 본격화",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "42e330f7487dd247710d62e5c23ab505c5a209c7"
+    ]
+  },
+  {
+    "issue_id": "c224bb0fba37",
+    "entity": "미상",
+    "title": "글로벌 AI 반도체 장비 ‘빅5’ 독점 체제… 빅테크 자본지출 폭발 마진...",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "231e8c72618e369dbbcf78594cec2398c0726df9"
+    ]
+  },
+  {
+    "issue_id": "d0145904e0dd",
+    "entity": "삼성전자",
+    "title": "삼성전자·SK하이닉스 반등 조건…AI 투자·ADR 수급 주목",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "66bfbadf07a04f77bbe9aff0033797bbdd5f5525"
+    ]
+  },
+  {
+    "issue_id": "fe167ec4bf64",
+    "entity": "삼성전자",
+    "title": "이재용 옆에선 한진만…삼성 파운드리 반등 기대감",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "2ac19b28c40055a90004588afb1196d0cd6b7401"
+    ]
+  },
+  {
+    "issue_id": "678eb5f546b7",
+    "entity": "SK하이닉스",
+    "title": "나스닥 입성 SK하이닉스, 청주 P&T 투자 속도 '기대감'",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "bbf4ac3333159a2ab8423a1b1a6f9c87300afb74"
+    ]
+  },
+  {
+    "issue_id": "a9af7d1999cd",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 나스닥 ‘오프닝 벨’…40조 원 조달",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "543bb7fd2c8a7b5b1d20a7dc9f26af84abe6fdbe"
+    ]
+  },
+  {
+    "issue_id": "86a1f7c2793b",
+    "entity": "삼성전자",
+    "title": "[1% 초고수의 주간 선택] '삼성전자' 담고 '두산' 팔았다",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "36a009fc2e5af3e80cb2d339fcc7b1e9802f3d0f"
+    ]
+  },
+  {
+    "issue_id": "34abc0556779",
+    "entity": "엔비디아",
+    "title": "화웨이 칩 384개 묶으면 엔비디아 이길까···中 H200 다시 찾은 진짜 이...",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "6cbf7d502777ac8b83ecb02cffed7e64f3e87b97"
+    ]
+  },
+  {
+    "issue_id": "8b4b20b2a729",
+    "entity": "미상",
+    "title": "[AI 브리핑] 오픈AI·구글 '中 우회 제공' 논란…메타는 9월 자체 AI칩 생...",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "f93a1aa75f98e42ca1ea97e2ba9c501fa78d8120"
+    ]
+  },
+  {
+    "issue_id": "1c0ea4867aa0",
+    "entity": "미상",
+    "title": "Development of a cold electron-beam–driven compact EUV source for next generation inspection tools part II: design, fabrication and experimental validation and analysis of EUV source efficiency",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-12",
+    "status": "진행중",
+    "related_article_ids": [
+      "71f3cb03338b30c30e85f56d65ba0149c6d237dc"
     ]
   }
 ]
