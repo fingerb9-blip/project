@@ -4388,7 +4388,7 @@
     "entity": "삼성전자",
     "title": "삼성전자, 테슬라 자율주행 칩 'AI5' 품었다…내년 2나노 양산 확정",
     "first_seen": "2026-07-13",
-    "last_updated": "2026-07-13",
+    "last_updated": "2026-07-14",
     "status": "진행중",
     "related_article_ids": [
       "61fdfab3c6524f03dc2bedb77820cabca84811a7"
@@ -4399,7 +4399,7 @@
     "entity": "SK하이닉스",
     "title": "넥스틴, HBM 검사 장비 추가 수주…글로벌 확대도 가속",
     "first_seen": "2026-07-13",
-    "last_updated": "2026-07-13",
+    "last_updated": "2026-07-14",
     "status": "진행중",
     "related_article_ids": [
       "72d381e0885912c5766681f0c1ccdf7c893f9b6f"
@@ -4755,6 +4755,435 @@
     "status": "진행중",
     "related_article_ids": [
       "c348c1e3ae34637d78db63c0d3f71c4d00083355"
+    ]
+  },
+  {
+    "issue_id": "7471262c5adb",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, D램 Hf 하이K 프리커서 조달처 다변화",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "3e6b028d01b1c9619b3c9bb13c23da4f275c39c0"
+    ]
+  },
+  {
+    "issue_id": "5ddd9305ffd6",
+    "entity": "미상",
+    "title": "제이앤티씨, 일본 토판과 TGV 유리기판 상용화 협약 체결",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "97e866ddb1886ae429e1782bd1a04781b9950151"
+    ]
+  },
+  {
+    "issue_id": "15f6437c7497",
+    "entity": "TSMC",
+    "title": "Commentary: Terafab and DRAM reveal Tan's long-term vision for Intel",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "74230a10666a103124bd8c8d857174304aa93d69"
+    ]
+  },
+  {
+    "issue_id": "4946aaad02ea",
+    "entity": "엔비디아",
+    "title": "Google reportedly ramps up TPU push to court Nvidia-backed cloud providers",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "3505585bd6247bc8fa20dac3e26f3ef63f4d7e45"
+    ]
+  },
+  {
+    "issue_id": "b135800a8ea5",
+    "entity": "TSMC",
+    "title": "TSMC and Vanguard drive Taiwan's silicon foundry revenue up 54% YoY in June",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "fb4c45e47143d765ad9c21208c48722fa618538e"
+    ]
+  },
+  {
+    "issue_id": "dfea91d74668",
+    "entity": "인텔",
+    "title": "Intel challenges HBM leaders with XBM and ZAM in a bid to reshape AI memory",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "88b52e05e880d316c5ce0eea96d06aef3d6f608b"
+    ]
+  },
+  {
+    "issue_id": "152d897c91b4",
+    "entity": "인텔",
+    "title": "Intel concentrates its European chipmaking in Ireland with EUR5 billion Leixlip expansion",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "ca703277d0ac9ab446f48a063448933449b83ad1"
+    ]
+  },
+  {
+    "issue_id": "baf8f1aa9381",
+    "entity": "미상",
+    "title": "Gudeng Precision Industrial posts record second quarter revenue on advanced semiconductor carrier demand",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "1b1c99b4e728287f0eeeca30e4b820abb0b0be13"
+    ]
+  },
+  {
+    "issue_id": "003d0420b489",
+    "entity": "미상",
+    "title": "China launches first 8-inch 2D chip line to bypass EUV limits",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "dd385bd63d0e8327e114e8d87286abb05dc36c40"
+    ]
+  },
+  {
+    "issue_id": "9d91a9aca2f0",
+    "entity": "삼성전자",
+    "title": "Samsung brings HBM, logic, and optics together in packaging push",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "8730148e12a336769c7f77bf2e3e55692b6ef7db"
+    ]
+  },
+  {
+    "issue_id": "7d9c75f399a0",
+    "entity": "SK하이닉스",
+    "title": "SK Hynix shares plunge after blockbuster Nasdaq ADR debut",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "353a61a2fc2a335979412e93688b524e3052ec1a"
+    ]
+  },
+  {
+    "issue_id": "715da5b189c0",
+    "entity": "미상",
+    "title": "Near-memory Dequantization Architecture In Custom HBM for LLM inference (SK hynix)",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "993e94d506df51641361cc65a9dae29c49d05d51"
+    ]
+  },
+  {
+    "issue_id": "3013d70e815c",
+    "entity": "미상",
+    "title": "\"반도체 팹 입지, 생태계로 따져야\"…대경권 소부장 호남의 5.3배",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "36a43714430915482330c1a9c8ab2ad24998dac2"
+    ]
+  },
+  {
+    "issue_id": "689885f0c055",
+    "entity": "SK하이닉스",
+    "title": "\"SK하이닉스에 대출금 40억 등 총 70억 투자했는데... 이렇게 됐습니다\"",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "04e8220a7441f72a6f70fecc24b5f78fe1c8a72b"
+    ]
+  },
+  {
+    "issue_id": "1132e1f857d8",
+    "entity": "미상",
+    "title": "최태원 SK 회장 \"향후 5년간 AI 성장기…美에 더 많은 투자 계획\"",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "bd52b301dbcbc48fffbd7cc99d5f43a869c26e75"
+    ]
+  },
+  {
+    "issue_id": "83c0ac9ba789",
+    "entity": "미상",
+    "title": "대원화성, 에프엔에스테크와 CMP Sub Pad 개발",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "c29d4cf1560bdd5461b8cef74d15c0fa4015335a"
+    ]
+  },
+  {
+    "issue_id": "4b8777436026",
+    "entity": "미상",
+    "title": "[CEO’s Speech] 최태원 “AI는 경기사이클 아닌 산업진화 그 차체”",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "60eafd115ffea7c946f3478093b323d2dcd54d14"
+    ]
+  },
+  {
+    "issue_id": "8c27ead1694b",
+    "entity": "삼성전자",
+    "title": "한미반도체, 2분기 매출 2511억…역대 최대 실적",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "a9f31c973dece0ce6e95bbf8f87ff5f76d8af7f5"
+    ]
+  },
+  {
+    "issue_id": "44739aafe542",
+    "entity": "SK하이닉스",
+    "title": "최태원 \"AI 시대, 회장도 최전선 직접 나가야…SK하이닉스 美투자 더 키...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "70bb685d22abbdbcd715d29bd11509bc52baeb26"
+    ]
+  },
+  {
+    "issue_id": "4ea0320aa563",
+    "entity": "미상",
+    "title": "저커버그의 끝없는 AI 베팅…메타, 데이터센터 투자 69조원으로 확대",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "4b76f5d6aaf7971377f1cdd8f5464e72e16efbca"
+    ]
+  },
+  {
+    "issue_id": "f392ba3d98fd",
+    "entity": "삼성전자",
+    "title": "고점 대비 40% 밀린 日키옥시아 \"50% 추가 하락\" vs \"10만엔 회복\"",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "bfb463b256be95f31c0e7bdd0a57fb19c2f1a102"
+    ]
+  },
+  {
+    "issue_id": "9427fb238284",
+    "entity": "미상",
+    "title": "HBM 호황 숨은 승자…한미반도체 영업익률 50% 돌파",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "b764932bd8a53400fce461fee98515eaa88c6581"
+    ]
+  },
+  {
+    "issue_id": "0faf1b0c90c8",
+    "entity": "삼성전자",
+    "title": "TSMC, 오는 16일 실적 발표... AI 반도체 ‘거품론’ 가를까?",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "15a8cf8c32748773a5e7d79376c521fddb75fd12"
+    ]
+  },
+  {
+    "issue_id": "6c51d0dc7f4b",
+    "entity": "미상",
+    "title": "한미반도체, 2분기 매출 창사 이래 최대치 달성, 영업이익률 52% 육박",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "b9e15c9f3a7a3a937d48d609301decf1f851314e"
+    ]
+  },
+  {
+    "issue_id": "370317c2a9dc",
+    "entity": "미상",
+    "title": "상반기 ICT 수출 2539억달러 '역대 최대'···반도체·SSD의 힘",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "895bff8ab30f0a6e09a4006827a12eb98a61fbc5"
+    ]
+  },
+  {
+    "issue_id": "f5b1d21ea67d",
+    "entity": "SK하이닉스",
+    "title": "반도체 '쩐의 전쟁'···삼성·SK하이닉스, 서로 다른 자금조달 해법은",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "0dc65fa7ecd22b3128b0268a2411f0172e209751"
+    ]
+  },
+  {
+    "issue_id": "145e0357f507",
+    "entity": "미상",
+    "title": "CNT솔루션, 투명 CQD·CNT 등 탄소 나노소재 플랫폼 확대",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "29ddf717f731f514feb5c8b5a7bdc9ed8c2d6def"
+    ]
+  },
+  {
+    "issue_id": "861e70f306c5",
+    "entity": "SK하이닉스",
+    "title": "김동춘號, 석화 의존도 낮춘다…LG화학, AI 반도체 소재로 포트폴리오 ...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "dbf9ebe008d7f8258d9957c749e9d3ce8b809f37"
+    ]
+  },
+  {
+    "issue_id": "9af63cb08d1c",
+    "entity": "엔비디아",
+    "title": "중국 둥팡쑤안신, 美 제재 뚫고 엔비디아에 도전장…3D 적층 기술로 승...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "39e478e3ff02b5144a2e2aa7fbc5840b6fa68f65"
+    ]
+  },
+  {
+    "issue_id": "c60940cbb385",
+    "entity": "삼성전자",
+    "title": "SK하이닉스는 나스닥 갔는데…삼성전자가 움직이지 않는 이유",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "0df9e5c27cb43c1161d9d816aed6d501207e245f"
+    ]
+  },
+  {
+    "issue_id": "14043a879862",
+    "entity": "삼성전자",
+    "title": "삼성전자·SK하이닉스 ‘동반 입주’ 호남 반도체, 치밀한 공간배치가 ...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "1fa3117ac1ea1817aa6e6260e564042b104c9f6d"
+    ]
+  },
+  {
+    "issue_id": "1d07d7559e90",
+    "entity": "미상",
+    "title": "SOX 5% 급락에도…삼성·SK 반등, HBM주 다시 뛴다 [칩칩폭폭]",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "6214c9b9c6f79bf8d5fc875dd6a3366a4644654a"
+    ]
+  },
+  {
+    "issue_id": "3514a28b1003",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 호남 반도체 팹 '합작법인' 가능해질 듯…재무 부담 경감 기...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "0c3fa56de7e15b4f4c96913d14c118597913b3cb"
+    ]
+  },
+  {
+    "issue_id": "b051a7173d86",
+    "entity": "인텔",
+    "title": "인텔, 8.5조원 승부수…아일랜드서 3nm급 제온 6 대량생산 나선다",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "94a38118eecfc28dfb88691bffab4e35c5386d13"
+    ]
+  },
+  {
+    "issue_id": "98c7d58ff874",
+    "entity": "미상",
+    "title": "\"핵심광물 재자원화, 제조산업으로 육성해야\"…與 오세희 의원, 토론회...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "5244dfebbef9babbdb4e0e2e8e20e657691bd7ba"
+    ]
+  },
+  {
+    "issue_id": "03767542cc60",
+    "entity": "엔비디아",
+    "title": "엔비디아 AI반도체의 중국 '우회 수출'도 막는다, 미국 정부 압박에 젠...",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "5e7873b785164a924ada80f65c33632355a132c1"
+    ]
+  },
+  {
+    "issue_id": "a2bcb954eb04",
+    "entity": "엔비디아",
+    "title": "엔비디아, 中 우회수출 차단…亞 AI칩 구매사 절반 퇴출",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "f759ebaeb73ab277026bebf8b49eb4fde49b8b21"
+    ]
+  },
+  {
+    "issue_id": "e78644b05999",
+    "entity": "미상",
+    "title": "핵심광물 공급망 해법은 '재자원화'…전략비축 넘어 산업 육성 목소리",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "211caab78456fdc0700b7e1a8bcb643b96b40d66"
+    ]
+  },
+  {
+    "issue_id": "b897e2c868d6",
+    "entity": "엔비디아",
+    "title": "'중국 유입 막아라'…엔비디아, 심사 강화로 고객 절반 탈락",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-14",
+    "status": "진행중",
+    "related_article_ids": [
+      "3cc930f9649fa42b011a5da30919ec1b898ed660"
     ]
   }
 ]

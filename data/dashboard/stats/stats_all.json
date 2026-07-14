@@ -259,5 +259,70 @@
       }
     ],
     "noise_reported": 0
+  },
+  {
+    "date": "2026-07-14",
+    "total_articles": 41,
+    "by_category": {
+      "장비·소재": 13,
+      "파운드리": 6,
+      "팹리스·설계": 2,
+      "메모리": 15,
+      "규제·무역": 5
+    },
+    "by_source": {
+      "디일렉": 4,
+      "DigiTimes": 9,
+      "Semiconductor Engineering": 1,
+      "네이버뉴스 재배포": 27
+    },
+    "by_confidence": {
+      "확정": 0,
+      "관측": 41,
+      "요약없음": 0
+    },
+    "top_keywords": [
+      {
+        "keyword": "HBM",
+        "count": 17
+      },
+      {
+        "keyword": "SK하이닉스",
+        "count": 13
+      },
+      {
+        "keyword": "패키징",
+        "count": 11
+      },
+      {
+        "keyword": "EUV",
+        "count": 10
+      },
+      {
+        "keyword": "삼성전자",
+        "count": 7
+      },
+      {
+        "keyword": "엔비디아",
+        "count": 6
+      },
+      {
+        "keyword": "파운드리",
+        "count": 5
+      },
+      {
+        "keyword": "팹",
+        "count": 5
+      },
+      {
+        "keyword": "웨이퍼",
+        "count": 4
+      },
+      {
+        "keyword": "인텔",
+        "count": 4
+      }
+    ],
+    "noise_reported": 0
   }
 ]
