@@ -1,0 +1,66 @@
+{
+  "date": "2026-07-17",
+  "total_articles": 45,
+  "by_category": {
+    "장비·소재": 3,
+    "파운드리": 18,
+    "메모리": 18,
+    "팹리스·설계": 8,
+    "규제·정책": 1
+  },
+  "by_source": {
+    "디일렉": 5,
+    "EE Times": 1,
+    "DigiTimes": 14,
+    "Semiconductor Engineering": 1,
+    "네이버뉴스 재배포": 24
+  },
+  "by_confidence": {
+    "확정": 6,
+    "관측": 34,
+    "요약없음": 0
+  },
+  "top_keywords": [
+    {
+      "keyword": "TSMC",
+      "count": 15
+    },
+    {
+      "keyword": "HBM",
+      "count": 13
+    },
+    {
+      "keyword": "파운드리",
+      "count": 10
+    },
+    {
+      "keyword": "EUV",
+      "count": 9
+    },
+    {
+      "keyword": "SK하이닉스",
+      "count": 8
+    },
+    {
+      "keyword": "노광",
+      "count": 7
+    },
+    {
+      "keyword": "인텔",
+      "count": 5
+    },
+    {
+      "keyword": "엔비디아",
+      "count": 5
+    },
+    {
+      "keyword": "팹",
+      "count": 4
+    },
+    {
+      "keyword": "웨이퍼",
+      "count": 3
+    }
+  ],
+  "noise_reported": 0
+}
