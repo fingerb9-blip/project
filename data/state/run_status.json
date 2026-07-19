@@ -1,7 +1,7 @@
 {
-  "last_run_date": "2026-07-18",
+  "last_run_date": "2026-07-19",
   "last_run_status": "success",
-  "last_success_at": "2026-07-18T15:31:29.830402+09:00",
+  "last_success_at": "2026-07-19T16:43:39.934356+09:00",
   "steps_completed": [
     "collect",
     "dedup",
@@ -13,6 +13,6 @@
     "assemble",
     "send"
   ],
-  "article_count": 87,
+  "article_count": 57,
   "failed_sources": []
 }
