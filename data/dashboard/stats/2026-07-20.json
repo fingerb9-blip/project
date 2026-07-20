@@ -1,0 +1,62 @@
+{
+  "date": "2026-07-20",
+  "total_articles": 40,
+  "by_category": {
+    "장비·소재": 19,
+    "메모리": 19,
+    "파운드리": 3
+  },
+  "by_source": {
+    "디일렉": 6,
+    "DigiTimes": 16,
+    "네이버뉴스 재배포": 18
+  },
+  "by_confidence": {
+    "확정": 1,
+    "관측": 33,
+    "요약없음": 0
+  },
+  "top_keywords": [
+    {
+      "keyword": "HBM",
+      "count": 15
+    },
+    {
+      "keyword": "TSMC",
+      "count": 11
+    },
+    {
+      "keyword": "삼성전자",
+      "count": 10
+    },
+    {
+      "keyword": "SK하이닉스",
+      "count": 10
+    },
+    {
+      "keyword": "엔비디아",
+      "count": 7
+    },
+    {
+      "keyword": "EUV",
+      "count": 7
+    },
+    {
+      "keyword": "팹",
+      "count": 5
+    },
+    {
+      "keyword": "파운드리",
+      "count": 5
+    },
+    {
+      "keyword": "패키징",
+      "count": 4
+    },
+    {
+      "keyword": "인텔",
+      "count": 3
+    }
+  ],
+  "noise_reported": 0
+}
