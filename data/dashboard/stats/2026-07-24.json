@@ -1,0 +1,76 @@
+{
+  "date": "2026-07-24",
+  "total_articles": 52,
+  "by_category": {
+    "모바일": 6,
+    "AI": 34,
+    "메모리": 17,
+    "장비·소재": 11,
+    "태양광": 1,
+    "디스플레이": 1,
+    "파운드리": 16,
+    "소프트웨어": 1,
+    "반도체": 3,
+    "규제·정책": 12,
+    "데이터센터": 5,
+    "공정_기술": 10,
+    "공급망": 2,
+    "로봇": 2
+  },
+  "by_source": {
+    "삼성전자 뉴스룸": 2,
+    "SK하이닉스 뉴스룸": 1,
+    "디일렉": 11,
+    "DigiTimes": 15,
+    "Semiconductor Engineering": 1,
+    "네이버뉴스 재배포": 22
+  },
+  "by_confidence": {
+    "확정": 2,
+    "관측": 47,
+    "요약없음": 0
+  },
+  "top_keywords": [
+    {
+      "keyword": "인텔",
+      "count": 13
+    },
+    {
+      "keyword": "HBM",
+      "count": 12
+    },
+    {
+      "keyword": "엔비디아",
+      "count": 11
+    },
+    {
+      "keyword": "SK하이닉스",
+      "count": 10
+    },
+    {
+      "keyword": "삼성전자",
+      "count": 9
+    },
+    {
+      "keyword": "EUV",
+      "count": 9
+    },
+    {
+      "keyword": "파운드리",
+      "count": 5
+    },
+    {
+      "keyword": "TSMC",
+      "count": 4
+    },
+    {
+      "keyword": "노광",
+      "count": 4
+    },
+    {
+      "keyword": "웨이퍼",
+      "count": 3
+    }
+  ],
+  "noise_reported": 0
+}
