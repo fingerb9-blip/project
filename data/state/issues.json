@@ -5874,11 +5874,352 @@
     ]
   },
   {
+    "issue_id": "685c4f8efdc5",
+    "entity": "미상",
+    "title": "SK실트론, 美 SiC 웨이퍼 자회사 연내 청산",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "678c11856828122a5aa1b5d1a5347da475ffa0de"
+    ]
+  },
+  {
+    "issue_id": "2660b613850e",
+    "entity": "미상",
+    "title": "ASML Raises Outlook, Plans More EUV Capacity",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "a93f7686612f3884191b49724371cd9f07f73208"
+    ]
+  },
+  {
+    "issue_id": "497105d3c4c8",
+    "entity": "삼성전자",
+    "title": "Commentary: Samsung, SK Hynix in Washington's crosshairs over memory fabs",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "e31b64a140db304a4943e459d96b947ea9792610"
+    ]
+  },
+  {
+    "issue_id": "1cc882899936",
+    "entity": "삼성전자",
+    "title": "As AI expands nanotech, Samsung fortifies ecosystem and LG pivots to chip equipment",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "bebe658d5d2a5980d7b3c44efb8b7065146ac558"
+    ]
+  },
+  {
+    "issue_id": "eabea208a9a8",
+    "entity": "미상",
+    "title": "JNTC-TOPPAN glass substrate push signals AI packaging supply-chain shift",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "40dce5c14f74db56ecdf32f5771172ae733b8df6"
+    ]
+  },
+  {
+    "issue_id": "f02fdb8180c1",
+    "entity": "인텔",
+    "title": "China's AI sector pivots to system-level \"super-nodes\" as chip curbs bite at WAIC 2026",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "da2f7bb1548028caad8cd6cbf07aeb7eb1833c85"
+    ]
+  },
+  {
+    "issue_id": "4dfb6fa8c0e2",
+    "entity": "TSMC",
+    "title": "TSMC's CoWoS capacity remains 'extremely tight' as OSAT partners ramp expansion",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "60ae19de6ed98c71397885c02ce73e4bcf05eac9"
+    ]
+  },
+  {
+    "issue_id": "c22807d26ba4",
+    "entity": "TSMC",
+    "title": "TSMC limits mature-node expansion and eases pressure on PMIC suppliers",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "c2284cf14cd97a86cfc3f440730d24bea25cf9ff"
+    ]
+  },
+  {
+    "issue_id": "bfe1adf7e8a1",
+    "entity": "미상",
+    "title": "China's DRAM milestone arrives with CXMT IPO; HBM now separates contenders from leaders",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "e92d8c9b775504688d081213eb3901d636dc94ab"
+    ]
+  },
+  {
+    "issue_id": "8b9ecfd73cb4",
+    "entity": "SK하이닉스",
+    "title": "[특징주] SK하이닉스, 증권가 목표가 하향 우위에 11%대 급락",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "105688c4ad7d0130b46d526eff0cde28ecca44aa"
+    ]
+  },
+  {
+    "issue_id": "8d1f5d374431",
+    "entity": "SK하이닉스",
+    "title": "\"6800선 바닥 찍었나\"…다음주 빅테크·SK하이닉스 실적이 반등 가른다",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "1883264c6d3c75d52887df3e233034e61bb0338e"
+    ]
+  },
+  {
+    "issue_id": "2a95d6c5d36c",
+    "entity": "SK하이닉스",
+    "title": "이혼 후 5배 뛴 SK 주식도 나누나… 최태원·노소영 재산분할 '평가 기준...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "57ecee23fcb0716973109b720dbbceac99f9f52c"
+    ]
+  },
+  {
+    "issue_id": "a603e74d4bf3",
+    "entity": "SK하이닉스",
+    "title": "'이혼 후 오른 주식 가치'도 나눌까… 24일 최태원·노소영 재산분할 선...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "b7a8767ef0fc2495996e61ee0eb0466224ccac5d"
+    ]
+  },
+  {
+    "issue_id": "168833f14edc",
+    "entity": "SK하이닉스",
+    "title": "청주에서 뉴욕까지…HBM 개척 '메모리 마스터' 최태원의 발자취 [강경주...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "751f73c40a4df5934b2479c84364686a7014b344"
+    ]
+  },
+  {
+    "issue_id": "292bac4df6c6",
+    "entity": "SK하이닉스",
+    "title": "하이닉스 인수는 별거 뒤···AI로 뛴 SK 가치도 재산분할?",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "f3a0bd4962a66033fbf3caf1f939e8efe561e171"
+    ]
+  },
+  {
+    "issue_id": "d0a68fab9e9b",
+    "entity": "SK하이닉스",
+    "title": "롤러코스트 SK하이닉스, 최태원, \"주식 가만히 갖고 있어라\". 정말 믿어...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "580dc77b145f609e433e46cf1fa5787d39153f60"
+    ]
+  },
+  {
+    "issue_id": "2645c10896ae",
+    "entity": "미상",
+    "title": "[마켓분석] 반도체에서 빠진 돈은 어디로 가나…금·비트코인·핀테크로...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "579c24600ebbd5b7f52d028bd21cb1a6149ac034"
+    ]
+  },
+  {
+    "issue_id": "dceac26c7c20",
+    "entity": "TSMC",
+    "title": "삼성·SK 주가 급락에 '피크아웃론' 고개…전문가 \"2028년까지 메모리 부...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "93d61de095fe480d9ade7272526be5f109fb5148"
+    ]
+  },
+  {
+    "issue_id": "d2a7eedbf9a8",
+    "entity": "TSMC",
+    "title": "[마켓분석] 전쟁과 순환매가 동시에 덮쳤다…AI 반도체 랠리는 끝났나",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "b2433a9dccfa7f62876704be0566f767f1b506c9"
+    ]
+  },
+  {
+    "issue_id": "148818acbc6c",
+    "entity": "TSMC",
+    "title": "“연휴에 웬 날벼락”…코스피 블랙먼데이 오나 [머니+]",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "defcf2c0787d838a5bc79583e303d37750f75233"
+    ]
+  },
+  {
+    "issue_id": "7c63b9f96cca",
+    "entity": "TSMC",
+    "title": "[김대호 인물] 웨이저자(魏哲家) TSMC \"모리스창 공식 후계자\"",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "46a165ebc773a4e79528da3cc7415df6981266b2"
+    ]
+  },
+  {
+    "issue_id": "72d462a707b2",
+    "entity": "TSMC",
+    "title": "AI 반도체 차익실현에 뉴욕증시 하락…필라델피아지수 약세장",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "8d59f533d22b8e5bf7f8977d65833a887e070c9e"
+    ]
+  },
+  {
+    "issue_id": "8eb49ae99831",
+    "entity": "인텔",
+    "title": "인텔(INTC), 142달러 고점 →100달러 붕괴...HBSC 목표가 200달러 회복은...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "e2137183bd174383c92e481cbeecc00b6f359ce4"
+    ]
+  },
+  {
+    "issue_id": "f524fc9d8b35",
+    "entity": "미상",
+    "title": "AI 메모리 수요 폭증…삼성·SK·마이크론·CXMT '속도전'",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "f2907fb230674074fa4b78de9f126669980d43dc"
+    ]
+  },
+  {
+    "issue_id": "1c66ddd16cd0",
+    "entity": "인텔",
+    "title": "ASML, 하이 NA EUV 공급확대 본격화···인텔이 첫 고객",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "b5b6b38e9089c8e653ca386e94493aadc2d81088"
+    ]
+  },
+  {
+    "issue_id": "9d1db4f801b7",
+    "entity": "미상",
+    "title": "반도체 수장들 실적 낙관… 글로벌 반도체株는 하락",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "4639344a91ff91e6b7aede95480a5b33dd035150"
+    ]
+  },
+  {
+    "issue_id": "374ca3a18b4d",
+    "entity": "삼성전자",
+    "title": "TSMC \"AI 수요, 2030년까지 강력하게 유지\"… 설비투자 최대 640억달러로...",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "727ef1b120c2f6a186e907991d015a6d8486db9b"
+    ]
+  },
+  {
+    "issue_id": "7ed6bb0bba81",
+    "entity": "미상",
+    "title": "中기업들, AI칩 수천장 묶은 슈퍼노드 띄우기…\"새로운 도약\"(종합)",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "5ee1af46186b4f717634c7dee6fd9c65d85869fe"
+    ]
+  },
+  {
+    "issue_id": "5f44c29092f2",
+    "entity": "미상",
+    "title": "\"질문이 탐구가 됐다\"…부평고, 학생 주도 학술축제 눈길",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "509287bc049cfdf7a0ddd55e82710aef060a817c"
+    ]
+  },
+  {
+    "issue_id": "fdbba751d171",
+    "entity": "삼성전자",
+    "title": "\"코스피, 고점이었다고?\"…7000선 밀리자 목표가 하향 리포트 쏟아져",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "6d3c60f85323498be98f9e8f54587eedf5d3942d"
+    ]
+  },
+  {
+    "issue_id": "18431e415d04",
+    "entity": "미상",
+    "title": "인도, 수입 100여 개 품목 국산화 검토 착수",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-18",
+    "status": "종료",
+    "related_article_ids": [
+      "701cb9a90d096a6835ba15e72456cd6362463ddb"
+    ]
+  },
+  {
     "issue_id": "d1a3ce5be8ea",
     "entity": "SK하이닉스",
     "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
     "first_seen": "2026-07-09",
-    "last_updated": "2026-07-25",
+    "last_updated": "2026-07-27",
     "status": "진행중",
     "related_article_ids": [
       "600bc74f9f0cce52520f5427c7ada9ddbb31b50b",
@@ -5898,9 +6239,10 @@
       "7e2f95593b2e5bb60b870e1c75569aaa6d5d2542",
       "202787efde26362e433ad62ec85d0e1a067e1844",
       "b84ca9bbf55ddbee6284d1c0940c4a940d5f8c97",
-      "4a18cbadb4c7bfec3cbab68fde1de2df93ad72c5"
+      "4a18cbadb4c7bfec3cbab68fde1de2df93ad72c5",
+      "0071a6304510f52a7699420c2b4186bf3b7615df"
     ],
-    "progress_summary": "SK하이닉스는 HBM4 양산 준비 및 품질 검증을 위해 유니테스트로부터 웨이퍼 테스터를 추가 공급받고 있으며, TSMC와의 협력으로 HBM4에 첨단 로직 공정을 적용하며 차세대 AI 메모리 상용화를 선도하고 있습니다. 최근에는 미국 엔지니어 채용을 통해 3D 적층 DRAM 개발에 힘쓰고 있으며, 빅테크 5곳과 AI 반도체 및 데이터센터 협력을 확대하여 HBM4 기술을 통합하고 있습니다. 경쟁사인 삼성전자가 HBM4 시장에서 SK하이닉스를 추월할 것이라는 전망도 있으나, SK하이닉스는 HBM 기술 개발과 AI 시대 선도를 위한 투자를 지속하며 시장 성장에 대한 확신을 보이고 있습니다."
+    "progress_summary": "SK하이닉스는 HBM4 양산 준비 및 품질 검증을 위해 유니테스트로부터 웨이퍼 테스터를 추가 공급받고 있으며, TSMC와의 협력으로 HBM4에 첨단 로직 공정을 적용하며 차세대 AI 메모리 상용화를 선도하고 있습니다. 최근에는 미국 엔지니어 채용을 통해 3D 적층 DRAM 개발에 힘쓰고 있으며, 빅테크 5곳과 AI 반도체 및 데이터센터 협력을 확대하여 HBM4 기술을 통합하고 있습니다. 또한, AI 혁신을 이끌 차세대 지능형 메모리인 'PIM(Processing-In-Memory)' 기술을 통해 메모리 내에서 직접 연산을 수행하여 데이터 이동의 한계를 극복하고 AI 반도체 성능 향상과 전력 효율 증대에 기여할 것으로 기대됩니다. 경쟁사의 추격에도 불구하고 SK하이닉스는 HBM 기술 개발과 AI 시대 선도를 위한 투자를 지속하며 시장 성장에 대한 확신을 보이고 있습니다."
   },
   {
     "issue_id": "28d8d35d0fec",
@@ -6256,113 +6598,16 @@
     "entity": "삼성전자",
     "title": "HBM4, HBM4E… 삼전이 꺼내든 무기와 HBM 패권전쟁 [경제용어사전]",
     "first_seen": "2026-07-17",
-    "last_updated": "2026-07-24",
+    "last_updated": "2026-07-27",
     "status": "진행중",
     "related_article_ids": [
       "326adf3563d6d7cdf170342077fe625b6a6343b6",
       "565cb415d7859f318bc41d57fca5ea75bf4a0c24",
-      "9daef18baee599ab285eb6d74d17cf6bae015c28"
+      "9daef18baee599ab285eb6d74d17cf6bae015c28",
+      "abbc9fd522aeb03c92c534f139bcd49d7a4850b8",
+      "68078325dd202c36b8bfa79b627fd65ed9eec2d2"
     ],
-    "progress_summary": "이슈는 2026-07-17부터 2026-07-24까지 이어지고 있으며, 삼성전자는 2026년 10월 한국 온양 반도체 패키징 부지에 1조 3천억원을 투자하여 확장을 시작하고 2029년 5월 HBM 양산을 목표로 하고 있습니다. 또한, 삼성전자는 세계 최고 수준의 TSV 및 EUV 기술을 집약한 차세대 DDR5 메모리를 선보였으며, AMD는 Helios MI455X에 삼성 HBM4를 탑재할 예정입니다."
-  },
-  {
-    "issue_id": "685c4f8efdc5",
-    "entity": "미상",
-    "title": "SK실트론, 美 SiC 웨이퍼 자회사 연내 청산",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "678c11856828122a5aa1b5d1a5347da475ffa0de"
-    ]
-  },
-  {
-    "issue_id": "2660b613850e",
-    "entity": "미상",
-    "title": "ASML Raises Outlook, Plans More EUV Capacity",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "a93f7686612f3884191b49724371cd9f07f73208"
-    ]
-  },
-  {
-    "issue_id": "497105d3c4c8",
-    "entity": "삼성전자",
-    "title": "Commentary: Samsung, SK Hynix in Washington's crosshairs over memory fabs",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "e31b64a140db304a4943e459d96b947ea9792610"
-    ]
-  },
-  {
-    "issue_id": "1cc882899936",
-    "entity": "삼성전자",
-    "title": "As AI expands nanotech, Samsung fortifies ecosystem and LG pivots to chip equipment",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "bebe658d5d2a5980d7b3c44efb8b7065146ac558"
-    ]
-  },
-  {
-    "issue_id": "eabea208a9a8",
-    "entity": "미상",
-    "title": "JNTC-TOPPAN glass substrate push signals AI packaging supply-chain shift",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "40dce5c14f74db56ecdf32f5771172ae733b8df6"
-    ]
-  },
-  {
-    "issue_id": "f02fdb8180c1",
-    "entity": "인텔",
-    "title": "China's AI sector pivots to system-level \"super-nodes\" as chip curbs bite at WAIC 2026",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "da2f7bb1548028caad8cd6cbf07aeb7eb1833c85"
-    ]
-  },
-  {
-    "issue_id": "4dfb6fa8c0e2",
-    "entity": "TSMC",
-    "title": "TSMC's CoWoS capacity remains 'extremely tight' as OSAT partners ramp expansion",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "60ae19de6ed98c71397885c02ce73e4bcf05eac9"
-    ]
-  },
-  {
-    "issue_id": "c22807d26ba4",
-    "entity": "TSMC",
-    "title": "TSMC limits mature-node expansion and eases pressure on PMIC suppliers",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "c2284cf14cd97a86cfc3f440730d24bea25cf9ff"
-    ]
-  },
-  {
-    "issue_id": "bfe1adf7e8a1",
-    "entity": "미상",
-    "title": "China's DRAM milestone arrives with CXMT IPO; HBM now separates contenders from leaders",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "e92d8c9b775504688d081213eb3901d636dc94ab"
-    ]
+    "progress_summary": "이슈는 2026-07-17부터 2026-07-27까지 이어지고 있으며, 삼성전자는 2026년 10월 한국 온양 반도체 패키징 부지에 1조 3천억원을 투자하여 확장을 시작하고 2029년 5월 HBM 양산을 목표로 하고 있습니다. 또한, 삼성전자는 세계 최고 수준의 TSV 및 EUV 기술을 집약한 차세대 DDR5 메모리를 선보였으며, AMD는 Helios MI455X에 삼성 HBM4를 탑재할 예정입니다. 최근에는 HBM5의 베이스 다이에 2nm 게이트-올-어라운드(GAA) 파운드리 공정을 적용하여 로직 성능, 전력 효율성, 열 관리 요구 사항을 충족시킬 계획이며, 이는 HBM4E(7세대)보다 50% 이상 동작 속도가 향상될 것으로 예상됩니다."
   },
   {
     "issue_id": "1fad2639372e",
@@ -6376,204 +6621,6 @@
       "c6306b890d03c91b1bea168d2e01898395ea1e98"
     ],
     "progress_summary": "2026년 7월 18일부터 7월 24일까지 진행된 이번 주 칩 산업계 주요 뉴스로는 Amkor의 15억 달러 딜, 인텔 파운드리 매출 31% 증가, Siemens의 듀얼 인수, SiC 공장 폐쇄, AMD의 주요 발표, TSMC 가격 인상, Nokia의 팹 인수, 실적 발표, 추론 가속화를 위한 3억 달러 투자, Keysight의 멀티피직스, 구리 인터커넥트 대안 등이 포함되었습니다."
-  },
-  {
-    "issue_id": "8b9ecfd73cb4",
-    "entity": "SK하이닉스",
-    "title": "[특징주] SK하이닉스, 증권가 목표가 하향 우위에 11%대 급락",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "105688c4ad7d0130b46d526eff0cde28ecca44aa"
-    ]
-  },
-  {
-    "issue_id": "8d1f5d374431",
-    "entity": "SK하이닉스",
-    "title": "\"6800선 바닥 찍었나\"…다음주 빅테크·SK하이닉스 실적이 반등 가른다",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "1883264c6d3c75d52887df3e233034e61bb0338e"
-    ]
-  },
-  {
-    "issue_id": "2a95d6c5d36c",
-    "entity": "SK하이닉스",
-    "title": "이혼 후 5배 뛴 SK 주식도 나누나… 최태원·노소영 재산분할 '평가 기준...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "57ecee23fcb0716973109b720dbbceac99f9f52c"
-    ]
-  },
-  {
-    "issue_id": "a603e74d4bf3",
-    "entity": "SK하이닉스",
-    "title": "'이혼 후 오른 주식 가치'도 나눌까… 24일 최태원·노소영 재산분할 선...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "b7a8767ef0fc2495996e61ee0eb0466224ccac5d"
-    ]
-  },
-  {
-    "issue_id": "168833f14edc",
-    "entity": "SK하이닉스",
-    "title": "청주에서 뉴욕까지…HBM 개척 '메모리 마스터' 최태원의 발자취 [강경주...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "751f73c40a4df5934b2479c84364686a7014b344"
-    ]
-  },
-  {
-    "issue_id": "292bac4df6c6",
-    "entity": "SK하이닉스",
-    "title": "하이닉스 인수는 별거 뒤···AI로 뛴 SK 가치도 재산분할?",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "f3a0bd4962a66033fbf3caf1f939e8efe561e171"
-    ]
-  },
-  {
-    "issue_id": "d0a68fab9e9b",
-    "entity": "SK하이닉스",
-    "title": "롤러코스트 SK하이닉스, 최태원, \"주식 가만히 갖고 있어라\". 정말 믿어...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "580dc77b145f609e433e46cf1fa5787d39153f60"
-    ]
-  },
-  {
-    "issue_id": "2645c10896ae",
-    "entity": "미상",
-    "title": "[마켓분석] 반도체에서 빠진 돈은 어디로 가나…금·비트코인·핀테크로...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "579c24600ebbd5b7f52d028bd21cb1a6149ac034"
-    ]
-  },
-  {
-    "issue_id": "dceac26c7c20",
-    "entity": "TSMC",
-    "title": "삼성·SK 주가 급락에 '피크아웃론' 고개…전문가 \"2028년까지 메모리 부...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "93d61de095fe480d9ade7272526be5f109fb5148"
-    ]
-  },
-  {
-    "issue_id": "d2a7eedbf9a8",
-    "entity": "TSMC",
-    "title": "[마켓분석] 전쟁과 순환매가 동시에 덮쳤다…AI 반도체 랠리는 끝났나",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "b2433a9dccfa7f62876704be0566f767f1b506c9"
-    ]
-  },
-  {
-    "issue_id": "148818acbc6c",
-    "entity": "TSMC",
-    "title": "“연휴에 웬 날벼락”…코스피 블랙먼데이 오나 [머니+]",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "defcf2c0787d838a5bc79583e303d37750f75233"
-    ]
-  },
-  {
-    "issue_id": "7c63b9f96cca",
-    "entity": "TSMC",
-    "title": "[김대호 인물] 웨이저자(魏哲家) TSMC \"모리스창 공식 후계자\"",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "46a165ebc773a4e79528da3cc7415df6981266b2"
-    ]
-  },
-  {
-    "issue_id": "72d462a707b2",
-    "entity": "TSMC",
-    "title": "AI 반도체 차익실현에 뉴욕증시 하락…필라델피아지수 약세장",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "8d59f533d22b8e5bf7f8977d65833a887e070c9e"
-    ]
-  },
-  {
-    "issue_id": "8eb49ae99831",
-    "entity": "인텔",
-    "title": "인텔(INTC), 142달러 고점 →100달러 붕괴...HBSC 목표가 200달러 회복은...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "e2137183bd174383c92e481cbeecc00b6f359ce4"
-    ]
-  },
-  {
-    "issue_id": "f524fc9d8b35",
-    "entity": "미상",
-    "title": "AI 메모리 수요 폭증…삼성·SK·마이크론·CXMT '속도전'",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "f2907fb230674074fa4b78de9f126669980d43dc"
-    ]
-  },
-  {
-    "issue_id": "1c66ddd16cd0",
-    "entity": "인텔",
-    "title": "ASML, 하이 NA EUV 공급확대 본격화···인텔이 첫 고객",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "b5b6b38e9089c8e653ca386e94493aadc2d81088"
-    ]
-  },
-  {
-    "issue_id": "9d1db4f801b7",
-    "entity": "미상",
-    "title": "반도체 수장들 실적 낙관… 글로벌 반도체株는 하락",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "4639344a91ff91e6b7aede95480a5b33dd035150"
-    ]
-  },
-  {
-    "issue_id": "374ca3a18b4d",
-    "entity": "삼성전자",
-    "title": "TSMC \"AI 수요, 2030년까지 강력하게 유지\"… 설비투자 최대 640억달러로...",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "727ef1b120c2f6a186e907991d015a6d8486db9b"
-    ]
   },
   {
     "issue_id": "630c62e57718",
@@ -6590,56 +6637,12 @@
     "progress_summary": "\"단일 칩 밀려도 묶어서 이긴다\" 미국의 제재 뚫는 중국 AI\" 이슈는 2026년 7월 18일부터 7월 25일까지 이어지고 있으며, 중국은 3년 내 AI 칩 자립 및 2030년까지 AI 칩 자급률 70% 달성을 목표로 하고 있다. 딥 유비라이트그래피(DUV)와 칩 스태킹 기술을 활용한 디자인 역량을 발전시키고 있지만, 엔비디아의 최신 AI 가속기와 ASML의 극자외선(EUV) 리소그래피 장비 확보에 어려움을 겪고 있다."
   },
   {
-    "issue_id": "7ed6bb0bba81",
-    "entity": "미상",
-    "title": "中기업들, AI칩 수천장 묶은 슈퍼노드 띄우기…\"새로운 도약\"(종합)",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "5ee1af46186b4f717634c7dee6fd9c65d85869fe"
-    ]
-  },
-  {
-    "issue_id": "5f44c29092f2",
-    "entity": "미상",
-    "title": "\"질문이 탐구가 됐다\"…부평고, 학생 주도 학술축제 눈길",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "509287bc049cfdf7a0ddd55e82710aef060a817c"
-    ]
-  },
-  {
-    "issue_id": "fdbba751d171",
-    "entity": "삼성전자",
-    "title": "\"코스피, 고점이었다고?\"…7000선 밀리자 목표가 하향 리포트 쏟아져",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "6d3c60f85323498be98f9e8f54587eedf5d3942d"
-    ]
-  },
-  {
-    "issue_id": "18431e415d04",
-    "entity": "미상",
-    "title": "인도, 수입 100여 개 품목 국산화 검토 착수",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-18",
-    "status": "종료",
-    "related_article_ids": [
-      "701cb9a90d096a6835ba15e72456cd6362463ddb"
-    ]
-  },
-  {
     "issue_id": "a4fb820c0be2",
     "entity": "미상",
     "title": "ASML supplier Trumpf says South Korea EUV demand is growing faster than Taiwan's",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c244aa663bc41ee0d65bff1d6c06ee0391e31bc2"
     ]
@@ -6650,7 +6653,7 @@
     "title": "[문준호의 넥스트 프레임] 문샷 충격, AI는 끝난 것이 아니라 기대가 조...",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "dcd7f321f209f8e81f1735a086af83a788592304"
     ]
@@ -6661,7 +6664,7 @@
     "title": "[ET단상] 한국 반도체, 유럽을 다시 생각할 때",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "5f4cd33b2cce5a45a173f6ff8b9d1e9e723dd962"
     ]
@@ -6672,7 +6675,7 @@
     "title": "와이씨켐, 턴어라운드 넘어 성장 국면…반도체 소재 포트폴리오 확대",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "ae125ff2a9c87c62d8d91aa1677145fbbee6dab2"
     ]
@@ -6683,7 +6686,7 @@
     "title": "[전문인칼럼] 반도체 슈퍼을 ASML, 변방에서 고객 찾아 출발하다",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "43de0a03e0c669510ebe43f996e8dcd372be3c8d"
     ]
@@ -6694,7 +6697,7 @@
     "title": "AI가 앞당긴 글로벌 반도체 1조 달러 시대",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "0b1e3f35a9473522a8c82b4ec3f43fd56309f888"
     ]
@@ -6705,7 +6708,7 @@
     "title": "\"장기적으론 반도체 괜찮아\"...반도체株 하락에도 낙관론 나오는 까닭",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "cdd1d6d99358b3ae487373c314168030e6509f21"
     ]
@@ -6716,7 +6719,7 @@
     "title": "[人터뷰+] “中, ASML 엔지니어까지 빼간다...‘4종 지원책’으로 반도체...",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "d1b627b92dd09bfd279cdf19584188784074afcb"
     ]
@@ -6727,7 +6730,7 @@
     "title": "[인공지능 줌인] AI 패권 전쟁 가운데에 끼인 ASML",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "365ef4dc33d01a35e82feeb984636e88213cddd0"
     ]
@@ -6738,7 +6741,7 @@
     "title": "딥시크 이어 中 AI '키미 쇼크'…\"美와 격차 2~3개월로 좁혀져\"",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "157787e14dc701f1de47c3a0cdce4c28a2a91f27"
     ]
@@ -6749,7 +6752,7 @@
     "title": "시진핑 첫 등판에 29개국 규합까지…中 WAIC서 'AI 국제질서' 새판 짰다",
     "first_seen": "2026-07-19",
     "last_updated": "2026-07-19",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "9c614056e95b03f72ff2f15d7925e7f866bc7a8c"
     ]
@@ -6793,7 +6796,7 @@
     "title": "씨엠티엑스, 단결정 실리콘 그라운드 링 애프터마켓 최초 생산",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "2d3cb0abd657d640f6b6474930bdf4454365a91b"
     ]
@@ -6815,7 +6818,7 @@
     "title": "Musk brands US$52 billion SpaceX-Foxconn Nvidia server order 'fake news'",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c36130b701d84a0456ca187b4636e63d20006b5d"
     ]
@@ -6826,7 +6829,7 @@
     "title": "Intel reassigns global fabs, eyes early 14A and EMIB-T AI wins",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "6a20f3e49f4c5b4d5bd6aa9d794d5ffed0e5dae2"
     ]
@@ -6837,7 +6840,7 @@
     "title": "Taiwan-US 'co-make' white paper debuts amid investment boom",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "477e1805201be6f390695029de34b377ac8d215a"
     ]
@@ -6860,7 +6863,7 @@
     "title": "Jensen Huang's week in Tokyo: what Nvidia's Japan trip reveals about future partners",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "d3bd683cbb12ab2cb5c4da796823861e18cbac74"
     ]
@@ -6871,7 +6874,7 @@
     "title": "Nvidia grappling with internal compute needs amid GPU shortages",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c8fee552c3f94a39d536100c50c28fc9766615b6"
     ]
@@ -6882,7 +6885,7 @@
     "title": "Samsung struggles to secure AI chip substrates, report says",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "76e047efed07e2bbabdceb7f92af962c6b6c53a4"
     ]
@@ -6893,7 +6896,7 @@
     "title": "Nvidia shrugs off HBM shortage, bets on AI infrastructure to sustain explosive growth",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "0a58e926abcf8e724c4d28d1575c2eccf3e4597a"
     ]
@@ -6904,7 +6907,7 @@
     "title": "Micron's 10-year deal with GlobalWafers signals tighter 12-inch supply",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "b69adc4bc0e1b5d000af69fb5dfc0aab2de3237f"
     ]
@@ -6915,7 +6918,7 @@
     "title": "Hanmi Semiconductor speeds up HBM tool output and plants US flag as equipment shortage looms",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "4bfa751078071177c344c0480838c970758440f0"
     ]
@@ -6926,7 +6929,7 @@
     "title": "삼성전자 소액주주들 \"40조 성과급, 주총 승인 거쳐야\"…국민연금에 서...",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "3cabb3296f2bfb5bb1625cd22f9e8aa34eea85a8"
     ]
@@ -6937,7 +6940,7 @@
     "title": "[시사플랫폼] “우리 증시 변곡점 돌입…빅테크 기업실적에 따라 증시 ...",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "6e9942f1b06864a3c09cbf0c009f1f0fb60a6ceb"
     ]
@@ -6948,7 +6951,7 @@
     "title": "[투자를IT다] 2026년 7월 3주차 IT기업 주요 소식과 시장 전망",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "acf99f1b8cf61e6a03c2a4bed4a5bc5abf282d4b"
     ]
@@ -6959,7 +6962,7 @@
     "title": "美 반도체주 쇼크 덮친 코스피…폭락장서 상위 1% 투자자들의 선택은?",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "f71efe3abab3b2dd95e4fd2d3758ac7b1fa2b02a"
     ]
@@ -6970,7 +6973,7 @@
     "title": "반도체 사이클 가르는 분수령…구글 실적따라 주가 출렁일 듯 [동여의도...",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "9373c47e65e8805ce96efb8f8e99e8f20557f972"
     ]
@@ -6981,7 +6984,7 @@
     "title": "잡코리아, 반도체 채용 빅데이터 분석 발표 \"올 상반기 신입 공고 47% 급...",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c058e2bd844d1fad7e52a80e40954e4f89b21186"
     ]
@@ -6992,7 +6995,7 @@
     "title": "[사설] 반도체 올라탄 GDP 4만 달러 ‘네덜란드병’ 경계해야",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "b8b960f381c1986de0a4e6be4660386714ffa2b2"
     ]
@@ -7003,7 +7006,7 @@
     "title": "TSMC “AI 반도체 수요 수년간 지속된다”",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "7ad2ed10e5f8f145e289473f7a53ba9debfa1f45"
     ]
@@ -7014,7 +7017,7 @@
     "title": "TSMC도 증설 가세…5년간 팹 25곳 확대",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "123df2571b33cbfa551afd980980922bedf88bba"
     ]
@@ -7025,7 +7028,7 @@
     "title": "글로벌 빅테크 실적발표 임박… '1074兆' AI투자 지속여부 촉각",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "f5eaef23f2abe9355ef2d49e94dd5318d3f40403"
     ]
@@ -7036,7 +7039,7 @@
     "title": "AI 투자 아직 안 끝났다…TSMC·ASML이 확인한 '메모리 랠리'",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "1c12245a82e60b45cb80b0093835fbb4c00fe243"
     ]
@@ -7047,7 +7050,7 @@
     "title": "[뉴스분석] 40조 조달·ADR 흥행…SK하이닉스, 주주환원도 글로벌 기준으...",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "15a34bb40748de0eeba037829743f2e97b086091"
     ]
@@ -7058,7 +7061,7 @@
     "title": "\"메모리 반도체 공급과잉 아직 아니다…2035년까지 수요가 공급 앞서\"",
     "first_seen": "2026-07-20",
     "last_updated": "2026-07-20",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "121397b5ca0030ac03a02f22e9464d1e5a7b07be"
     ]
@@ -8572,10 +8575,11 @@
     "entity": "삼성전자",
     "title": "삼성·브로드컴, 290조 AI 동맹…HBM·2나노 원팀",
     "first_seen": "2026-07-25",
-    "last_updated": "2026-07-25",
+    "last_updated": "2026-07-27",
     "status": "진행중",
     "related_article_ids": [
-      "a1b6a63226ea03908aaf754bf768b60089c56025"
+      "a1b6a63226ea03908aaf754bf768b60089c56025",
+      "cda4c1d71729a183a896318477d9c51047a2989c"
     ]
   },
   {
@@ -8642,6 +8646,116 @@
     "status": "진행중",
     "related_article_ids": [
       "162eab3512981c03408a55c494fc0554f29556a9"
+    ]
+  },
+  {
+    "issue_id": "3b29ed3f7716",
+    "entity": "삼성전자",
+    "title": "삼성전자, 갤럭시Z폴드8·플립8 사전판매",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "7c1b981f3f1123e953df23ada65062e6eca5129c"
+    ]
+  },
+  {
+    "issue_id": "267acbe75526",
+    "entity": "엔비디아",
+    "title": "네이버, 엔비디아에 1조4800억원 규모 3자배정 유상증자",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "2de1a699c62e9cf52d0978846b00cfceb99107d9"
+    ]
+  },
+  {
+    "issue_id": "a01e6a64db25",
+    "entity": "엔비디아",
+    "title": "SK, 글로벌 빅테크들과 AI 인프라 협력 확대",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "dc570b8a881516a97be18adfc43b2ece062126eb"
+    ]
+  },
+  {
+    "issue_id": "477d3254ccf3",
+    "entity": "삼성전자",
+    "title": "Samsung converts AMD and OpenAI ties into HBM4 supply wins",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "eb11614b925fa5b5aac3c491f6f7cb3045bd63af"
+    ]
+  },
+  {
+    "issue_id": "2ec747fc9e9d",
+    "entity": "엔비디아",
+    "title": "Nvidia weighs US$250B backstop for OpenAI's Ohio data center",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "611c8e8ce7849a07ee072c5a8fb526a7f2079a2e"
+    ]
+  },
+  {
+    "issue_id": "e1b6eebd58a1",
+    "entity": "SK하이닉스",
+    "title": "Weekly news roundup: Samsung and SK Hynix favor DDR5, Intel accelerates 18A, Alibaba deepens CXMT ties",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "0f79a377be9599023ab64f8d60277f9cd0b79c43"
+    ]
+  },
+  {
+    "issue_id": "a910bf8bc4b0",
+    "entity": "엔비디아",
+    "title": "Jensen Huang backs open-weight AI as report says OpenAI, Anthropic lobby for tighter controls",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "38b1fc22a91d30cd39a36fa55bba3cb827314951"
+    ]
+  },
+  {
+    "issue_id": "9e07f02f7b81",
+    "entity": "삼성전자",
+    "title": "Samsung opens preorders for new foldables as Apple entry expected to reshape market",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "5df1141bb26cc8a73be1d9554c8c7ef22b2e1054"
+    ]
+  },
+  {
+    "issue_id": "2722287bd0b7",
+    "entity": "삼성전자",
+    "title": "eSSD contracts surge as AI data centers shift spending from memory to storage",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "612f2484362e22ca9f166aa75e15ae538af08bac"
+    ]
+  },
+  {
+    "issue_id": "6d2f0d28d8f5",
+    "entity": "삼성전자",
+    "title": "몰락이냐 '제2 한강의 기적'이냐…한국에 경고 쏟아졌다",
+    "first_seen": "2026-07-27",
+    "last_updated": "2026-07-27",
+    "status": "진행중",
+    "related_article_ids": [
+      "1b542146c4e67011765bd9bd6e9fd1a2de1ee0d3"
     ]
   }
 ]
