@@ -7461,156 +7461,6 @@
     ]
   },
   {
-    "issue_id": "d1a3ce5be8ea",
-    "entity": "SK하이닉스",
-    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "600bc74f9f0cce52520f5427c7ada9ddbb31b50b",
-      "db3288c503003335fea47c73f32db4247d50a076",
-      "990f72a16c13d99e6ada5bccd603fe30c76dc237",
-      "f635fdfd9106e063d8c7f49a1a4546c745d20346",
-      "57b33a5c349d22f1eecd881ab2c612557e6c738f",
-      "e8ea32817be65be38e3a70ba24025c8c7cb4c272",
-      "a7e47f9494c5cc1960b4d7852a4a061bc7e3ae0f",
-      "e0300940e2680928fbe05c523ee6cce32d2a06e2",
-      "3e6b028d01b1c9619b3c9bb13c23da4f275c39c0",
-      "f119c2767118c9393385f27b868266b21c28f6fa",
-      "11f6e6d6d1f21ff4385412c570c4cebe6e224452",
-      "7b13279c7a59ce27abe83338ee8d4d85331138fc",
-      "b081b89eab86e6de220171e3f8074778c14da269",
-      "0d3610f95c98f090598ba522cee36b9c61924f5f",
-      "7e2f95593b2e5bb60b870e1c75569aaa6d5d2542",
-      "202787efde26362e433ad62ec85d0e1a067e1844",
-      "b84ca9bbf55ddbee6284d1c0940c4a940d5f8c97",
-      "4a18cbadb4c7bfec3cbab68fde1de2df93ad72c5",
-      "0071a6304510f52a7699420c2b4186bf3b7615df",
-      "84d001d1e3fc7c4a6998907672d6242720fcad67",
-      "a9963fb9f9e17cef01370ff24013c380cf5c651d",
-      "28c830e110929ef4e82292fe15b7b6b7be4599f8",
-      "65d99c96e281fae0da6e94749341b9ac5ed7a448",
-      "b22c2e5f8da6869931136797ba57ab0983fd965f",
-      "0974412a3007fc8decfa475cd3723fe4e1110a9f",
-      "6debfec5afae6ac200ef05970f6c203247cf82d0",
-      "3e904e39a3669b0e316d8f40f85c059b99927d2f",
-      "376922816f19c4e96d9ce18ac614129da39c50e6"
-    ],
-    "progress_summary": "SK하이닉스는 AI 메모리 시장의 폭발적인 성장을 바탕으로 2026년 2분기 사상 최대 실적을 기록했으며, HBM4 양산 준비, PIM 기술 개발, 3D 적층 DRAM 연구 등 차세대 AI 메모리 기술 개발에 박차를 가하며 시장 지배력을 강화하고 있다. 또한, 2026년 하반기에는 샤오미를 첫 고객으로 LPDDR6 양산을 시작하며 프리미엄 모바일 DRAM 시장 입지를 공고히 할 전망이다. 한편, AI 시대에 맞춰 '생각 근육'을 갖춘 인재 선발을 위해 '반나절 심층면접'을 도입했다."
-  },
-  {
-    "issue_id": "28d8d35d0fec",
-    "entity": "삼성전자",
-    "title": "[특징주] 삼성전자·SK하이닉스, 프리마켓 널뛰기 딛고 오전장 쾌속 상...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "79d34c2dd935b352a6aa98c6c93c6e49fbbea555",
-      "d120d9c6d133b15316aa53bfc81d759c0c41a841",
-      "1d2d5ad5f47e23a9c1a748f1cac7a17c10d64fa4",
-      "eaa07674b8999e197ad4b3609051ff158138ec0c",
-      "2f0e9899e1b4a20e4d6e81040978ea06cf02dc9f",
-      "05d5b7e2d41f6c85c32028f30da3b5919bfc7e2e",
-      "21b2d5fedc5e475fe92820ed3db2c207fd28b204",
-      "44ed1c9289e8a9e8de814ddb8c9092e92db02db7",
-      "9878b2f3adb2904dd5aae109b085b0f95f0c1dbc",
-      "b0998d67dbfe4a4636ce08597b50a3133c2d540c",
-      "571acf559fbb3c77d765ada1c96d933440b0153a",
-      "b87132485e1c4d5391ab4075d658e8a2bdb3a05f",
-      "4976ea0fc7e4efed979cafff7b2676f028b3cf80",
-      "f211578d6e99048b63676ef707880d12c2f18b51"
-    ],
-    "progress_summary": "2026년 7월 9일부터 7월 30일까지 '삼성전자'와 'SK하이닉스'는 AI 서버 확대와 HBM 수요 증가 기대감으로 상승세를 보이다가, 7월 24일 중국 메모리 업체의 증설 소식과 7월 29일 SK하이닉스의 기대치 하회 실적 발표로 주가가 하락하는 등 변동성을 겪었습니다. 그러나 7월 30일 삼성전자가 2분기 역대 최대 실적을 경신했다는 소식이 전해지며 반등의 여지를 보여주고 있습니다."
-  },
-  {
-    "issue_id": "ca8348220b59",
-    "entity": "SK하이닉스",
-    "title": "최태원 SK 회장 방미, 하이닉스 ADR 나스닥 상장…빅테크와 AI 메모리 협...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-29",
-    "status": "진행중",
-    "related_article_ids": [
-      "3f5360a79e3bf3a9310273d1d3ef915e683e54c2",
-      "3b0d735eb3eb53c6e5aa8ba317a33a06ae46afcd",
-      "eba668d9a37ef72c79a514ecaad016b3fd512665",
-      "08bed367f8d3d73d104d4cb63cfe07862eb35669",
-      "cc5f9c7ec1bd2afd3e0a2eaf975f32f74e46805a",
-      "4b7dffae5d614f6032798670b504789f6162476f",
-      "f78f88444b8a7065d82efb3d4e859d7d88e75f63",
-      "98b147fdefac23b9f3c9f8f8b866b3e42eda0bfa",
-      "9e11dc26a021b21d7faa7a5de62676651c18eb08",
-      "569256e3a01e3627454059e0aedad97fb8dd19df",
-      "96da900c7c022c5a04ca68923d5a2be4d24544b4",
-      "af37e494f6c0be6636c14cca9f6a91981c9d8d05",
-      "b40b5a9d5872ff9570953c77377879d5dc279dab",
-      "69ffbf94cafdffbc2ef109ea41ef801ef6b31d2f",
-      "a0cca0509e5e90b5b7339ff669e0cc557c6ac73b",
-      "c670f8a5fdd540ad63a22fcd10da15901c9ddfc1",
-      "6b60181eccf528b3de2314ad491e498d7807c05a",
-      "c824323dde9270e48a7c24328b14f6de3c2d5db4",
-      "479b97554dc3c0e1e35d7632510bb2b8d4b31569",
-      "4213e01e157abaad80a12702df9b56de413bc759",
-      "41d47e7d118fb28913c5114b99b119b232d1b1b7",
-      "bf55cf89cbd62bfddabfe0612f582b8b94930533",
-      "7a86a4542ec8a2f6e1afa1e18a8c2ae5bd3e6bb2",
-      "156464412828665d0752c8c4a97cdf9e05992ed9",
-      "ba6b8c47e2771078b8431e3effc33d5a939b51c1",
-      "9dae951ed42d14386679cb69d40df534807304ea",
-      "7dde9704a32efe91e45a1c1365c685e2dcf81ba6",
-      "5b031b7c5654dda6f65a028d756db46fd1551e8e",
-      "af0a8145020c52b6fd09f550daf941089f973e48",
-      "54a60411a149941c9488285d564faa28e56819e5",
-      "db073fa6c3bfc8e62e952039222d7a82ff82d426",
-      "5d271ceca15e20f7caafcf224a654f575de99f13",
-      "b9183c3603f0fdfdda5863b11b21f2dd1fd11f9f",
-      "24f062909b066f9af60411c6d9f2aa67c8d1969d",
-      "4b8adb96b5bd53040c873f6eab2fff071ca0e35f",
-      "02fbfae0006a77e54384536e047d481fc35ee144",
-      "e167cee4fbc9d6026fed60ac434b50386a53342f",
-      "8dae33f6c2b8e62e86c66aadc3dfff6c00946256",
-      "364d94f653296dddbcf41a4a8aceec96cd8d5cc8",
-      "b36264ae6961875f88d9c4ddc994fb0b46c8d71f",
-      "614057d86e1428807f721e16a2c34033b0163ca8",
-      "7ecf9039861d3d8465d810fd8154d3890859f4e9",
-      "ff7b5692b24202ec1ceab5dd78c7184e6b2b01c5",
-      "8062123cba6f61ecd6fb55bae653328e20f9c4c7",
-      "497bb185d05f61cf970f36b66cafd2a87a1d4708",
-      "c0551ecb84f89ff547730b6bb728e2676e8dbb61"
-    ],
-    "progress_summary": "SK하이닉스는 최태원 회장의 미국 방문을 계기로 젠슨 황 엔비디아 CEO를 비롯한 빅테크 기업들과 AI 메모리, HBM4 공급, 데이터센터 인프라 등 AI 분야에서 5000억 달러 규모의 협력 파트너십을 강화하였으며, 2026년 빅테크 기업들의 AI 투자 증가에 대비해 10여 곳의 고객사와 5년 장기 공급 계약(LTA)을 체결하고 40조 원 이상의 투자를 계획하며 견조한 메모리 수요 전망에 대응하고 있다. 또한, SK하이닉스는 미국과 일본에서의 신규 생산 투자 결정은 유연하게 진행할 예정이며, 6세대 HBM4 양산 확대와 1c 나노미터 D램 출하를 통해 비트그로스 성장을 추진할 계획이다."
-  },
-  {
-    "issue_id": "b02007223cfe",
-    "entity": "미상",
-    "title": "中 CXMT, 43억달러 IPO로 메모리 굴기 시험대",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-28",
-    "status": "진행중",
-    "related_article_ids": [
-      "a3f2ce839767cc8ae58dd483f3ff349d29c1b78b",
-      "58571185b57c52defccadcac2297777379dbaa6d",
-      "ed295bf6dd7c055a2563718dd22f0da89da55f3a",
-      "17b9448b7aa0a260b516189d81a4806fd2559eda",
-      "c4b9c26c0060b2e4ad3a4d1f1aab2e5d3d8a8804",
-      "e92d8c9b775504688d081213eb3901d636dc94ab",
-      "ac3e879c28d3faf868f686eb3880972487a10061",
-      "9b9868e09a7a035dd7f09d92caa31e85b4d52c41",
-      "cbab7f59f784e7a04784535fd2179b88eaaff20c",
-      "de33faa3ba17debe8027f91848ca02649758684f",
-      "4d1b474800153741fc3f9911a301874ebd48b522",
-      "f554a8ac783a683079c8aba5d2f9f9960d3da398",
-      "45a6a77e33309d6446c78c4c0b8f2c6ab91f4fa2",
-      "354d49f0d022dc219557d99e9b5ac615f66fb1fe",
-      "afa5aa6e0845a327ffafaea08cf328330abaef4d",
-      "1e85515cfe9f234c1295797f0ea04f7523d6197f",
-      "bc9bfcdf69dfe343fe820b9f05c5667639771e0b",
-      "82269e5f4009f642948e09dddeae3d2d6399c494"
-    ],
-    "progress_summary": "China's memory chip manufacturer CXMT is progressing towards a $4.3 billion IPO, aiming to capitalize on the AI boom and expand its presence in the High Bandwidth Memory (HBM) market. Despite facing significant challenges due to US export controls and restricted access to advanced EUV lithography equipment, which is projected to delay its HBM3/HBM3E development, CXMT is actively seeking to overcome these hurdles. A recent development includes China's successful domestic production of DUV lithography equipment, which, while less advanced than EUV, is crucial for various semiconductor manufacturing processes and represents a significant step towards self-sufficiency amidst international trade tensions. This domestic capability is seen as a pivotal moment for China's semiconductor industry, especially as it navigates limitations in accessing cutting-edge foreign technology."
-  },
-  {
     "issue_id": "48909eb9d64e",
     "entity": "미상",
     "title": "한화-한미반도체, TC본더 소송 2차 변론… \"특허 침해\" vs \"사실 왜곡\"",
@@ -7623,212 +7473,6 @@
       "96b9c5fdad2ac9613d883578aa5b5513ebdd7d8a"
     ],
     "progress_summary": "2026년 7월 9일부터 7월 23일까지 한화와 한미반도체 간의 TC 본더 관련 특허 침해 소송 2차 변론이 진행되었으며, 한미반도체는 특허 침해를 주장하고 한화는 사실 왜곡이라고 반박했습니다. 이 분쟁은 고대역폭 메모리(HBM) 생산에 필수적인 TC 본더 장비의 특허와 관련이 있으며, 한미반도체는 HBM 장비를 넘어 우주 반도체 분야로 사업 포트폴리오를 확장하여 새로운 성장 동력을 모색하고 있습니다."
-  },
-  {
-    "issue_id": "99d8a8fcf3c4",
-    "entity": "엔비디아",
-    "title": "[미국 특징주] 로이터 \"메타, 9월부터 자체 AI 칩 생산…엔비디아 의존...",
-    "first_seen": "2026-07-09",
-    "last_updated": "2026-07-28",
-    "status": "진행중",
-    "related_article_ids": [
-      "e0e7674f0e43ef3f08c6aa1895cd6fe0ba15fa99",
-      "b7d622703d1707884df31a1282a5426ba94786b8",
-      "2b3bbbd0c478397bf7029a95dd0e415848b86e7c",
-      "ea72f54e659918f3e3b4d20301a45035be5be91b",
-      "07d1c230a615323e759a29e93eba7b634ac86523",
-      "18c820a061ecd46b622e95aefa7b14117db37c77",
-      "7bbf17460818a492d8af3b3b6729ec2d49b7457a"
-    ],
-    "progress_summary": "2026년 7월 9일부터 시작된 '메타의 자체 AI 칩 생산 및 엔비디아 의존도 감소' 이슈는 2026년 7월 28일까지 이어지고 있습니다. 이 기간 동안 엔비디아는 일본에서 AI 파트너십을 확장하고 블랙웰 칩을 통합하며 AI 생태계를 구축하는 데 주력했으며, 네이버는 엔비디아와의 협력을 통해 AI 팩토리 구축을 위한 가능성을 모색했습니다. 또한, 중국 반도체 산업은 딥시크의 량원펑 창업자가 미국 수출 통제 강화 이전에 GPU를 확보하며 긍정적인 전망을 보였습니다. 최근 새로 추가된 기사에서는 AMD가 토큰당 비용을 30% 절감하는 새로운 데이터센터 GPU인 Helios 랙을 발표하며 AI 컴퓨팅 시장에서의 경쟁력을 강화했음을 알 수 있습니다."
-  },
-  {
-    "issue_id": "bf55b1ffc347",
-    "entity": "인텔",
-    "title": "Simplifying Intelligent Wireless Design and Security Certification for Healthcare Devices",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "d131265958e349834537edd81ddafbacb866520d",
-      "3ec73ca52223911e8a0b695c1dd1c2869990593c",
-      "3a923f6b4d1f3407d9f77bf8169e8577ab0d2067",
-      "f3c487cce175948e8f0733179a6bd7e0ea8ad2ba",
-      "270b4470334300ac92aed21cea4a01ee7a425c19",
-      "4033c7fe1151b3fd22895794f28c25daff8f203f",
-      "5ae51a78555d4c23dd13bdc7292c2385dcc34f1d",
-      "074f54cf14d082c2e229bb51912cf8da0f8af30a",
-      "d3401534973a05d9299b54f0d578ccf58e39a70f",
-      "76122c005c7821fcbd6226e0f2e928b927776110",
-      "a38245d6e4946c665a4283d3e36ff58fd7bb1315"
-    ],
-    "progress_summary": "인텔의 'Simplifying Intelligent Wireless Design and Security Certification for Healthcare Devices' 이슈는 2026년 7월 10일부터 7월 30일까지 이어지고 있습니다. 최근 보도에 따르면 인텔은 AI 기반 컴퓨팅 수요에 힘입어 2분기 실적 호조를 기록하고 2026년 설비 투자를 200억 달러 이상으로 확대할 계획이며, ASML의 High-NA EUV 기술을 활용한 Panther Lake 칩의 양산과 Foxconn, Siemens, Fortinet과의 파트너십을 발표했지만, 외주 고객 매출은 여전히 TSMC에 비해 미미하며 칩 부족 현상은 4분기까지 지속될 것으로 예상됩니다. 인텔은 턴어라운드를 증명하기 위해 실제 AI 주문 성과를 보여줄 필요가 있습니다. 한편, 포스코DX는 산업 현장의 피지컬 AI와 사무 업무의 에이전틱 AI를 중심으로 'AI 네이티브 컴퍼니'로의 전환을 선언하며 현장 설비 제어를 위한 피지컬 AI 확산 및 설비 로봇화에 주력하고 있습니다."
-  },
-  {
-    "issue_id": "fb0b6168d22e",
-    "entity": "삼성전자",
-    "title": "삼성전자·SK하이닉스 895조 투자… 광주 부동산시장 기대감 폭발",
-    "first_seen": "2026-07-10",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "11adac1c19e7b61640b535549f6f74744e54cf39",
-      "42b0cbc65e573eaa8348a1814147f9691feb0a46",
-      "7ea775b2ea626e7f50aab49efec7847417b79fe1",
-      "0d3c91d33553e7f455061863c34dc108bce72627",
-      "dc7a0d3a400d2512b7349c3548bd54474e308225",
-      "4528f06a944cf354b81b395aa05713ab299ba675",
-      "b8d73571b4a8b38b6807623e8459ca395124acf1",
-      "3068df9670d2db1ec3997443b2965e2e8828b11c",
-      "9eb9567fb8f69e8e14a4d879ad5571d1ad6eb11d"
-    ],
-    "progress_summary": "삼성전자·SK하이닉스의 895조 원 규모 투자 이슈는 2026년 7월 30일까지 이어지고 있으며, 최근 삼성전자는 2026년 2분기 매출 171.5조 원, 영업이익 89.5조 원으로 역대 최대 분기 실적을 달성했다. 이는 AI 붐에 따른 메모리 수요 급증과 시장 대응의 결과로, 특히 디바이스솔루션(DS) 부문은 AI 주도 메모리 슈퍼 사이클 심화로 매출 127.5조 원, 영업이익 89.2조 원을 기록하며 70%의 높은 영업이익률을 달성했다. 한편, S&P는 HBM과 파운드리 경쟁력 개선을 근거로 삼성전자의 신용등급 전망을 '긍정적'으로 상향 조정했으며, 삼성전자는 브로드컴과 AI 칩 개발 협력을 포함한 MOU를 체결하는 등 미국 빅테크 기업들과의 협력을 강화하고 있다. 다만, 메모리 가격 상승으로 인한 부품 비용 증가로 디바이스경험(DX) 부문은 8000억 원의 영업 손실을 기록했다."
-  },
-  {
-    "issue_id": "d60c873df4ff",
-    "entity": "미상",
-    "title": "AI 수요가 만든 메모리 대전… 생산 주도권 경쟁 격화",
-    "first_seen": "2026-07-12",
-    "last_updated": "2026-07-28",
-    "status": "진행중",
-    "related_article_ids": [
-      "3bbcbfdab4fc0be51aa9687f302a04ef4e3e185a",
-      "6bd4dddce0c15ddf3492d52293dac8f1d6ff5de4",
-      "bbd5edfd2d831177cdbdc7c5f9cedbc4558df693",
-      "a30ecdedfdf7d96c08a076ab442e1f72986aaa82"
-    ],
-    "progress_summary": "AI 수요로 인해 2026년 7월 12일부터 메모리 시장 경쟁이 격화되고 있으며, 초기에는 HBM 시장 성장과 긍정적인 전망이 있었으나, 현재는 AI 서버용 HBM 및 기업용 저장장치 생산 확대가 범용 반도체 공급 감소로 이어져 자동차 부품 및 IT 업계의 원가 부담을 가중시키고 있습니다. 더 나아가, 글로벌 팹 투자 증가로 반도체 장비 납기일이 늘어나면서 삼성전자와 SK하이닉스는 핵심 장비 주문을 더 일찍 진행하는 방안을 검토하는 등 생산 주도권 경쟁이 심화되고 있습니다."
-  },
-  {
-    "issue_id": "b9debb39434d",
-    "entity": "TSMC",
-    "title": "TSMC June 2026 revenue surges 68% as AI demand continues to fuel growth",
-    "first_seen": "2026-07-13",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "bc83a1af31c6140ccfc05cb020cb3a709890492a",
-      "80e7ecb5587ce44f030a5fdec8bae663cdebcf64",
-      "45104b2b68198323cc816919f518c924b5d0959b",
-      "3a570f08f469ac7f0f33d3a974af5cd7cbba964a",
-      "b795dbbb26102c5803eb56a084f2f700d4308f1e",
-      "5e87f0261b13a5e0a240fe74364f046fb02310c4",
-      "633b910ddc190516cda09d1f8ecf2371003ab4d9"
-    ],
-    "progress_summary": "2026년 7월 13일부터 2026년 7월 30일까지 TSMC의 AI 수요 견인 성장세가 지속되어 2026년 6월 매출이 68% 급증하는 이슈가 이어지고 있다. 2026년 2분기에 AI 수요와 고성능 컴퓨팅(HPC) 칩에 대한 지속적인 수요를 바탕으로 매출, 이익, 주당순이익(EPS)이 시장 예상치를 뛰어넘는 기록적인 실적을 달성했으며, 2분기 순이익은 77% 급증하며 사상 최대 실적을 경신했다. AI 반도체 시장 호황에 힘입어 TSMC는 AI 칩 개발사의 핵심 파운드리 파트너로서 AI 산업 성장에 따라 시장 지위와 기업 가치가 크게 상승했으며, 향후 몇 년간 AI 칩 수요 강세를 예상하고 애리조나 현장에 대한 투자를 총 2650억 달러로 확대하고 있다. 한편, 일본 구마모토 지진 이후 TSMC는 JASM 웨이퍼 팹의 유틸리티 시스템이 정상 작동하고 있으며, 장비 점검 및 보정이 진행 중이라고 밝혔고, 두 번째 구마모토 팹 건설도 재개되었다. 또한, 미래에셋의 'TIGER 미국필라델피아반도체나스닥 ETF' 순자산이 6조 원을 돌파하며 AI 반도체 밸류체인 전반에 걸친 투자가 활발히 이루어지고 있음이 확인되었다."
-  },
-  {
-    "issue_id": "d38aa04ae137",
-    "entity": "SK하이닉스",
-    "title": "美 증시 첫날 13% 오른 SK하이닉스, 국내선 15% 급락…왜?",
-    "first_seen": "2026-07-13",
-    "last_updated": "2026-07-29",
-    "status": "진행중",
-    "related_article_ids": [
-      "52129b1a653282fc0d5715391b502f8b844caf07",
-      "ff3144b32025d2a0f7383d379455de2442f62c1c",
-      "3ac208bdd6f385198a972262949354c412da3117",
-      "2a7cd2a5d681f20bb078e8cd1896b13539633b87",
-      "f326a0c67d30aa3bd0193f9bd7a740cf26e484c4",
-      "806d55f44b17929578b8d1ddacd18c06c86beabf",
-      "373217b50333a4ec11a7e5310337ae38dbc3f29e",
-      "4beb870e78f2677445fa40bd7acde575857d71b2",
-      "ae44c201a371fbc4fc2f5269107788007c72d979"
-    ],
-    "progress_summary": "SK하이닉스의 2분기 실적 발표를 앞두고 HBM, 고용량 서버용 D램, 낸드 기반 기업용 SSD(eSSD) 수요 증가와 D램 및 낸드 가격 상승세로 시장 호조세가 예상되었으나, SK하이닉스 ADR의 환전 랠리에도 불구하고 원·달러 환율 회귀는 어려울 전망이다. 중국의 자체 DUV 노광장비 생산 돌입 소식은 반도체 자립 가속화 움직임으로 해석되나, 창신메모리(CXMT)는 EUV 노광장비 미확보 우려가 제기되었다. 그러나 2분기 실적이 시장 기대치를 밑돌면서 SK하이닉스를 포함한 반도체 대장주들이 급락하고 AI 반도체 시장 투자 심리 악화, 중국 반도체 부상, 미·이란 협상 불확실성 등이 복합적으로 작용하여 한국 증시가 사상 첫 이틀 연속 서킷브레이커 발동과 함께 코스피가 5600선 후퇴 및 시총 283조원 증발이라는 '패닉셀' 장세를 겪었다. SK하이닉스는 2분기부터 HBM4 양산을 시작하고 하반기 생산을 확대할 계획이며 하반기에도 메모리 수요 성장세가 지속될 것으로 전망했으나, 증시 하락세를 막지는 못했다."
-  },
-  {
-    "issue_id": "152d897c91b4",
-    "entity": "인텔",
-    "title": "Intel concentrates its European chipmaking in Ireland with EUR5 billion Leixlip expansion",
-    "first_seen": "2026-07-14",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "ca703277d0ac9ab446f48a063448933449b83ad1",
-      "a6ae0bc8394a57ca10539cd9534be938aec06c3b",
-      "6724f5321dda43a48d178f630c9f6c0868f78a72",
-      "ca4a58004fad28cb512db0769bc241ef7d12e327",
-      "4d9c9fa3babea904105df95fa432444263c96e32",
-      "2fd5620405d87d0882bfa311304a0467acfe96b5",
-      "bbb01f36d776489530832ade1fd7d0c41978f0ae"
-    ],
-    "progress_summary": "2026년 7월 14일부터 7월 30일까지 '인텔'의 'Intel concentrates its European chipmaking in Ireland with EUR5 billion Leixlip expansion' 이슈가 이어지고 있다. 인텔은 파운드리 로드맵보다 앞서 인텔 18A 공정에 하이 NA(High-NA) EUV 리소그래피를 도입했으며, 이는 팬터 레이크 및 코어 울트라 시리즈 3과 같은 노트북 프로세서의 특정 레이어에 적용된다. 또한, 인텔은 유리 기판 기반의 첨단 반도체 패키징 기술 개발을 위해 중국 기반의 렌즈 테크놀로지와 협력하고 있으며, 팬터 레이크 제조를 위해 ASML의 차세대 하이 NA(High-NA) EUV 리소그래피 장비 도입을 가속화하고 있다. Cadence Design Systems는 AI 기반 칩 설계 도구 수요 증가와 인텔과의 계약을 바탕으로 2분기 실적이 예상치를 상회하며 연간 매출 성장 전망치를 19%로 상향 조정했다. 한편, AI 서버 수요로 인한 DDR5 메모리 가격 상승세 속에서 인텔의 DDR4 CPU 재도입이 하반기 PC 수요를 견인할 가능성이 제기되고 있다."
-  },
-  {
-    "issue_id": "d18f6291fc7c",
-    "entity": "미상",
-    "title": "ASML, AI 투자 훈풍에 2분기 호실적…연간 매출 전망도 상향",
-    "first_seen": "2026-07-15",
-    "last_updated": "2026-07-28",
-    "status": "진행중",
-    "related_article_ids": [
-      "be4c0010d4007a5887ffc4491694c7ef0f26a4bf",
-      "9796a9a05c84854b56bd1e41520b9fef1363b4e5",
-      "8727949eb959c2a686c36a3e1e0801cbb5a13d4a",
-      "ac68ea60c98e0b52a77262142945b6fcb89c4255",
-      "9feebf3b219c5806a2252d5fbbaceffed933ff89",
-      "c0277e7b2f2a0692a258a3d3489d055b65a90273"
-    ],
-    "progress_summary": "ASML's strong Q2 performance and raised annual revenue forecast are driven by the AI investment tailwind, particularly its monopoly in EUV lithography. To address the increasing demand for advanced chips fueled by AI data center investments, Zeiss is expanding its production capacity to alleviate ASML's EUV optics bottleneck."
-  },
-  {
-    "issue_id": "199cebdf18fe",
-    "entity": "삼성전자",
-    "title": "HBM4, HBM4E… 삼전이 꺼내든 무기와 HBM 패권전쟁 [경제용어사전]",
-    "first_seen": "2026-07-17",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "326adf3563d6d7cdf170342077fe625b6a6343b6",
-      "565cb415d7859f318bc41d57fca5ea75bf4a0c24",
-      "9daef18baee599ab285eb6d74d17cf6bae015c28",
-      "abbc9fd522aeb03c92c534f139bcd49d7a4850b8",
-      "68078325dd202c36b8bfa79b627fd65ed9eec2d2",
-      "3807850caec842a9ea4444ee1e3a8ff7cf0048a0",
-      "b1abe76da12dad586d459a816433e506b794da34",
-      "c7d311f9ae0fd801ed34a278aed1b64f0b35143e"
-    ],
-    "progress_summary": "삼성전자의 HBM4, HBM4E 관련 이슈는 2026년 7월 17일부터 7월 30일까지 지속되고 있으며, 2026년 2분기 역대 최대 실적을 기록하는 등 반도체 수요 강세와 AI 메모리 사업 성장에 힘입어 HBM 시장에서의 입지를 강화하고 있습니다. 회사는 2026년 3분기에 HBM4 매출이 전분기 대비 세 배 이상 증가할 것으로 예상하며, 이는 하반기 전체 HBM 매출의 60% 이상을 차지하고 HBM 시장 경쟁에서 DRAM 시장 점유율과 유사한 수준으로 끌어올릴 전망입니다. 또한, 2026년 10월 온양 반도체 패키징 부지에 1조 3천억원을 투자하여 2029년 5월 HBM 양산을 목표로 하고 있으며, 차세대 DDR5 메모리와 함께 AMD의 Helios MI455X에 HBM4를 탑재하고, HBM5에는 2nm GAA 공정을 적용하여 HBM4E 대비 50% 이상의 성능 향상을 기대하는 등 차세대 기술 개발에도 적극적으로 나서고 있습니다. 최근 SK하이닉스의 HBM4E 가격 인상 움직임은 AI 지출 확대로 인한 D램, 낸드플래시, SSD 전반의 가격 상승세와 맞물려 삼성전자에도 긍정적인 영향을 미치고 있습니다."
-  },
-  {
-    "issue_id": "1fad2639372e",
-    "entity": "인텔",
-    "title": "Chip Industry Week In Review",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "3ec73ca52223911e8a0b695c1dd1c2869990593c",
-      "c6306b890d03c91b1bea168d2e01898395ea1e98"
-    ],
-    "progress_summary": "2026년 7월 18일부터 7월 24일까지 진행된 이번 주 칩 산업계 주요 뉴스로는 Amkor의 15억 달러 딜, 인텔 파운드리 매출 31% 증가, Siemens의 듀얼 인수, SiC 공장 폐쇄, AMD의 주요 발표, TSMC 가격 인상, Nokia의 팹 인수, 실적 발표, 추론 가속화를 위한 3억 달러 투자, Keysight의 멀티피직스, 구리 인터커넥트 대안 등이 포함되었습니다."
-  },
-  {
-    "issue_id": "630c62e57718",
-    "entity": "미상",
-    "title": "\"단일 칩 밀려도 묶어서 이긴다\" 미국의 제재 뚫는 중국 AI",
-    "first_seen": "2026-07-18",
-    "last_updated": "2026-07-25",
-    "status": "진행중",
-    "related_article_ids": [
-      "67fbe5e8d4d55d9c8325e6e342617e180bf18e6c",
-      "0fb9f67a813310d2faa4ba7528b126d9da89f0eb",
-      "724fa294c74a9953e2d59203aaad813ef7404d25"
-    ],
-    "progress_summary": "\"단일 칩 밀려도 묶어서 이긴다\" 미국의 제재 뚫는 중국 AI\" 이슈는 2026년 7월 18일부터 7월 25일까지 이어지고 있으며, 중국은 3년 내 AI 칩 자립 및 2030년까지 AI 칩 자급률 70% 달성을 목표로 하고 있다. 딥 유비라이트그래피(DUV)와 칩 스태킹 기술을 활용한 디자인 역량을 발전시키고 있지만, 엔비디아의 최신 AI 가속기와 ASML의 극자외선(EUV) 리소그래피 장비 확보에 어려움을 겪고 있다."
-  },
-  {
-    "issue_id": "f775ff3276d6",
-    "entity": "SK하이닉스",
-    "title": "SK Hynix denies report it is pursuing deal for Intel's Ohio fab",
-    "first_seen": "2026-07-22",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "10ab658caab233c55b2ed49c3439a490851dc97f",
-      "85b9238b5e5990aec3f818c4c432f520e3c96195"
-    ]
   },
   {
     "issue_id": "f61523c96240",
@@ -7845,44 +7489,6 @@
     ]
   },
   {
-    "issue_id": "d94c8ea22a4a",
-    "entity": "미상",
-    "title": "[뉴욕증시 전략] 반도체주 급반등에 뉴욕증시 상승…빅테크 실적 시험대",
-    "first_seen": "2026-07-22",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "1c796181e740fa0eea88a92d2d253ac2c303b19a",
-      "a5fd401f100b7abc8df2f6c6033b033c5adbe31a",
-      "5d8f631468a25da6f7288b2b5dca7cd07780de0b",
-      "cabfd618796f8bc5f1dae21bcf52ab59ab87a085",
-      "ddc335bd983d4235acf6d4f6220ce173645f2ff2"
-    ],
-    "progress_summary": "2026년 7월 22일부터 7월 30일까지 '미상'의 '[뉴욕증시 전략] 반도체주 급반등에 뉴욕증시 상승…빅테크 실적 시험대' 이슈가 진행 중이며, 최근 기사들은 삼성전자의 HBM4 매출 계획과 주주환원책 제시에도 불구하고 코스피가 5500선대로 후퇴하는 등 반도체 투자 심리에 대한 수급 불안이 여전함을 보이고 있다. 31일 예정된 예탁금 상향 조치가 향후 변동성에 영향을 미칠 것으로 예상된다."
-  },
-  {
-    "issue_id": "84af9868ad49",
-    "entity": "인텔",
-    "title": "인텔리빅스, 전국 고속도로 돌발상황 AI로 실시간 탐지",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "e7c284bf467f215394733fcdcf29e05b884181c5"
-    ]
-  },
-  {
-    "issue_id": "a0285598b7b8",
-    "entity": "인텔",
-    "title": "'칩플레이션'에 저해상도 플렉시블 OLED 적용 확대",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "e6bc12a41701d635cd1e41c31f8bdaa6235f06c2"
-    ]
-  },
-  {
     "issue_id": "f3592770253e",
     "entity": "인텔",
     "title": "안랩, 위협정보 연동 강화한 ‘TIP API’ 출시",
@@ -7891,28 +7497,6 @@
     "status": "종료",
     "related_article_ids": [
       "d8a3e315ea9a4f632e360a45a7787f12d4a66ead"
-    ]
-  },
-  {
-    "issue_id": "0a80de598bd1",
-    "entity": "SK하이닉스",
-    "title": "SK하이닉스, 청주 P&T7 클린룸 오픈 3개월 앞당긴다",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "1be43aae8a780eaf1ea45aacd596fd81f578f21d"
-    ]
-  },
-  {
-    "issue_id": "79283f9d8c80",
-    "entity": "SK하이닉스",
-    "title": "\"SK하이닉스-인텔, 美 오하이오 공장 공동 운영 추진\"",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "b5df8acc1c2a6314d9e2f8b9b40fd830ebadd5c6"
     ]
   },
   {
@@ -7946,18 +7530,6 @@
     "status": "종료",
     "related_article_ids": [
       "cd2c1e03b9d8380d82bd72f6c7ec2c794e3f3260"
-    ]
-  },
-  {
-    "issue_id": "52c24817a0a6",
-    "entity": "미상",
-    "title": "OCI, 2분기 영업익 433억…웨이퍼 재생 사업 진출",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-24",
-    "status": "진행중",
-    "related_article_ids": [
-      "63a88827bd55466f36804f91a9319208c3dcc2fa",
-      "f7e534ef109d45f288e55c89991bbcb5dc534087"
     ]
   },
   {
@@ -8082,20 +7654,6 @@
     ]
   },
   {
-    "issue_id": "cdbc4174757f",
-    "entity": "엔비디아",
-    "title": "AMD lands Anthropic as its third marquee AI customer, chipping at Nvidia's grip on training silicon",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-30",
-    "status": "진행중",
-    "related_article_ids": [
-      "967b9595d1c36052a55e357136a408ae8c88f3c6",
-      "7845fc065e2217e89a53a6f6f591c7d308e1bf1b",
-      "9e9d5cbdcd5e35a51e6d46b94f40601a59b12cea"
-    ],
-    "progress_summary": "AMD는 Nvidia의 CUDA 생태계에 도전하기 위해 소프트웨어, 시스템, 그리고 Anthropic과의 파트너십을 강화하며 AI 분야에서 Nvidia의 독점적 지위에 대한 새로운 변수로 작용하고 있다. 특히 AMD의 '헬리오스'는 Nvidia의 CUDA에 대한 도전에서 입지를 넓히고 있으나, ROCm의 안정성 및 헬리오스의 양산 능력 확보가 시장 점유율 확대를 위한 과제로 남아있다."
-  },
-  {
     "issue_id": "661e307e7570",
     "entity": "미상",
     "title": "[증시 인사이트] 코스닥, 장중 한때 매수 사이드카 발동…780선 회복",
@@ -8170,31 +7728,6 @@
     "status": "종료",
     "related_article_ids": [
       "b1835fdc3caa7a7b0cc24698a45330b0a3a97c2a"
-    ]
-  },
-  {
-    "issue_id": "b2361a58cf3c",
-    "entity": "미상",
-    "title": "高난도 습식 식각 시장 공략… 이엔에프테크놀로지, 첨단 반도체 공급망...",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-29",
-    "status": "진행중",
-    "related_article_ids": [
-      "e2219a7bc09582ee5a742ffdefa07f7e101b7633",
-      "4a0a6d31e682e742d8334c54b0ce1276a9dae6e7"
-    ],
-    "progress_summary": "이엔에프테크놀로지는 SK하이닉스에 반도체용 불산을 공급하기 시작한 지 한 달 만에 해당 시장에서 두 자릿수 점유율을 확보하며, 이는 국내 한 공장에 대한 공급 결과이다. 향후 용인 클러스터 가동에 맞춰 공급량을 늘릴 계획이며, 이는 고난도 습식 식각 시장 공략 및 첨단 반도체 공급망 강화와 관련된 이슈의 연장선에 있다."
-  },
-  {
-    "issue_id": "0bbc497ade9a",
-    "entity": "미상",
-    "title": "AI발 반도체 속도전에 ‘수퍼 을’ 된 반도체 장비사... “1년 넘게 기다...",
-    "first_seen": "2026-07-23",
-    "last_updated": "2026-07-25",
-    "status": "진행중",
-    "related_article_ids": [
-      "c8da8e2f1cfa67c6e5b037c4a4f0f1c5c4e5c9c3",
-      "146d8f774a280c7ad48684ae7486536b858e8e1c"
     ]
   },
   {
@@ -8275,12 +7808,495 @@
     ]
   },
   {
+    "issue_id": "d1a3ce5be8ea",
+    "entity": "SK하이닉스",
+    "title": "HBM에서 eSSD까지, SK하이닉스가 그리는 풀 스택 AI 메모리",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-30",
+    "status": "진행중",
+    "related_article_ids": [
+      "600bc74f9f0cce52520f5427c7ada9ddbb31b50b",
+      "db3288c503003335fea47c73f32db4247d50a076",
+      "990f72a16c13d99e6ada5bccd603fe30c76dc237",
+      "f635fdfd9106e063d8c7f49a1a4546c745d20346",
+      "57b33a5c349d22f1eecd881ab2c612557e6c738f",
+      "e8ea32817be65be38e3a70ba24025c8c7cb4c272",
+      "a7e47f9494c5cc1960b4d7852a4a061bc7e3ae0f",
+      "e0300940e2680928fbe05c523ee6cce32d2a06e2",
+      "3e6b028d01b1c9619b3c9bb13c23da4f275c39c0",
+      "f119c2767118c9393385f27b868266b21c28f6fa",
+      "11f6e6d6d1f21ff4385412c570c4cebe6e224452",
+      "7b13279c7a59ce27abe83338ee8d4d85331138fc",
+      "b081b89eab86e6de220171e3f8074778c14da269",
+      "0d3610f95c98f090598ba522cee36b9c61924f5f",
+      "7e2f95593b2e5bb60b870e1c75569aaa6d5d2542",
+      "202787efde26362e433ad62ec85d0e1a067e1844",
+      "b84ca9bbf55ddbee6284d1c0940c4a940d5f8c97",
+      "4a18cbadb4c7bfec3cbab68fde1de2df93ad72c5",
+      "0071a6304510f52a7699420c2b4186bf3b7615df",
+      "84d001d1e3fc7c4a6998907672d6242720fcad67",
+      "a9963fb9f9e17cef01370ff24013c380cf5c651d",
+      "28c830e110929ef4e82292fe15b7b6b7be4599f8",
+      "65d99c96e281fae0da6e94749341b9ac5ed7a448",
+      "b22c2e5f8da6869931136797ba57ab0983fd965f",
+      "0974412a3007fc8decfa475cd3723fe4e1110a9f",
+      "6debfec5afae6ac200ef05970f6c203247cf82d0",
+      "3e904e39a3669b0e316d8f40f85c059b99927d2f",
+      "376922816f19c4e96d9ce18ac614129da39c50e6"
+    ],
+    "progress_summary": "SK하이닉스는 AI 메모리 시장의 폭발적인 성장을 바탕으로 2026년 2분기 사상 최대 실적을 기록했으며, HBM4 양산 준비, PIM 기술 개발, 3D 적층 DRAM 연구 등 차세대 AI 메모리 기술 개발에 박차를 가하며 시장 지배력을 강화하고 있다. 또한, 2026년 하반기에는 샤오미를 첫 고객으로 LPDDR6 양산을 시작하며 프리미엄 모바일 DRAM 시장 입지를 공고히 할 전망이다. 한편, AI 시대에 맞춰 '생각 근육'을 갖춘 인재 선발을 위해 '반나절 심층면접'을 도입했다."
+  },
+  {
+    "issue_id": "28d8d35d0fec",
+    "entity": "삼성전자",
+    "title": "[특징주] 삼성전자·SK하이닉스, 프리마켓 널뛰기 딛고 오전장 쾌속 상...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "79d34c2dd935b352a6aa98c6c93c6e49fbbea555",
+      "d120d9c6d133b15316aa53bfc81d759c0c41a841",
+      "1d2d5ad5f47e23a9c1a748f1cac7a17c10d64fa4",
+      "eaa07674b8999e197ad4b3609051ff158138ec0c",
+      "2f0e9899e1b4a20e4d6e81040978ea06cf02dc9f",
+      "05d5b7e2d41f6c85c32028f30da3b5919bfc7e2e",
+      "21b2d5fedc5e475fe92820ed3db2c207fd28b204",
+      "44ed1c9289e8a9e8de814ddb8c9092e92db02db7",
+      "9878b2f3adb2904dd5aae109b085b0f95f0c1dbc",
+      "b0998d67dbfe4a4636ce08597b50a3133c2d540c",
+      "571acf559fbb3c77d765ada1c96d933440b0153a",
+      "b87132485e1c4d5391ab4075d658e8a2bdb3a05f",
+      "4976ea0fc7e4efed979cafff7b2676f028b3cf80",
+      "f211578d6e99048b63676ef707880d12c2f18b51",
+      "b20f2286fe87389293164c8f8d2414e05ab9963b"
+    ],
+    "progress_summary": "2026년 7월 9일부터 7월 30일까지 '삼성전자'와 'SK하이닉스'는 AI 서버 확대와 HBM 수요 증가 기대감으로 상승세를 보였으나, 중국 메모리 업체 증설 소식과 SK하이닉스의 기대치 하회 실적 발표로 인해 변동성을 겪었습니다. 7월 30일 삼성전자가 2분기 역대 최대 실적을 경신하며 반등의 여지를 보였고, 7월 31일에는 메모리 사이클 회복 기대감과 주주환원 정책 강화 소식에 힘입어 증권가에서 긍정적인 전망을 내놓고 있습니다. 삼성전자는 다년 계약 비중 확대와 HBM 및 범용 D램 간의 균형을 통해 수주 기반 매출 비중을 늘릴 계획입니다."
+  },
+  {
+    "issue_id": "ca8348220b59",
+    "entity": "SK하이닉스",
+    "title": "최태원 SK 회장 방미, 하이닉스 ADR 나스닥 상장…빅테크와 AI 메모리 협...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "3f5360a79e3bf3a9310273d1d3ef915e683e54c2",
+      "3b0d735eb3eb53c6e5aa8ba317a33a06ae46afcd",
+      "eba668d9a37ef72c79a514ecaad016b3fd512665",
+      "08bed367f8d3d73d104d4cb63cfe07862eb35669",
+      "cc5f9c7ec1bd2afd3e0a2eaf975f32f74e46805a",
+      "4b7dffae5d614f6032798670b504789f6162476f",
+      "f78f88444b8a7065d82efb3d4e859d7d88e75f63",
+      "98b147fdefac23b9f3c9f8f8b866b3e42eda0bfa",
+      "9e11dc26a021b21d7faa7a5de62676651c18eb08",
+      "569256e3a01e3627454059e0aedad97fb8dd19df",
+      "96da900c7c022c5a04ca68923d5a2be4d24544b4",
+      "af37e494f6c0be6636c14cca9f6a91981c9d8d05",
+      "b40b5a9d5872ff9570953c77377879d5dc279dab",
+      "69ffbf94cafdffbc2ef109ea41ef801ef6b31d2f",
+      "a0cca0509e5e90b5b7339ff669e0cc557c6ac73b",
+      "c670f8a5fdd540ad63a22fcd10da15901c9ddfc1",
+      "6b60181eccf528b3de2314ad491e498d7807c05a",
+      "c824323dde9270e48a7c24328b14f6de3c2d5db4",
+      "479b97554dc3c0e1e35d7632510bb2b8d4b31569",
+      "4213e01e157abaad80a12702df9b56de413bc759",
+      "41d47e7d118fb28913c5114b99b119b232d1b1b7",
+      "bf55cf89cbd62bfddabfe0612f582b8b94930533",
+      "7a86a4542ec8a2f6e1afa1e18a8c2ae5bd3e6bb2",
+      "156464412828665d0752c8c4a97cdf9e05992ed9",
+      "ba6b8c47e2771078b8431e3effc33d5a939b51c1",
+      "9dae951ed42d14386679cb69d40df534807304ea",
+      "7dde9704a32efe91e45a1c1365c685e2dcf81ba6",
+      "5b031b7c5654dda6f65a028d756db46fd1551e8e",
+      "af0a8145020c52b6fd09f550daf941089f973e48",
+      "54a60411a149941c9488285d564faa28e56819e5",
+      "db073fa6c3bfc8e62e952039222d7a82ff82d426",
+      "5d271ceca15e20f7caafcf224a654f575de99f13",
+      "b9183c3603f0fdfdda5863b11b21f2dd1fd11f9f",
+      "24f062909b066f9af60411c6d9f2aa67c8d1969d",
+      "4b8adb96b5bd53040c873f6eab2fff071ca0e35f",
+      "02fbfae0006a77e54384536e047d481fc35ee144",
+      "e167cee4fbc9d6026fed60ac434b50386a53342f",
+      "8dae33f6c2b8e62e86c66aadc3dfff6c00946256",
+      "364d94f653296dddbcf41a4a8aceec96cd8d5cc8",
+      "b36264ae6961875f88d9c4ddc994fb0b46c8d71f",
+      "614057d86e1428807f721e16a2c34033b0163ca8",
+      "7ecf9039861d3d8465d810fd8154d3890859f4e9",
+      "ff7b5692b24202ec1ceab5dd78c7184e6b2b01c5",
+      "8062123cba6f61ecd6fb55bae653328e20f9c4c7",
+      "497bb185d05f61cf970f36b66cafd2a87a1d4708",
+      "c0551ecb84f89ff547730b6bb728e2676e8dbb61",
+      "781f6c11425fb3ee9f66ef55d63a4b87b3535249"
+    ],
+    "progress_summary": "SK하이닉스는 최태원 회장의 미국 방문을 계기로 젠슨 황 엔비디아 CEO를 비롯한 빅테크 기업들과 AI 메모리, HBM4 공급, 데이터센터 인프라 등 AI 분야에서 5000억 달러 규모의 협력 파트너십을 강화하였으며, 2026년 빅테크 기업들의 AI 투자 증가에 대비해 10여 곳의 고객사와 5년 장기 공급 계약(LTA)을 체결하고 40조 원 이상의 투자를 계획하며 견조한 메모리 수요 전망에 대응하고 있다. 또한, SK하이닉스는 미국과 일본에서의 신규 생산 투자 결정은 유연하게 진행할 예정이며, 6세대 HBM4 양산 확대와 1c 나노미터 D램 출하를 통해 비트그로스 성장을 추진할 계획이다. 더불어 최태원 SK그룹 회장이 SK하이닉스 주식 3620주를 약 47억9000만원 규모로 장내 매수하며 처음으로 직접 주식을 매입함으로써 책임 경영 의지를 표명했다."
+  },
+  {
+    "issue_id": "b02007223cfe",
+    "entity": "미상",
+    "title": "中 CXMT, 43억달러 IPO로 메모리 굴기 시험대",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "a3f2ce839767cc8ae58dd483f3ff349d29c1b78b",
+      "58571185b57c52defccadcac2297777379dbaa6d",
+      "ed295bf6dd7c055a2563718dd22f0da89da55f3a",
+      "17b9448b7aa0a260b516189d81a4806fd2559eda",
+      "c4b9c26c0060b2e4ad3a4d1f1aab2e5d3d8a8804",
+      "e92d8c9b775504688d081213eb3901d636dc94ab",
+      "ac3e879c28d3faf868f686eb3880972487a10061",
+      "9b9868e09a7a035dd7f09d92caa31e85b4d52c41",
+      "cbab7f59f784e7a04784535fd2179b88eaaff20c",
+      "de33faa3ba17debe8027f91848ca02649758684f",
+      "4d1b474800153741fc3f9911a301874ebd48b522",
+      "f554a8ac783a683079c8aba5d2f9f9960d3da398",
+      "45a6a77e33309d6446c78c4c0b8f2c6ab91f4fa2",
+      "354d49f0d022dc219557d99e9b5ac615f66fb1fe",
+      "afa5aa6e0845a327ffafaea08cf328330abaef4d",
+      "1e85515cfe9f234c1295797f0ea04f7523d6197f",
+      "bc9bfcdf69dfe343fe820b9f05c5667639771e0b",
+      "82269e5f4009f642948e09dddeae3d2d6399c494",
+      "f64b26cdacd634e38d6c42054cea87d21520c790",
+      "b2cab000fab10937bc6400a323a324aab3a497b6",
+      "1f0afb657a8247f3fc0f1964e52c2cb8b4e77d43"
+    ],
+    "progress_summary": "China's memory chip manufacturer CXMT is making strides with its $4.3 billion IPO, aiming to boost its presence in the DRAM market, where it has achieved a 7.67% share. Despite its market capitalization soaring past 3.5 trillion yuan shortly after listing, CXMT faces significant challenges in the High Bandwidth Memory (HBM) sector due to US export controls and limitations in accessing advanced EUV lithography equipment. While the company aims to supply HBM within China from 2027 and is developing its technology roadmap towards 2028, its reliance on less advanced DUV equipment, a consequence of not acquiring EUV technology, positions it behind competitors in terms of production efficiency, as approximately 30% more wafers are needed to produce the same volume of memory. This situation highlights China's broader semiconductor industry push for self-sufficiency amidst international trade tensions, though it may not immediately alter the global memory market outlook."
+  },
+  {
+    "issue_id": "99d8a8fcf3c4",
+    "entity": "엔비디아",
+    "title": "[미국 특징주] 로이터 \"메타, 9월부터 자체 AI 칩 생산…엔비디아 의존...",
+    "first_seen": "2026-07-09",
+    "last_updated": "2026-07-28",
+    "status": "진행중",
+    "related_article_ids": [
+      "e0e7674f0e43ef3f08c6aa1895cd6fe0ba15fa99",
+      "b7d622703d1707884df31a1282a5426ba94786b8",
+      "2b3bbbd0c478397bf7029a95dd0e415848b86e7c",
+      "ea72f54e659918f3e3b4d20301a45035be5be91b",
+      "07d1c230a615323e759a29e93eba7b634ac86523",
+      "18c820a061ecd46b622e95aefa7b14117db37c77",
+      "7bbf17460818a492d8af3b3b6729ec2d49b7457a"
+    ],
+    "progress_summary": "2026년 7월 9일부터 시작된 '메타의 자체 AI 칩 생산 및 엔비디아 의존도 감소' 이슈는 2026년 7월 28일까지 이어지고 있습니다. 이 기간 동안 엔비디아는 일본에서 AI 파트너십을 확장하고 블랙웰 칩을 통합하며 AI 생태계를 구축하는 데 주력했으며, 네이버는 엔비디아와의 협력을 통해 AI 팩토리 구축을 위한 가능성을 모색했습니다. 또한, 중국 반도체 산업은 딥시크의 량원펑 창업자가 미국 수출 통제 강화 이전에 GPU를 확보하며 긍정적인 전망을 보였습니다. 최근 새로 추가된 기사에서는 AMD가 토큰당 비용을 30% 절감하는 새로운 데이터센터 GPU인 Helios 랙을 발표하며 AI 컴퓨팅 시장에서의 경쟁력을 강화했음을 알 수 있습니다."
+  },
+  {
+    "issue_id": "bf55b1ffc347",
+    "entity": "인텔",
+    "title": "Simplifying Intelligent Wireless Design and Security Certification for Healthcare Devices",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "d131265958e349834537edd81ddafbacb866520d",
+      "3ec73ca52223911e8a0b695c1dd1c2869990593c",
+      "3a923f6b4d1f3407d9f77bf8169e8577ab0d2067",
+      "f3c487cce175948e8f0733179a6bd7e0ea8ad2ba",
+      "270b4470334300ac92aed21cea4a01ee7a425c19",
+      "4033c7fe1151b3fd22895794f28c25daff8f203f",
+      "5ae51a78555d4c23dd13bdc7292c2385dcc34f1d",
+      "074f54cf14d082c2e229bb51912cf8da0f8af30a",
+      "d3401534973a05d9299b54f0d578ccf58e39a70f",
+      "76122c005c7821fcbd6226e0f2e928b927776110",
+      "a38245d6e4946c665a4283d3e36ff58fd7bb1315",
+      "c9b742fe7ea401ba465337a2bc22e18bf9f49729",
+      "ba2065ce5fa186dc36d8d1efce69d1cd80d69f6e"
+    ],
+    "progress_summary": "인텔의 'Simplifying Intelligent Wireless Design and Security Certification for Healthcare Devices' 이슈는 2026년 7월 10일부터 7월 31일까지 진행되고 있다. 최근 인텔은 AI 수요 증가에 힘입어 2분기 실적 호조를 보였고, 설비 투자를 확대하며 ASML의 High-NA EUV 기술을 활용한 칩 양산 및 파트너십을 발표했으나, 외주 고객 매출은 TSMC에 비해 미미하며 칩 부족 현상은 4분기까지 지속될 전망이다. 또한, 인텔은 스타트업 RosaicLabs에 Atom 프로세서 기술의 일부를 제공하는 이례적인 IP 거래를 통해 맞춤형 x86 칩 개발을 지원하며 기술 라이선싱 전략 변화를 시사했다. 한편, 포스코DX는 산업 현장의 피지컬 AI와 사무 업무의 에이전틱 AI를 중심으로 'AI 네이티브 컴퍼니'로의 전환을 선언하며 AI 기술 확산에 주력하고 있다."
+  },
+  {
+    "issue_id": "fb0b6168d22e",
+    "entity": "삼성전자",
+    "title": "삼성전자·SK하이닉스 895조 투자… 광주 부동산시장 기대감 폭발",
+    "first_seen": "2026-07-10",
+    "last_updated": "2026-07-30",
+    "status": "진행중",
+    "related_article_ids": [
+      "11adac1c19e7b61640b535549f6f74744e54cf39",
+      "42b0cbc65e573eaa8348a1814147f9691feb0a46",
+      "7ea775b2ea626e7f50aab49efec7847417b79fe1",
+      "0d3c91d33553e7f455061863c34dc108bce72627",
+      "dc7a0d3a400d2512b7349c3548bd54474e308225",
+      "4528f06a944cf354b81b395aa05713ab299ba675",
+      "b8d73571b4a8b38b6807623e8459ca395124acf1",
+      "3068df9670d2db1ec3997443b2965e2e8828b11c",
+      "9eb9567fb8f69e8e14a4d879ad5571d1ad6eb11d"
+    ],
+    "progress_summary": "삼성전자·SK하이닉스의 895조 원 규모 투자 이슈는 2026년 7월 30일까지 이어지고 있으며, 최근 삼성전자는 2026년 2분기 매출 171.5조 원, 영업이익 89.5조 원으로 역대 최대 분기 실적을 달성했다. 이는 AI 붐에 따른 메모리 수요 급증과 시장 대응의 결과로, 특히 디바이스솔루션(DS) 부문은 AI 주도 메모리 슈퍼 사이클 심화로 매출 127.5조 원, 영업이익 89.2조 원을 기록하며 70%의 높은 영업이익률을 달성했다. 한편, S&P는 HBM과 파운드리 경쟁력 개선을 근거로 삼성전자의 신용등급 전망을 '긍정적'으로 상향 조정했으며, 삼성전자는 브로드컴과 AI 칩 개발 협력을 포함한 MOU를 체결하는 등 미국 빅테크 기업들과의 협력을 강화하고 있다. 다만, 메모리 가격 상승으로 인한 부품 비용 증가로 디바이스경험(DX) 부문은 8000억 원의 영업 손실을 기록했다."
+  },
+  {
+    "issue_id": "d60c873df4ff",
+    "entity": "미상",
+    "title": "AI 수요가 만든 메모리 대전… 생산 주도권 경쟁 격화",
+    "first_seen": "2026-07-12",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "3bbcbfdab4fc0be51aa9687f302a04ef4e3e185a",
+      "6bd4dddce0c15ddf3492d52293dac8f1d6ff5de4",
+      "bbd5edfd2d831177cdbdc7c5f9cedbc4558df693",
+      "a30ecdedfdf7d96c08a076ab442e1f72986aaa82",
+      "53e5c72b3e5137b7de78f0c974d2349e647926ac",
+      "dedfccab38037faa0c34d3d99ad462dec53e1e1a",
+      "ccbb3b67ecb3709d7f144a7ee7178f4f54eaea53"
+    ],
+    "progress_summary": "AI 수요 급증으로 인한 고성능 반도체(GPU, HBM, CPU 등) 수요가 성숙 공정 파운드리 및 후단 패키징 업체까지 공급망 압박으로 이어지면서, 칩 설계 업체들은 주문은 많지만 공급 부족을 겪고 있습니다. 빅테크의 AI 투자 확대는 삼성전자와 SK하이닉스에 수혜로 작용하며 고대역폭메모리(HBM), 서버용 D램, SSD 수요 증가를 견인하고 있으며, 이러한 메모리 부족 현상은 내년까지 지속될 전망입니다. 또한, 글로벌 팹 투자 증가로 반도체 장비 납기일이 늘어나면서 삼성전자와 SK하이닉스는 생산 주도권 확보를 위한 경쟁을 더욱 심화시키고 있습니다."
+  },
+  {
+    "issue_id": "b9debb39434d",
+    "entity": "TSMC",
+    "title": "TSMC June 2026 revenue surges 68% as AI demand continues to fuel growth",
+    "first_seen": "2026-07-13",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "bc83a1af31c6140ccfc05cb020cb3a709890492a",
+      "80e7ecb5587ce44f030a5fdec8bae663cdebcf64",
+      "45104b2b68198323cc816919f518c924b5d0959b",
+      "3a570f08f469ac7f0f33d3a974af5cd7cbba964a",
+      "b795dbbb26102c5803eb56a084f2f700d4308f1e",
+      "5e87f0261b13a5e0a240fe74364f046fb02310c4",
+      "633b910ddc190516cda09d1f8ecf2371003ab4d9",
+      "a6cc0fe9ea3f5731d90b950e7411418f69353ac9"
+    ],
+    "progress_summary": "2026년 7월 13일부터 2026년 7월 31일까지 TSMC의 AI 수요 견인 성장세가 지속되어 2026년 6월 매출이 68% 급증하는 이슈가 이어지고 있다. TSMC는 2분기 기록적인 실적 달성 및 사상 최대 순이익 경신에 이어, 미국 내 생산 능력 확대를 위해 기존 1650억 달러에 1000억 달러를 추가 투자할 계획이라고 발표하며 AI 반도체 시장에서의 입지를 강화하고 있다. 이러한 투자는 미국 정부의 압력, 미국 내 고객 수요, 그리고 대만의 안보 우려를 고려한 결정으로 분석된다. 또한, 일본 구마모토 지진에도 불구하고 JASM 웨이퍼 팹 운영을 정상화하고 두 번째 팹 건설을 재개했으며, AI 반도체 밸류체인 전반에 걸친 투자가 활발히 이루어지고 있음을 보여준다."
+  },
+  {
+    "issue_id": "d38aa04ae137",
+    "entity": "SK하이닉스",
+    "title": "美 증시 첫날 13% 오른 SK하이닉스, 국내선 15% 급락…왜?",
+    "first_seen": "2026-07-13",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "52129b1a653282fc0d5715391b502f8b844caf07",
+      "ff3144b32025d2a0f7383d379455de2442f62c1c",
+      "3ac208bdd6f385198a972262949354c412da3117",
+      "2a7cd2a5d681f20bb078e8cd1896b13539633b87",
+      "f326a0c67d30aa3bd0193f9bd7a740cf26e484c4",
+      "806d55f44b17929578b8d1ddacd18c06c86beabf",
+      "373217b50333a4ec11a7e5310337ae38dbc3f29e",
+      "4beb870e78f2677445fa40bd7acde575857d71b2",
+      "ae44c201a371fbc4fc2f5269107788007c72d979",
+      "59e396317e96e5aaec77f7b8eca5706dffaaceba"
+    ],
+    "progress_summary": "SK하이닉스의 ADR 주가 상승에도 불구하고, 2분기 실적이 시장 기대치를 하회하고 중국의 반도체 자립 가속화 움직임, 미·이란 협상 불확실성 등 복합적인 요인으로 인해 국내 증시가 급락하며 SK하이닉스를 포함한 반도체 대장주들이 큰 폭으로 하락했습니다. 이러한 상황에서 SK하이닉스 출신인 이미지스테크놀로지 이동섭 대표가 취임 4개월 만에 사임하는 등 악재가 겹쳤습니다. SK하이닉스는 2분기부터 HBM4 양산을 시작하고 하반기 생산 확대를 계획하고 있으나, 현재의 증시 하락세를 반전시키지는 못하고 있습니다."
+  },
+  {
+    "issue_id": "152d897c91b4",
+    "entity": "인텔",
+    "title": "Intel concentrates its European chipmaking in Ireland with EUR5 billion Leixlip expansion",
+    "first_seen": "2026-07-14",
+    "last_updated": "2026-07-30",
+    "status": "진행중",
+    "related_article_ids": [
+      "ca703277d0ac9ab446f48a063448933449b83ad1",
+      "a6ae0bc8394a57ca10539cd9534be938aec06c3b",
+      "6724f5321dda43a48d178f630c9f6c0868f78a72",
+      "ca4a58004fad28cb512db0769bc241ef7d12e327",
+      "4d9c9fa3babea904105df95fa432444263c96e32",
+      "2fd5620405d87d0882bfa311304a0467acfe96b5",
+      "bbb01f36d776489530832ade1fd7d0c41978f0ae"
+    ],
+    "progress_summary": "2026년 7월 14일부터 7월 30일까지 '인텔'의 'Intel concentrates its European chipmaking in Ireland with EUR5 billion Leixlip expansion' 이슈가 이어지고 있다. 인텔은 파운드리 로드맵보다 앞서 인텔 18A 공정에 하이 NA(High-NA) EUV 리소그래피를 도입했으며, 이는 팬터 레이크 및 코어 울트라 시리즈 3과 같은 노트북 프로세서의 특정 레이어에 적용된다. 또한, 인텔은 유리 기판 기반의 첨단 반도체 패키징 기술 개발을 위해 중국 기반의 렌즈 테크놀로지와 협력하고 있으며, 팬터 레이크 제조를 위해 ASML의 차세대 하이 NA(High-NA) EUV 리소그래피 장비 도입을 가속화하고 있다. Cadence Design Systems는 AI 기반 칩 설계 도구 수요 증가와 인텔과의 계약을 바탕으로 2분기 실적이 예상치를 상회하며 연간 매출 성장 전망치를 19%로 상향 조정했다. 한편, AI 서버 수요로 인한 DDR5 메모리 가격 상승세 속에서 인텔의 DDR4 CPU 재도입이 하반기 PC 수요를 견인할 가능성이 제기되고 있다."
+  },
+  {
+    "issue_id": "d18f6291fc7c",
+    "entity": "미상",
+    "title": "ASML, AI 투자 훈풍에 2분기 호실적…연간 매출 전망도 상향",
+    "first_seen": "2026-07-15",
+    "last_updated": "2026-07-28",
+    "status": "진행중",
+    "related_article_ids": [
+      "be4c0010d4007a5887ffc4491694c7ef0f26a4bf",
+      "9796a9a05c84854b56bd1e41520b9fef1363b4e5",
+      "8727949eb959c2a686c36a3e1e0801cbb5a13d4a",
+      "ac68ea60c98e0b52a77262142945b6fcb89c4255",
+      "9feebf3b219c5806a2252d5fbbaceffed933ff89",
+      "c0277e7b2f2a0692a258a3d3489d055b65a90273"
+    ],
+    "progress_summary": "ASML's strong Q2 performance and raised annual revenue forecast are driven by the AI investment tailwind, particularly its monopoly in EUV lithography. To address the increasing demand for advanced chips fueled by AI data center investments, Zeiss is expanding its production capacity to alleviate ASML's EUV optics bottleneck."
+  },
+  {
+    "issue_id": "199cebdf18fe",
+    "entity": "삼성전자",
+    "title": "HBM4, HBM4E… 삼전이 꺼내든 무기와 HBM 패권전쟁 [경제용어사전]",
+    "first_seen": "2026-07-17",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "326adf3563d6d7cdf170342077fe625b6a6343b6",
+      "565cb415d7859f318bc41d57fca5ea75bf4a0c24",
+      "9daef18baee599ab285eb6d74d17cf6bae015c28",
+      "abbc9fd522aeb03c92c534f139bcd49d7a4850b8",
+      "68078325dd202c36b8bfa79b627fd65ed9eec2d2",
+      "3807850caec842a9ea4444ee1e3a8ff7cf0048a0",
+      "b1abe76da12dad586d459a816433e506b794da34",
+      "c7d311f9ae0fd801ed34a278aed1b64f0b35143e",
+      "c19075a3b201e1c56ffee937773b200d75eda570",
+      "4fd5fec9bcab505911babe455e521fd0da5f9b10"
+    ],
+    "progress_summary": "삼성전자의 HBM4, HBM4E 관련 이슈는 2026년 7월 17일부터 7월 31일까지 지속되고 있다. 2026년 2분기 역대 최대 실적을 기록하며 HBM 시장 입지를 강화하고 있으며, 2026년 3분기 HBM4 매출은 전분기 대비 세 배 이상 증가할 것으로 예상된다. 2026년 10월 온양에 1조 3천억원을 투자하여 2029년 5월 HBM 양산을 목표로 하고 있으며, 차세대 DDR5 메모리와 함께 AMD의 Helios MI455X에 HBM4를 탑재하고 HBM5에는 2nm GAA 공정을 적용하여 성능 향상을 기대하고 있다. 또한, 삼성전자는 HBM4 베이스 다이가 TSMC와 인텔이 복제할 수 없는 파운드리 무기임을 강조하며, 용량 부족 시장에 대응하는 프로필을 보여주고 있다. 노태문 삼성전자 사장의 7억원 규모 자사주 매입은 경영진의 실적 개선 및 주가 회복에 대한 자신감을 나타낸다."
+  },
+  {
+    "issue_id": "1fad2639372e",
+    "entity": "인텔",
+    "title": "Chip Industry Week In Review",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-24",
+    "status": "종료",
+    "related_article_ids": [
+      "3ec73ca52223911e8a0b695c1dd1c2869990593c",
+      "c6306b890d03c91b1bea168d2e01898395ea1e98"
+    ],
+    "progress_summary": "2026년 7월 18일부터 7월 24일까지 진행된 이번 주 칩 산업계 주요 뉴스로는 Amkor의 15억 달러 딜, 인텔 파운드리 매출 31% 증가, Siemens의 듀얼 인수, SiC 공장 폐쇄, AMD의 주요 발표, TSMC 가격 인상, Nokia의 팹 인수, 실적 발표, 추론 가속화를 위한 3억 달러 투자, Keysight의 멀티피직스, 구리 인터커넥트 대안 등이 포함되었습니다."
+  },
+  {
+    "issue_id": "630c62e57718",
+    "entity": "미상",
+    "title": "\"단일 칩 밀려도 묶어서 이긴다\" 미국의 제재 뚫는 중국 AI",
+    "first_seen": "2026-07-18",
+    "last_updated": "2026-07-25",
+    "status": "진행중",
+    "related_article_ids": [
+      "67fbe5e8d4d55d9c8325e6e342617e180bf18e6c",
+      "0fb9f67a813310d2faa4ba7528b126d9da89f0eb",
+      "724fa294c74a9953e2d59203aaad813ef7404d25"
+    ],
+    "progress_summary": "\"단일 칩 밀려도 묶어서 이긴다\" 미국의 제재 뚫는 중국 AI\" 이슈는 2026년 7월 18일부터 7월 25일까지 이어지고 있으며, 중국은 3년 내 AI 칩 자립 및 2030년까지 AI 칩 자급률 70% 달성을 목표로 하고 있다. 딥 유비라이트그래피(DUV)와 칩 스태킹 기술을 활용한 디자인 역량을 발전시키고 있지만, 엔비디아의 최신 AI 가속기와 ASML의 극자외선(EUV) 리소그래피 장비 확보에 어려움을 겪고 있다."
+  },
+  {
+    "issue_id": "f775ff3276d6",
+    "entity": "SK하이닉스",
+    "title": "SK Hynix denies report it is pursuing deal for Intel's Ohio fab",
+    "first_seen": "2026-07-22",
+    "last_updated": "2026-07-24",
+    "status": "종료",
+    "related_article_ids": [
+      "10ab658caab233c55b2ed49c3439a490851dc97f",
+      "85b9238b5e5990aec3f818c4c432f520e3c96195"
+    ]
+  },
+  {
+    "issue_id": "d94c8ea22a4a",
+    "entity": "미상",
+    "title": "[뉴욕증시 전략] 반도체주 급반등에 뉴욕증시 상승…빅테크 실적 시험대",
+    "first_seen": "2026-07-22",
+    "last_updated": "2026-07-30",
+    "status": "진행중",
+    "related_article_ids": [
+      "1c796181e740fa0eea88a92d2d253ac2c303b19a",
+      "a5fd401f100b7abc8df2f6c6033b033c5adbe31a",
+      "5d8f631468a25da6f7288b2b5dca7cd07780de0b",
+      "cabfd618796f8bc5f1dae21bcf52ab59ab87a085",
+      "ddc335bd983d4235acf6d4f6220ce173645f2ff2"
+    ],
+    "progress_summary": "2026년 7월 22일부터 7월 30일까지 '미상'의 '[뉴욕증시 전략] 반도체주 급반등에 뉴욕증시 상승…빅테크 실적 시험대' 이슈가 진행 중이며, 최근 기사들은 삼성전자의 HBM4 매출 계획과 주주환원책 제시에도 불구하고 코스피가 5500선대로 후퇴하는 등 반도체 투자 심리에 대한 수급 불안이 여전함을 보이고 있다. 31일 예정된 예탁금 상향 조치가 향후 변동성에 영향을 미칠 것으로 예상된다."
+  },
+  {
+    "issue_id": "84af9868ad49",
+    "entity": "인텔",
+    "title": "인텔리빅스, 전국 고속도로 돌발상황 AI로 실시간 탐지",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-24",
+    "status": "종료",
+    "related_article_ids": [
+      "e7c284bf467f215394733fcdcf29e05b884181c5"
+    ]
+  },
+  {
+    "issue_id": "a0285598b7b8",
+    "entity": "인텔",
+    "title": "'칩플레이션'에 저해상도 플렉시블 OLED 적용 확대",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "e6bc12a41701d635cd1e41c31f8bdaa6235f06c2",
+      "5e0a3f9698d7d4596a7dcf1f418a7118c7ca2d0b"
+    ],
+    "progress_summary": "2026년 7월 23일부터 7월 31일까지 '인텔'의 '칩플레이션'에 저해상도 플렉시블 OLED 적용 확대 이슈가 다뤄지고 있으며, 특히 삼성전자의 갤럭시 S26 울트라에 적용된 프라이버시 OLED 패널의 원가가 일반 LTPO OLED보다 10% 이상 높은 것으로 분석되었다. 이 프라이버시 OLED는 듀얼픽셀 구조를 사용하여 일반 모드와 프라이버시 모드에서 각각 다른 픽셀을 사용하며, 이는 원가 상승 요인으로 작용하고 있다."
+  },
+  {
+    "issue_id": "0a80de598bd1",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스, 청주 P&T7 클린룸 오픈 3개월 앞당긴다",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-24",
+    "status": "종료",
+    "related_article_ids": [
+      "1be43aae8a780eaf1ea45aacd596fd81f578f21d"
+    ]
+  },
+  {
+    "issue_id": "79283f9d8c80",
+    "entity": "SK하이닉스",
+    "title": "\"SK하이닉스-인텔, 美 오하이오 공장 공동 운영 추진\"",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-24",
+    "status": "종료",
+    "related_article_ids": [
+      "b5df8acc1c2a6314d9e2f8b9b40fd830ebadd5c6"
+    ]
+  },
+  {
+    "issue_id": "52c24817a0a6",
+    "entity": "미상",
+    "title": "OCI, 2분기 영업익 433억…웨이퍼 재생 사업 진출",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-24",
+    "status": "종료",
+    "related_article_ids": [
+      "63a88827bd55466f36804f91a9319208c3dcc2fa",
+      "f7e534ef109d45f288e55c89991bbcb5dc534087"
+    ]
+  },
+  {
+    "issue_id": "cdbc4174757f",
+    "entity": "엔비디아",
+    "title": "AMD lands Anthropic as its third marquee AI customer, chipping at Nvidia's grip on training silicon",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-30",
+    "status": "진행중",
+    "related_article_ids": [
+      "967b9595d1c36052a55e357136a408ae8c88f3c6",
+      "7845fc065e2217e89a53a6f6f591c7d308e1bf1b",
+      "9e9d5cbdcd5e35a51e6d46b94f40601a59b12cea"
+    ],
+    "progress_summary": "AMD는 Nvidia의 CUDA 생태계에 도전하기 위해 소프트웨어, 시스템, 그리고 Anthropic과의 파트너십을 강화하며 AI 분야에서 Nvidia의 독점적 지위에 대한 새로운 변수로 작용하고 있다. 특히 AMD의 '헬리오스'는 Nvidia의 CUDA에 대한 도전에서 입지를 넓히고 있으나, ROCm의 안정성 및 헬리오스의 양산 능력 확보가 시장 점유율 확대를 위한 과제로 남아있다."
+  },
+  {
+    "issue_id": "b2361a58cf3c",
+    "entity": "미상",
+    "title": "高난도 습식 식각 시장 공략… 이엔에프테크놀로지, 첨단 반도체 공급망...",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-29",
+    "status": "진행중",
+    "related_article_ids": [
+      "e2219a7bc09582ee5a742ffdefa07f7e101b7633",
+      "4a0a6d31e682e742d8334c54b0ce1276a9dae6e7"
+    ],
+    "progress_summary": "이엔에프테크놀로지는 SK하이닉스에 반도체용 불산을 공급하기 시작한 지 한 달 만에 해당 시장에서 두 자릿수 점유율을 확보하며, 이는 국내 한 공장에 대한 공급 결과이다. 향후 용인 클러스터 가동에 맞춰 공급량을 늘릴 계획이며, 이는 고난도 습식 식각 시장 공략 및 첨단 반도체 공급망 강화와 관련된 이슈의 연장선에 있다."
+  },
+  {
+    "issue_id": "0bbc497ade9a",
+    "entity": "미상",
+    "title": "AI발 반도체 속도전에 ‘수퍼 을’ 된 반도체 장비사... “1년 넘게 기다...",
+    "first_seen": "2026-07-23",
+    "last_updated": "2026-07-25",
+    "status": "진행중",
+    "related_article_ids": [
+      "c8da8e2f1cfa67c6e5b037c4a4f0f1c5c4e5c9c3",
+      "146d8f774a280c7ad48684ae7486536b858e8e1c"
+    ]
+  },
+  {
     "issue_id": "9c4b5bae73dd",
     "entity": "SK하이닉스",
     "title": "[SK하이닉스 JOB리포트 3편] 차세대 메모리를 완성하다, AI 시대의 새로운 기준 System Architecture & Software Solution",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "a31c2b655e2e57140eb19376f9ea59ba58f8fce2"
     ]
@@ -8302,7 +8318,7 @@
     "title": "티이엠씨씨엔에스, 하이닉스 반도체 소재 공급 재개…보은공장서 첫 출하",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "1c3ba83ffe20a7055047efea6c92d6050dd0d3ec"
     ]
@@ -8313,7 +8329,7 @@
     "title": "퀄컴, 삼성전자에 스냅드래곤 공급 확대",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "2231ccbfee148aa8d8a8bc813814c3b946f15a2e"
     ]
@@ -8324,7 +8340,7 @@
     "title": "노태문 \"폴더블 7년 노하우, 단기간 따라잡기 힘들다\"",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "403abc937353dddac3885870e4130e17e109fca6"
     ]
@@ -8335,7 +8351,7 @@
     "title": "AMD launches ROCm.ai to accelerate agentic AI development, reporting up to 3.3x inference gains",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c8d02a651766f7abbceb2cb6cca452ed16cd49c5"
     ]
@@ -8346,7 +8362,7 @@
     "title": "TSMC's Arizona expansion moves past initial hurdles as fabs and packaging ramp up",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "ab81248b7114714c087754846bbf45c466cd73f5"
     ]
@@ -8357,7 +8373,7 @@
     "title": "Commentary: Wistron's Texas AI factory shows why US manufacturing still needs Taiwan",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "bbdaef6e3fedbf2836c3c47abafb146f2a458ad9"
     ]
@@ -8368,7 +8384,7 @@
     "title": "Amkor, Nvidia widen AI packaging partnership as US capacity expands",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "0030322eb8c9c516b4140c496f4488a5fc32522e"
     ]
@@ -8379,7 +8395,7 @@
     "title": "Nvidia 800V HVDC enters production in 1Q27, Delta set for 2Q ramp",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "b05a77a876de44d30b2c03de3b41d63c99672551"
     ]
@@ -8390,7 +8406,7 @@
     "title": "China's AI chip share tops 50%, but Nvidia still rules frontier training",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "a0d5ab9af287640e61331412235a9001de36ef50"
     ]
@@ -8401,7 +8417,7 @@
     "title": "Analysis: Why Nvidia is betting Japan's manufacturing data will power physical AI",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "16b4931a672b3b779c9f62c0be73870cf5d5e989"
     ]
@@ -8412,7 +8428,7 @@
     "title": "Trumpf builds EUV moat with 40 years of chip tech",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c8a2e157911b7256aad1fe46789efce451e8c0d2"
     ]
@@ -8423,7 +8439,7 @@
     "title": "Arizona lures chip boom with three key advantages",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "4ff85b44e5b7256366b032661c2664b32d499129"
     ]
@@ -8434,7 +8450,7 @@
     "title": "AMD goes all-in on ecosystem strategy to challenge Nvidia",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "8d7a77f8dc5bf407886429ec2b5f577423716ea1"
     ]
@@ -8445,7 +8461,7 @@
     "title": "[증시 인사이트] 반도체주 약세·외국인 순매도에 7천선과 멀어지는 코...",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "9783482fceb9ce9cc647a46e77f6775252c4ff21"
     ]
@@ -8456,7 +8472,7 @@
     "title": "“에이전틱 AI가 ‘CUDA 해자’ 없앴다…AI 인프라는 이제 랙 단위 경쟁...",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "364a80ae657d5980442067984318b7a0bcd336e7"
     ]
@@ -8467,7 +8483,7 @@
     "title": "삼성전자 60조·현대차 9조…구미·새만금 부동산 들썩",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "d5d715a405ca6f20186e63d0769a9fb480d2f94c"
     ]
@@ -8478,7 +8494,7 @@
     "title": "인텔, 15년 만에 최대 매출 성장률…에이전트 확산에 CPU 수요 급증",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "49080d6a2afc5f261f6a63ea418d965a8a261c8a"
     ]
@@ -8489,7 +8505,7 @@
     "title": "모건스탠리와 골드만삭스의 반도체 개론",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "162eab3512981c03408a55c494fc0554f29556a9"
     ]
@@ -8500,7 +8516,7 @@
     "title": "반도체 제조사, 장비 확보 '발등에 불'…\"납기 2배까지 늘어\"",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "146d8f774a280c7ad48684ae7486536b858e8e1c"
     ]
@@ -8511,7 +8527,7 @@
     "title": "연초 대비 800% 폭등…글로벌 거인 줄 세운 ‘실리콘’의 조용한 파트너...",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "79b601412fb256c5ad31a25e3ad3f71c21b83c4f"
     ]
@@ -8522,7 +8538,7 @@
     "title": "인텔, 2분기 AI발 수요 광풍에 15년만 최고 매출 성장률",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "4b928ed642fbbee3a170137a98e349194a9d546a"
     ]
@@ -8533,7 +8549,7 @@
     "title": "인텔, 2분기 영업익 2조6400억원 ‘흑자전환’… AI 매출 59% 급증",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "7e7f7395504f6b06f5a71360d13bc86de6403dcf"
     ]
@@ -8544,7 +8560,7 @@
     "title": "AI도 결국 공장·광물…미·중 제조전쟁 속 '韓' 승부수",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "c022a5a4ec29fba91f8130ac1a6ec7379bc7d3e8"
     ]
@@ -8555,7 +8571,7 @@
     "title": "美 백악관 “중국 문샷 AI, 태국서 엔비디아 첨단 칩 접근”",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "6b07673ccd3aa4126ba3b1da3c688708118f949b"
     ]
@@ -8566,7 +8582,7 @@
     "title": "미·중은 AI 총력전인데… 한국은 '원팀 거버넌스' 과제",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "d291ba0a5e7ecc9a70925d014d51c0bcaf39520a"
     ]
@@ -8577,7 +8593,7 @@
     "title": "\"中 몰리브덴, 반도체 新수요 공급 불안 지속…韓 조달 전략 변화\"",
     "first_seen": "2026-07-24",
     "last_updated": "2026-07-24",
-    "status": "진행중",
+    "status": "종료",
     "related_article_ids": [
       "9e908029649b2aaeb1ff5b50f5bd6e2d21382581"
     ]
@@ -8700,11 +8716,13 @@
     "entity": "삼성전자",
     "title": "삼성전자, 갤럭시Z폴드8·플립8 사전판매",
     "first_seen": "2026-07-27",
-    "last_updated": "2026-07-27",
+    "last_updated": "2026-07-31",
     "status": "진행중",
     "related_article_ids": [
-      "7c1b981f3f1123e953df23ada65062e6eca5129c"
-    ]
+      "7c1b981f3f1123e953df23ada65062e6eca5129c",
+      "3b8bdb3bed6709894a0dac49e3f57a3fd0c414d6"
+    ],
+    "progress_summary": "삼성전자, 갤럭시Z폴드8·플립8 사전판매 이슈가 2026년 7월 27일부터 7월 31일까지 이어지고 있다. 특히, 중국 CXMT의 급성장에도 불구하고 최신 EUV 장비 확보의 어려움으로 인해 삼성전자, SK하이닉스와의 HBM 기술 격차를 좁히기 어렵다는 분석이 나왔다. EUV 장비 없이는 경쟁사와 동일한 수준의 생산성 확보가 힘든 상황이다."
   },
   {
     "issue_id": "267acbe75526",
@@ -8953,11 +8971,13 @@
     "entity": "TSMC",
     "title": "'日 반도체 중심지' 구마모토서 규모 7.1 강진…쓰나미 주의보",
     "first_seen": "2026-07-28",
-    "last_updated": "2026-07-28",
+    "last_updated": "2026-07-31",
     "status": "진행중",
     "related_article_ids": [
-      "c84be485a05b89d55816dab84151c18fa0beb4be"
-    ]
+      "c84be485a05b89d55816dab84151c18fa0beb4be",
+      "f24724fe804890bf1e3e0e3b6ce7c523e727a64b"
+    ],
+    "progress_summary": "TSMC의 일본 구마모토 공장이 규모 7.1의 강진으로 인해 일시적으로 가동을 중단했으나, 매출에 미치는 영향은 0.03% 수준에 그칠 것으로 예상된다. 다만, 지진 여진이 공장 가동에 미치는 영향이 주요 변수로 작용할 수 있다."
   },
   {
     "issue_id": "ba62045f0a08",
@@ -9107,11 +9127,13 @@
     "entity": "미상",
     "title": "“중국, DUV 노광장비 자체생산”…반도체 자립 가속",
     "first_seen": "2026-07-28",
-    "last_updated": "2026-07-28",
+    "last_updated": "2026-07-31",
     "status": "진행중",
     "related_article_ids": [
-      "97bea9b7113dec99dc86744d469139af3fbc03ff"
-    ]
+      "97bea9b7113dec99dc86744d469139af3fbc03ff",
+      "c3af335f2fe26d7451ab32a1210864076fd69595"
+    ],
+    "progress_summary": "미상의 '\"중국, DUV 노광장비 자체생산”…반도체 자립 가속' 이슈는 2026년 7월 28일부터 7월 31일까지 이어지고 있다. 새로 추가된 기사에 따르면, 중국은 EUV 기술의 높은 장벽과 미국산 반도체 의존성으로 인해 반도체 자립에 어려움을 겪고 있으며, 미국 주도의 수출 규제로 EUV 장비 확보가 제한되자 DUV 장비를 활용한 멀티패터닝 기술로 7나노 공정 구현을 시도하고 있다."
   },
   {
     "issue_id": "9421e43a7989",
@@ -9228,7 +9250,7 @@
     "entity": "미상",
     "title": "SEMI \"2분기 웨이퍼 출하량 전분기 대비 9.1% 증가\"",
     "first_seen": "2026-07-30",
-    "last_updated": "2026-07-30",
+    "last_updated": "2026-07-31",
     "status": "진행중",
     "related_article_ids": [
       "dcaba32538573e40296c3cdf1e1438831c7ba9b0"
@@ -9239,7 +9261,7 @@
     "entity": "미상",
     "title": "LG디스플레이, 차세대 OLED에 3조 투자",
     "first_seen": "2026-07-30",
-    "last_updated": "2026-07-30",
+    "last_updated": "2026-07-31",
     "status": "진행중",
     "related_article_ids": [
       "435e95abb303b0e1acf425e1f680dbcc89f1e248"
@@ -9250,7 +9272,7 @@
     "entity": "미상",
     "title": "DB하이텍 파운드리 증설 '비상'…수공 \"물 공급 어려워\"",
     "first_seen": "2026-07-30",
-    "last_updated": "2026-07-30",
+    "last_updated": "2026-07-31",
     "status": "진행중",
     "related_article_ids": [
       "1dc6998351e7915b49f3210ff12d855f8adb56a8"
@@ -9507,6 +9529,314 @@
     "status": "진행중",
     "related_article_ids": [
       "19c073c0eea41f79f7cb3d9f1c94624a9c56fc33"
+    ]
+  },
+  {
+    "issue_id": "cc03382e2ac6",
+    "entity": "삼성전자",
+    "title": "삼성 GaN 파운드리 양산 또 해 넘기나...시험생산서 '불량' 확인",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "c4f49c21e8d3a2eabc8953fab8e7fd05005d9375"
+    ]
+  },
+  {
+    "issue_id": "3fdb1c039a47",
+    "entity": "SK하이닉스",
+    "title": "SK하이닉스 \"주주환원 못 밝힌 이유는 ADR 규제\"",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "88d4e6e10329f31864eba4f47d26a5394fd426b1"
+    ]
+  },
+  {
+    "issue_id": "c789b1d5eff3",
+    "entity": "삼성전자",
+    "title": "삼성전자 \"미국 테일러 팹2 연말 착공...LTA 60~70% 할당\"",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "64278f6baaafee8a12d0ca01a87c2eedc03a05e9"
+    ]
+  },
+  {
+    "issue_id": "2be341c78372",
+    "entity": "삼성전자",
+    "title": "Samsung chip engineers eye SK hynix as AI-driven bonus gap fuels talent war",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "4775c80a9c2c31e9e241079e228d961fb98278cc"
+    ]
+  },
+  {
+    "issue_id": "de80fda043dc",
+    "entity": "TSMC",
+    "title": "TSMC reportedly develops EMIB-like packaging to counter Intel",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "e4986a2b0f7a501ba453637fe1a799eaf9d02d58"
+    ]
+  },
+  {
+    "issue_id": "7fc2ed70cf3d",
+    "entity": "TSMC",
+    "title": "Unimicron says Intel's EMIB-T will not reach mass production until 2027, sharpening advanced packaging rivalry",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "5db81c92be91c0c3120d66c5112ba3653272e6fc"
+    ]
+  },
+  {
+    "issue_id": "689052bffe06",
+    "entity": "삼성전자",
+    "title": "Samsung boosts Hwaseong DRAM capacity as it converts older NAND lines",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "18dc76573fe435b90e4569d3f79d8b7b90a22f59"
+    ]
+  },
+  {
+    "issue_id": "6ceb610ddc9d",
+    "entity": "미상",
+    "title": "두산, SK실트론 지분 70.6% 인수 계약 체결",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "e03f2477e18079d4d9cc798d51c736e0560c91cd"
+    ]
+  },
+  {
+    "issue_id": "f1229a14cc21",
+    "entity": "미상",
+    "title": "SK, 실트론 2.3조 매각…두산 반도체 영토 넓힌다",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "e2b80248be6846f31e6cd6d102f9fe77087d7eb3"
+    ]
+  },
+  {
+    "issue_id": "99eb1cb4fcfa",
+    "entity": "미상",
+    "title": "두산, SK실트론 2.3조원에 인수…반도체 전공정 소재 전격 진출",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "184db1fb516ae42e8c5efe405a0c0a9a5bec02ff"
+    ]
+  },
+  {
+    "issue_id": "5a7adeb3865e",
+    "entity": "미상",
+    "title": "맥주·중공업 넘어 반도체로…두산, SK실트론 품고 AI 첨단기업 도약",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "726133391c08cd4aeaccace1adfdb5d4b6857383"
+    ]
+  },
+  {
+    "issue_id": "f7acbe7a2c52",
+    "entity": "미상",
+    "title": "[진단] 반도체만 웃는 한국 제조업…8월 경기 회복 기대 속 깊어지는 산...",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "b5bae43471459553a225299cd1a56aba8d141399"
+    ]
+  },
+  {
+    "issue_id": "8fd0a0210562",
+    "entity": "삼성전자",
+    "title": "삼성전자 DS부문 '아픈 손가락' 파운드리가 2나노와 수주 확대로 성장세...",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "a18bde6d3d0c9e3aad22255cdb7bd4543619eced"
+    ]
+  },
+  {
+    "issue_id": "29f95f474106",
+    "entity": "미상",
+    "title": "삼성전기, MLCC 범용부품서 '장기계약 부품'으로…10여개 고객 선점",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "0f66c57c19dd53154365cca2896414fec6de957f"
+    ]
+  },
+  {
+    "issue_id": "938a90803d64",
+    "entity": "미상",
+    "title": "두산, SK실트론 2조3000억에 품는다… '웨이퍼→테스트' 반도체 수직계...",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "dff112d17e8678842cd087f4f3876e8e5269e4a7"
+    ]
+  },
+  {
+    "issue_id": "81fde1f00138",
+    "entity": "SK하이닉스",
+    "title": "두산, SK실트론 2.3조에 품었다",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "89d77aed3b47ab75812c777f467657633c55d826"
+    ]
+  },
+  {
+    "issue_id": "5dfe6d1bfaab",
+    "entity": "미상",
+    "title": "박정원의 '반도체 비전' 가속도…세계 3위 웨이퍼 생산능력 확보",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "2978ccf87de66c7f2a0cc78351097c588c0bc899"
+    ]
+  },
+  {
+    "issue_id": "d8ed59e0c595",
+    "entity": "TSMC",
+    "title": "TSMC 1.4나노 양산 2028년으로 앞당겨…삼성과 경쟁 더 치열해진다",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "f4548e5a8faa9cff5a9da63a470d2deecf0f2367"
+    ]
+  },
+  {
+    "issue_id": "d84493bf802e",
+    "entity": "미상",
+    "title": "SK실트론 품는 두산…반도체 매출 키우지만 시너지 창출 '난망'",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "05a1ffb2d609695935ba43202ab86c54f5102498"
+    ]
+  },
+  {
+    "issue_id": "8f261e00457c",
+    "entity": "미상",
+    "title": "독일 반도체 연합, 일본에 동맹 제안… AI 첨단 공급망 강화",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "1cbbb121672b4a22c0fff0db77794cce1939a0c5"
+    ]
+  },
+  {
+    "issue_id": "47899f13b2fe",
+    "entity": "삼성전자",
+    "title": "중국 CXMT, 삼성전자·SK하이닉스·마이크론 주도 HBM 기술 격차 여전",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "8c45ecfe56f578fe47d49fad3717f56cab612604"
+    ]
+  },
+  {
+    "issue_id": "f4af69452795",
+    "entity": "미상",
+    "title": "대형 롤러코스터 탄 반도체…여기가 바닥일까?",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "a80d55a88324a5efc4798ca8d6cdb9f7e9b156cc"
+    ]
+  },
+  {
+    "issue_id": "d00f832ff7a6",
+    "entity": "미상",
+    "title": "멜콘, 코스닥 상장예비심사 통과",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "f2247c6c421f9631917f07b7eb7aff0f8f4336b4"
+    ]
+  },
+  {
+    "issue_id": "a1e717ff0a99",
+    "entity": "미상",
+    "title": "두산, SK실트론 2조3000억 인수…반도체 전공정 진출",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "4a98cf5a10806399c6b2aa05baf5c05824e042a8"
+    ]
+  },
+  {
+    "issue_id": "1726eee1cf13",
+    "entity": "미상",
+    "title": "‘AI 해커’ 만든 윤인수 KAIST 교수 “AI 보안은 성능 싸움…中 모델 위...",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "436200ec8a4613e89ec86076e6bd7b177d607692"
+    ]
+  },
+  {
+    "issue_id": "ddbd41cce4b6",
+    "entity": "미상",
+    "title": "KAI, 국산 AI 반도체를 무인기 '두뇌'로 만든다",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "52eb4904f173ce298d905934ab12a51cb27e9e2a"
+    ]
+  },
+  {
+    "issue_id": "da0ccb120f72",
+    "entity": "미상",
+    "title": "美 의회, 애플에 \"중국 CXMT,YMTC 메모리 사용하지 말라\" 경고",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "cddeca0a21a60efb59d4246664a32944cd6fcb2b"
+    ]
+  },
+  {
+    "issue_id": "091b80ae3a5b",
+    "entity": "TSMC",
+    "title": "테슬라 中사업 매각설…머스크는 부인(종합)",
+    "first_seen": "2026-07-31",
+    "last_updated": "2026-07-31",
+    "status": "진행중",
+    "related_article_ids": [
+      "05df76b7b1235acf8cf188cadd6bbede3251333b"
     ]
   }
 ]
