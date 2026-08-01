@@ -1380,5 +1380,71 @@
       }
     ],
     "noise_reported": 0
+  },
+  {
+    "date": "2026-08-01",
+    "total_articles": 31,
+    "by_category": {
+      "장비·소재": 7,
+      "팹리스·설계": 7,
+      "파운드리": 6,
+      "메모리": 12,
+      "공정_기술": 7,
+      "규제·정책": 3
+    },
+    "by_source": {
+      "디일렉": 6,
+      "DigiTimes": 1,
+      "네이버뉴스 재배포": 23,
+      "OpenAlex": 1
+    },
+    "by_confidence": {
+      "확정": 0,
+      "관측": 29,
+      "요약없음": 0
+    },
+    "top_keywords": [
+      {
+        "keyword": "EUV",
+        "count": 9
+      },
+      {
+        "keyword": "삼성전자",
+        "count": 8
+      },
+      {
+        "keyword": "HBM",
+        "count": 8
+      },
+      {
+        "keyword": "SK하이닉스",
+        "count": 7
+      },
+      {
+        "keyword": "TSMC",
+        "count": 6
+      },
+      {
+        "keyword": "노광",
+        "count": 4
+      },
+      {
+        "keyword": "파운드리",
+        "count": 3
+      },
+      {
+        "keyword": "수출통제",
+        "count": 3
+      },
+      {
+        "keyword": "엔비디아",
+        "count": 2
+      },
+      {
+        "keyword": "수율",
+        "count": 2
+      }
+    ],
+    "noise_reported": 0
   }
 ]
