@@ -1,0 +1,65 @@
+{
+  "date": "2026-08-06",
+  "total_articles": 38,
+  "by_category": {
+    "메모리": 16,
+    "장비·소재": 24,
+    "파운드리": 7,
+    "규제·정책": 12,
+    "팹리스·설계": 3
+  },
+  "by_source": {
+    "디일렉": 6,
+    "EE Times": 1,
+    "DigiTimes": 7,
+    "네이버뉴스 재배포": 24
+  },
+  "by_confidence": {
+    "확정": 0,
+    "관측": 38,
+    "요약없음": 0
+  },
+  "top_keywords": [
+    {
+      "keyword": "HBM",
+      "count": 14
+    },
+    {
+      "keyword": "EUV",
+      "count": 8
+    },
+    {
+      "keyword": "패키징",
+      "count": 7
+    },
+    {
+      "keyword": "삼성전자",
+      "count": 7
+    },
+    {
+      "keyword": "SK하이닉스",
+      "count": 5
+    },
+    {
+      "keyword": "증설",
+      "count": 4
+    },
+    {
+      "keyword": "파운드리",
+      "count": 4
+    },
+    {
+      "keyword": "수출통제",
+      "count": 4
+    },
+    {
+      "keyword": "관세",
+      "count": 4
+    },
+    {
+      "keyword": "낸드",
+      "count": 3
+    }
+  ],
+  "noise_reported": 0
+}
